@@ -1,5 +1,8 @@
 # Handoff: stochseis, state as of 31 October 2026
 
+Repository: https://github.com/thwbecker/stochseis. Written by Claude
+(Anthropic) in a chat session with Thorsten Becker; see README.md.
+
 Purpose: a stochastic seismicity generator on fault patch graphs,
 intended as the baseline that physics-based earthquake cycle models have
 to beat. Owner: Thorsten Becker. This file records what exists, which
@@ -133,7 +136,7 @@ would be needed to produce stress-dependent b variations.
    exact for antiplane components only. Sub-patch events carry 2 percent
    of the moment.
 
-## 5. Next stages (from the original plan)
+## 5. Next stages (from the original plan; concrete steps in ROADMAP.md)
 
 Stage 1: UCERF3 or NZ CFM subsection loader producing the patch graph
 (sections, connections with jump distances, slip rates, coupling); the

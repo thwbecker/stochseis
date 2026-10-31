@@ -75,5 +75,8 @@ budget rather than by the scale-free hazard.
 
 ## Sweeps
 
-`examples/sweep_arrest_stressdrop.json` is a template. `plots.sweep_figure`
+`examples/sweep_arrest_stressdrop.json` is a small template and
+`examples/sweep_regime.json` the planned regime sweep (ROADMAP step 1).
+`--no-catalogs` keeps only the summary table; `examples/aggregate_sweep.py`
+averages metrics over seeds. `plots.sweep_figure`
 plots any summary metric against one parameter, grouped by another.

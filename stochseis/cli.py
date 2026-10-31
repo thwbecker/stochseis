@@ -87,14 +87,15 @@ def cmd_analyze(args):
 
 
 def _sweep_one(job):
-    pdict, out_path, mmain = job
+    pdict, out_path, mmain, save = job
     p = Params.from_dict(pdict)
     t0 = time.time()
     cat = Simulation(p).run()
-    cat.save(out_path)
+    if save:
+        cat.save(out_path)
     m = summary_metrics(cat, mmain=mmain)
     m = _json_safe(m)
-    m["file"] = out_path
+    m["file"] = out_path if save else ""
     m["wall_seconds"] = time.time() - t0
     for k, v in pdict.items():
         m["p_" + k] = v
@@ -118,7 +119,7 @@ def cmd_sweep(args):
             d["seed"] = seed
             tag = "_".join(f"{k}{v}" for k, v in zip(keys, combo)) + f"_s{seed}"
             tag = tag.replace("/", "-")
-            jobs.append((d, os.path.join(args.outdir, f"cat_{tag}.npz"), mmain))
+            jobs.append((d, os.path.join(args.outdir, f"cat_{tag}.npz"), mmain, not args.no_catalogs))
     print(f"{len(jobs)} runs on {args.nproc} processes")
     t0 = time.time()
     if args.nproc > 1:
@@ -155,6 +156,8 @@ def main(argv=None):
     a.add_argument("sweep", help="sweep specification JSON")
     a.add_argument("outdir")
     a.add_argument("--nproc", type=int, default=os.cpu_count() or 1)
+    a.add_argument("--no-catalogs", action="store_true",
+                   help="keep only the summary table (catalogs are 10 to 40 MB each)")
     a.set_defaults(func=cmd_sweep)
     args = ap.parse_args(argv)
     args.func(args)

@@ -1,0 +1,6 @@
+{
+  "base": {"duration_yr": 1500, "mag_min": 3.0, "pilot_events": 500},
+  "grid": {"arrest_scale": [0.0, 0.5, 2.0], "stress_drop_mpa": [1.0, 3.0]},
+  "seeds": [1],
+  "mmain": 6.0
+}

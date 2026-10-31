@@ -1,0 +1,74 @@
+# Parameters
+
+All parameters live in `stochseis.params.Params`; a run is reproducible
+from its JSON file and seed. Units in the interface: km, mm/yr, MPa,
+years, days (Omori c). Section numbers refer to `docs/design.md`.
+
+## Fault geometry (planar builder)
+
+| name | default | meaning |
+|---|---|---|
+| fault_length_km, fault_width_km | 200, 15 | rupture plane dimensions |
+| patch_km | 1.0 | patch size; sets the single-patch magnitude (about M4.2 at 3 MPa) |
+| dip_deg, top_depth_km, rake_deg | 90, 0, 180 | top_depth 0 means the free-surface image is used; rake selects strike or dip slip for the stiffness |
+| slip_rate_mm_yr | 20 | long-term loading; multiplied by patch area and rigidity it fixes the moment budget |
+| rigidity_pa | 3e10 | |
+| segment_gaps_km | [] | list of [position, gap]: cuts and step-overs |
+| jump_max_km | 5 | step-overs up to this width can be crossed, with probability 1 - gap/jump_max (UCERF3 uses a 5 km hard cutoff) |
+
+## Slip amplitude and roughness (A2, A3)
+
+| name | default | meaning |
+|---|---|---|
+| stress_drop_mpa | 3 | median macroscopic stress drop of the crack solution |
+| stress_drop_ln_sigma | 0.25 | lognormal scatter (0.25 is a factor 1.28 at one sigma; 0.5 gave site-recurrence CVs near 0.8); 0 for constant stress drop |
+| hurst | 0.75 | von Karman H (Mai and Beroza, 2002) |
+| slip_cv | 0.75 | coefficient of variation of the lognormal roughness pattern |
+| corr_length_scatter | 0 | ln-scatter on the Mai and Beroza correlation lengths |
+| condition_weight | 1 | exponent of the state weighting of slip inside the rupture; 0 switches it off |
+| cap_by_deficit | True | mean slip of an event cannot exceed the mean positive deficit on its rupture (roughness still overshoots locally); prevents forced release in relaxed zones |
+
+## Growth, arrest, kinematics (A4, A5, A6)
+
+| name | default | meaning |
+|---|---|---|
+| b_value | 1.0 | size hazard per unit ln area, equal to the GR b below width saturation |
+| stop_measure | "moment" | "moment" keeps b continuous through width saturation, "area" raises it by a factor 1.5 |
+| state_measure | "deficit" | state used for admission and slip conditioning; "stress" uses the backslip stress (noisy, see design.md) |
+| arrest_scale | 0.25 | rho_c of the admission rule; 0 disables the budget control of ruptures. Ruptures percolate where deficit exceeds about 0.73 rho_c times the implied slip; 0.5 confines the budget release to M < 7 on the test fault |
+| track_stress | True | compute the backslip stress field for heterogeneity diagnostics |
+| vs_km_s, rupture_speed_frac | 3.5, 0.8 | shear-wave speed and sub-Rayleigh rupture speed |
+| supershear_prob, supershear_speed_frac | 0.1, 1.5 | fraction and speed of supershear ruptures |
+
+## Nucleation and clustering (A7)
+
+| name | default | meaning |
+|---|---|---|
+| mag_min | 3.0 | completeness of the synthetic catalog |
+| etas | True | False gives stationary Poisson nucleation |
+| branching_ratio | 0.8 | mean direct offspring per event |
+| alpha | -1 (= b) | productivity exponent |
+| omori_p, omori_c_days | 1.1, 0.01 | temporal kernel |
+| spatial_d_km, spatial_q | 1.0, 1.5 | distance kernel r (r^2 + d^2)^-q |
+| nucleation_rate_per_km2_yr | -1 (auto) | fault-event nucleation rate; negative means budget calibration |
+| budget_scale | 1.0 | multiplier on the calibrated rate |
+| rate_feedback | True | background rate proportional to fault-mean deficit |
+
+## Run control
+
+| name | default | meaning |
+|---|---|---|
+| duration_yr | 3000 | |
+| seed | 1 | numpy Generator seed; runs are deterministic |
+| store_slip_min_mag | 6.0 | slip maps stored for events at or above this |
+| pilot_events | 2000 | growths used for the budget calibration |
+| initial_deficit | "random" | smooth random field in [0, fault-wide slip]; "zero" |
+| verbose | False | |
+
+## What is effectively free
+
+For single-fault experiments the quantities worth sweeping are
+stress_drop_mpa and its scatter, b_value, arrest_scale, branching_ratio
+and the two spatial-kernel numbers, plus stop_measure and state_measure
+as discrete choices. Everything else is either geometry, a convention
+(patch size, completeness) or taken from the literature.

@@ -325,4 +325,5 @@ def segment_slip_rates(fault, path, taper_km=10.0, max_dist_km=10.0, include=Non
             v[m] = (1 - w) * rates[j] + w * rates[j + 1]
             rk[m] = (1 - w) * rakes[j] + w * rakes[j + 1]
     table = [(n, s0 / 1e3, s1 / 1e3, r, rk_) for n, s0, s1, r, rk_ in segs]
+    fault.segment_bounds_m = np.array(bounds)
     return v, rk, table

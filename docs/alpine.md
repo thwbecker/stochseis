@@ -99,6 +99,75 @@ exponent, branching ratio, deep slip, slip weight, arrest scale and the
 deficit cap, two seeds each; `examples/alpine/abc_accept.py`) maps the
 accepted region on both geometries.
 
+## ABC round 1, planar geometry (run by T. Becker)
+
+200 random parameter vectors x 2 seeds x 5000 yr at 2 km patches
+(`examples/alpine/abc1_planar.json`; summary in
+`runs/alpine_abc1_planar/`), no failed runs. Scored with
+`examples/alpine/abc_accept.py` (CV error 0.15, RI error the standard
+error of the observed mean, SED error half the observed range):
+
+* Detection threshold 2 m: 7 vectors accepted (mean squared standardized
+  misfit below 4). The best (misfit 2.0; 3.45 MPa, ln-sigma 0.28,
+  nucleation exponent 1.7, branching 0.18, deep slip 19 km, slip weight
+  1.6, arrest scale 0.26, deficit cap) gives RI / CV / SED of 296 /
+  0.49 / 6.9 (south), 284 / 0.49 / 6.5 (central) and 519 / 0.55 / 3.5
+  (north). Accepted ranges are broad: stress drop 2.8 to 6.3 MPa, deep
+  slip 4 to 30 km, nucleation exponent 1.2 to 7.6, branching 0.18 to
+  0.57; slip weight above 1 and the deficit cap are favoured.
+* Threshold 1 m: one vector accepted; threshold 4 m: none (intervals
+  too long because too few events reach 4 m at the site).
+
+What controls what (linear regression of the 200 design means on the
+standardized parameters):
+
+| output | strongest controls (sign) | R^2 |
+|---|---|---|
+| SED at south and central | stress drop (+), nucleation exponent (-), arrest scale, cap and slip weight | 0.7 |
+| RI at south and central | stress drop (+), slip weight (+), nucleation exponent (-), cap (-) | 0.4 |
+| CV at south and central | stress drop (+), nucleation exponent (-), cap (-), all weak | 0.3 to 0.4 |
+| RI at north | none of the parameters | 0.09 |
+| Bath gap, Omori p, foreshock fraction | branching ratio | 0.8 to 0.97 |
+| b above saturation, max M | nucleation exponent and arrest scale (+ / -) | 0.7 to 0.9 |
+
+Findings.
+
+1. Mean recurrence and single-event displacement at the two 27 mm/yr
+   sites are matched by a band of stress drop and deep slip; they do not
+   constrain the clustering parameters.
+2. Regularity has a floor. Over the whole prior the lowest CV at the
+   central site (mean of two runs) is 0.37 and no vector has both south
+   and central below 0.40. With about 17 recorded events per run the
+   sampling standard deviation of a CV near 0.4 is about 0.07, and that
+   of the observed central CV (13 intervals) about 0.05, so the central
+   record (CV 0.23) lies roughly three standard errors below what this
+   model family produces; the south record (0.40) is matched. Extra
+   single-seed tests with a size-hazard b of 0.7, a nucleation exponent
+   of 20 with a branching ratio of 0.05, and stronger segment boundaries
+   did not lower the central CV below about 0.5.
+3. The north site is not fitted by any vector: intervals of 460 to 1100
+   yr against 413, insensitive to every parameter. Ruptures from the
+   south pass Springs Junction too readily and leave little slip there.
+   A strength factor at segment boundaries
+   (`segment_boundary_strength`, new) is included in round 2.
+4. Interpretation for the intercomparison: a stochastic model with
+   constant-stress-drop slip, a scale-free size hazard and deficit-
+   dependent nucleation reproduces the mean slip and timing of the
+   Alpine Fault and the regularity of the south record, but not the
+   exceptional regularity of the central record. That regularity
+   therefore needs more deterministic coupling between accumulated slip
+   and event timing and size than this baseline contains, which is what
+   physics-based simulators can be asked to explain. The natural
+   counter-hypothesis to test next within stochseis is a slip-predictable
+   amplitude rule (event slip equal to the local accumulated deficit
+   rather than set by stress drop).
+
+Round 2 (`examples/alpine/abc2_planar.json`): priors narrowed to the
+region with acceptable RI and SED, plus the size-hazard b-value (0.7 to
+1.1) and the segment-boundary strength (1 to 10), 100 vectors x 3 seeds
+x 10,000 yr for smaller CV errors. The variable-dip round 1
+(`abc1_variable_dip.json`) is still to be run.
+
 ## Status (1 November 2026)
 
 * Both geometries load as section grids at 1 km (19,630 and 17,142

@@ -37,3 +37,11 @@ cores. The acceptance script scores each vector against RI, CV and SED at
 the three sites for a chosen detection threshold (1, 2 or 4 m) and prints
 the best vectors and the accepted ranges. The tune1 specs predate the
 segment slip rates and are superseded.
+
+## Round 2 (planar)
+
+    python3 -m stochseis.cli sweep examples/alpine/abc2_planar.json abc2_planar --nproc N --no-catalogs
+
+300 runs of 10,000 yr, about 2 to 4 minutes each on one core (10 to 20
+core-hours). Round 1 results and the reasons for the narrowed priors are
+in docs/alpine.md.

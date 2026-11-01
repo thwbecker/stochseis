@@ -390,6 +390,14 @@ class Simulation:
             gs = gaussian_field(f.ns, f.nz, f.dx, corr, corr, p.strength_hurst, srng)
             sg = p.strength_ln_sigma
             self.strength = np.exp(sg * gs[f.col, f.row] - 0.5 * sg ** 2)
+        # stronger patches at segment boundaries (rupture-passage control)
+        bounds = getattr(f, "segment_bounds_m", None)
+        if p.segment_boundary_strength != 1.0 and bounds is not None and len(bounds):
+            if self.strength is None:
+                self.strength = np.ones(f.n)
+            near = np.min(np.abs(f.s[:, None] - np.asarray(bounds)[None, :]), axis=1) \
+                <= p.segment_boundary_width_km * 1e3
+            self.strength = self.strength * np.where(near, p.segment_boundary_strength, 1.0)
         self.state = FaultState(f, deficit0,
                                 with_stress=(p.state_measure == "stress" or p.track_stress))
         self.delta_ref = 0.5 * d_big

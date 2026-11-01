@@ -36,6 +36,9 @@ years, days (Omori c). Section numbers refer to `docs/design.md`.
 | b_value | 1.0 | size hazard per unit ln area, equal to the GR b below width saturation |
 | stop_measure | "moment" | "moment" keeps b continuous through width saturation, "area" raises it by a factor 1.5 |
 | size_hazard | True | False: no scale-free size hazard, ruptures stop only when no neighbour is admitted (state-only termination; gives characteristic size distributions, see ROADMAP) |
+| segments_file, segment_include, segment_max_dist_km, segment_taper_km | "", [], 10, 10 | segment table with end points, rake and slip rate; projected onto mesh traces (docs/alpine.md) |
+| segment_boundary_strength, segment_boundary_width_km | 1, 4 | strength factor of patches near segment boundaries, dividing the admission ratio (rupture-passage control) |
+| sites_file, site_thresholds_m | "", [1, 2, 4] | paleoseismic sites and detection thresholds for the summary statistics |
 | strength_ln_sigma, strength_hurst, strength_corr_km | 0, 0.25, -1 | quenched strength heterogeneity dividing the admission ratio (E17); off by default |
 | state_measure | "deficit" | state used for admission and slip conditioning; "stress" uses the backslip stress (noisy, see design.md) |
 | arrest_scale | 0.25 | rho_c of the admission rule; 0 disables the budget control of ruptures. Ruptures percolate where deficit exceeds about 0.73 rho_c times the implied slip; 0.5 confines the budget release to M < 7 on the test fault |

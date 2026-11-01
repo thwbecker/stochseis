@@ -49,7 +49,7 @@ years, days (Omori c). Section numbers refer to `docs/design.md`.
 |---|---|---|
 | mag_min | 3.0 | completeness of the synthetic catalog |
 | etas | True | False gives stationary Poisson nucleation |
-| branching_ratio | 0.5 | mean direct offspring per event; controls both Bath's gap and site recurrence CV (ROADMAP step 1) |
+| branching_ratio | 0.5 | nominal mean number of direct offspring per event (realised about 0.41 with the defaults, E22); controls both Bath's gap and site recurrence CV |
 | alpha | -1 (= b) | productivity exponent |
 | omori_p, omori_c_days | 1.1, 0.01 | temporal kernel |
 | spatial_d_km, spatial_q | 1.0, 1.5 | distance kernel r (r^2 + d^2)^-q |

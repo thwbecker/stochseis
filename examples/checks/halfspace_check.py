@@ -8,8 +8,14 @@ mirror image) and (b) half-space triangular dislocation kernels from cutde
 
     python examples/checks/halfspace_check.py
 """
+import os
+import sys
+
 import numpy as np
 import cutde.halfspace as hs
+
+# allow running as a script from anywhere without installing the package
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from stochseis.stiffness import crack_solution
 

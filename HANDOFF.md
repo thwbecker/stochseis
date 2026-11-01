@@ -92,23 +92,16 @@ next. Read `docs/design.md` first for the model itself.
    choice) because thinning on the fault maximum was too slow for
    gamma > 1. Test results are in ROADMAP step 1.
 
-## 3. Current behaviour of the defaults (200 x 15 km, 20 mm/yr, 3000 yr, seed 1)
+## 3. Current behaviour of the defaults (200 x 15 km, 20 mm/yr)
 
-Defaults as of 1 November 2026: deficit-weighted nucleation, no slip cap,
-branching ratio 0.5, stress drop 3 MPa with ln-scatter 0.25, b = 1,
-arrest_scale 0.25, slip CV 0.75, moment hazard. Figures in
-`runs/defaults_2026-11-01/`.
-
-* FMD on the GR line from M3 to M7.5 (b = 1.00 in the sub-patch range
-  and below width saturation, 1.35 above it), maximum M7.52, 27 events
-  above M7, none below mag_min.
-* Bath 1.25, Omori p 0.96 (observer view), site recurrence CV 0.74
-  (slip >= 0.3 m) and 0.62 (>= 1 m), whole-fault M >= 7 CV 0.81,
-  closure 0.98, mean deficit 2.1 m, M0 versus L slope above saturation
-  1.76.
-* Runtime: about 70 s per 3000 years, 330,000 events, one core.
-* Multi-seed statistics for neighbouring settings are in ROADMAP step 1
-  and `runs/regime_2026-11-01/`.
+Reference values with error bars from 20 seeds of 10,000 yr (E22 in
+docs/experiments.md): b = 1.00 +- 0.005 below width saturation and
+1.28 +- 0.07 above, maximum M 7.58, Bath 1.24 +- 0.015, Omori p 0.96 +-
+0.01 (observer view), site recurrence CV 0.62 +- 0.03 for slip >= 1 m,
+whole-fault M >= 7 CV 0.74 +- 0.05, foreshock fraction 0.33 against a
+chance level of 0.15 (10 days, 10 km), closure 1.002 +- 0.008, realised
+branching ratio 0.41 for a nominal 0.5. Runtime about 12 min per
+10,000 yr on one core.
 
 Results quoted before 1 November 2026, the figures in `runs/sweep1`,
 `runs/sweep2` and the top level of `runs/`, and the reasoning that led to

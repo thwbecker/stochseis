@@ -5,7 +5,9 @@ This log records the tests run on a single planar strike-slip fault
 what each was meant to establish, the settings, the results and the
 conclusion. Spec files that reproduce the multi-seed experiments with the
 current code are in `examples/experiments/`;
-`examples/experiments/run_all.sh [nproc] [outdir]` runs all of them and
+`examples/run_stochseis_tests.sh [ncpu] [outdir] [all]` runs the test
+suite, the half-space check and the sweeps with python3,
+`examples/experiments/run_all.sh [nproc] [outdir]` runs all sweeps, and
 `examples/aggregate_sweep.py` averages over seeds. Summaries of the runs
 quoted below are in `runs/regime_2026-11-01/` and `runs/tests_2026-11-02/`.
 
@@ -358,41 +360,103 @@ slip by 13 to 35 percent and the near-trench peak by nearly a factor of
 two, so the dipping-fault results of E16 are qualitative only and
 megathrust applications need half-space kernels (ROADMAP step 6).
 
-## E21. Lower median stress drop (3 November)
+## E21. Stress drop and deep slip (3 November; sweep run by T. Becker, 1 November local time)
 
-200 km fault, seed 1, 3000 yr, median stress drop 1 MPa instead of 3 MPa.
+200 km fault, defaults otherwise, three seeds of 3000 yr per cell (27
+runs, `examples/experiments/e21_stressdrop_deepslip.json`; summaries in
+`runs/e21_e22_2026-11-01/`). Means over seeds; seed-to-seed standard
+deviations are about 0.02 to 0.05 for magnitudes and Bath, 0.03 to 0.1
+for CVs, and up to 0.3 for the M0-L slope above saturation.
 
-| median stress drop | patch M | max M | median D/L all / L > 3W | Bath | Omori p | site CV 1 m | M>=7 CV |
-|---|---|---|---|---|---|---|---|
-| 3 MPa | 4.19 | 7.60 | 5.7e-5 / 1.2e-5 | 1.30 | 0.97 | 0.58 | 0.62 |
-| 1 MPa | 3.87 | 7.21 | 1.9e-5 / 5.4e-6 | 1.10 | 0.87 | 0.51 | 0.96 |
+| stress drop | deep slip | max M | median D/L all | median D/L L > 3W | M0-L slope above sat | Bath | Omori p | site CV 1 m | M>=7 CV |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 MPa | 0 | 7.29 | 1.90e-5 | 0.45e-5 | 1.55 | 1.15 | 0.89 | 0.57 | 0.81 |
+| 1 MPa | 15 km | 7.43 | 1.97e-5 | 0.79e-5 | 1.56 | 1.24 | 0.93 | 0.49 | 0.59 |
+| 1 MPa | 45 km | 7.51 | 1.97e-5 | 0.93e-5 | 1.92 | 1.24 | 0.94 | 0.50 | 0.48 |
+| 2 MPa | 0 | 7.42 | 3.78e-5 | 0.95e-5 | 1.40 | 1.19 | 0.94 | 0.59 | 0.68 |
+| 2 MPa | 15 km | 7.59 | 3.94e-5 | 1.62e-5 | 1.54 | 1.27 | 0.97 | 0.57 | 0.80 |
+| 2 MPa | 45 km | 7.70 | 3.93e-5 | 1.75e-5 | 1.96 | 1.25 | 0.97 | 0.63 | 0.63 |
+| 3 MPa | 0 | 7.58 | 5.69e-5 | 1.22e-5 | 1.67 | 1.24 | 0.96 | 0.62 | 0.76 |
+| 3 MPa | 15 km | 7.77 | 5.89e-5 | 2.58e-5 | 1.72 | 1.27 | 0.99 | 0.59 | 0.62 |
+| 3 MPa | 45 km | 7.73 | 5.91e-5 | 2.93e-5 | 1.66 | 1.28 | 0.99 | 0.69 | 0.75 |
 
-Conclusion: with a saturating width, D/L falls with rupture length, so no
-single stress drop matches the roughly constant D/L of about 1.3e-5 in
-compilations: 1 MPa fits the median over all ruptures and 3 MPa the long
-ones. This is the same W-model limitation as in E18. The lower Omori p
-and Bath gap at 1 MPa probably reflect the higher event rate (530,000
-versus 320,000 events) and therefore more background inside the
-selection windows; not yet checked with the genealogy view.
-`examples/experiments/e21_stressdrop_deepslip.json` maps stress drop
-against deep slip with three seeds.
+Findings. The median D/L over all ruptures scales with stress drop
+(1.9e-5 per MPa) and is insensitive to deep slip, because it is
+dominated by small ruptures that do not reach the base of the locked
+zone. D/L of long ruptures roughly doubles with 15 km and triples with
+45 km of deep slip. The ratio of the two, which is one for self-similar
+D proportional to L, is 0.23 without deep slip, about 0.4 with 15 km and
+0.47 with 45 km at all stress drops. With 45 km of deep slip the M0-L
+slope above saturation approaches 2 (1.92 to 1.96 at 1 and 2 MPa, with
+large scatter). Bath, Omori p, site CV and closure change little; the
+lower Bath and Omori p at 1 MPa without deep slip go with the higher
+event count (480,000 against 320,000 events).
+
+Conclusion. No combination makes D/L independent of rupture length; deep
+slip of about 3W reduces the mismatch from a factor of four to a factor
+of two. Matching the compilation value of about 1.3e-5 (Blaser et al.,
+2010, as quoted in `docs/analysis.md`) for long ruptures needs about
+3 MPa without deep slip or 1.5 MPa with 15 to 45 km. Caveat: the median
+over all ruptures is dominated by one-to-few-patch events, whereas the
+compilation is for large earthquakes; a comparison restricted to the
+compilation's magnitude range (M >= 6, say) needs the catalogs, which
+the sweep did not keep. The earlier single-seed run (1 MPa, no deep
+slip: D/L 1.9e-5 and 0.54e-5, max M 7.21) is consistent with the table.
+
+## E22. Error bars for the defaults (sweep run by T. Becker)
+
+Defaults, 200 km fault, 20 seeds of 10,000 yr (about 1.1 million events
+each; `examples/experiments/e22_defaults_error_bars.json`; summaries in
+`runs/e21_e22_2026-11-01/`). Mean and standard deviation over seeds:
+
+| statistic | mean | sd |
+|---|---|---|
+| b sub-patch / below saturation / above saturation | 0.999 / 1.007 / 1.28 | 0.002 / 0.005 / 0.07 |
+| saturation magnitude | 6.68 | 0.04 |
+| maximum magnitude | 7.58 | 0.02 |
+| events M>=6 / M>=7 per 10,000 yr | 1092 / 110 | 68 / 7 |
+| Bath gap, mean / median | 1.24 / 1.28 | 0.015 / 0.017 |
+| Omori p, c [days] (observer view) | 0.961, 0.0061 | 0.008, 0.0004 |
+| site recurrence CV, slip >= 0.3 m / >= 1 m | 0.73 / 0.62 | 0.03 / 0.03 |
+| site recurrence interval, slip >= 1 m | 155 yr | 4 yr |
+| whole-fault CV, M>=6.5 / M>=7 (declustered) | 0.93 / 0.74 | 0.05 / 0.05 |
+| M>=6.5 recurrence interval | 33 yr | 2 yr |
+| foreshock fraction, 10 d and 10 km (chance) | 0.33 (0.15) | 0.015 (0.012) |
+| foreshock fraction, 3 d and 5 km (chance) | 0.15 (0.016) | 0.011 (0.002) |
+| M0-L slope below / above saturation | 2.37 / 1.48 | 0.02 / 0.17 |
+| median D/L all / L > 3W | 5.68e-5 / 1.36e-5 | 0.01e-5 / 0.11e-5 |
+| moment closure after burn-in | 1.002 | 0.008 |
+| realised branching ratio | 0.405 | 0.009 |
+| fraction of M>=6 stopped by state | 0.037 | 0.008 |
+| backslip-stress standard deviation | 18.6 MPa | 1.2 MPa |
+| surface-rupturing fraction of M>=6.5 | 0.98 | 0.006 |
+
+Findings. Seed-to-seed scatter is small for everything except the
+large-magnitude end (b above saturation, M0-L slope above saturation)
+and the final mean deficit, which is a snapshot. The realised branching
+ratio, the fraction of events with an ETAS parent, is 0.41 for a
+nominal 0.5: K0 is set from the analytic productivity of an
+unrestricted GR distribution up to the fault size, and the realised
+distribution has fewer of the most productive large events (state
+arrest at the top end). The parameter is therefore a nominal value; the
+other E6 values of the branching ratio are nominal in the same way.
+These numbers replace the single-seed values quoted earlier as the
+reference behaviour of the defaults.
 
 ## Remaining single-fault tests
 
 Status 3 November: items 1 to 7 of the original list below have been
 run (E13 to E21), the half-space check is done (E20), and the
 epicentre-based foreshock definition is now the one in
-`summary_metrics`. What remains for single faults needs more compute
-than a single core and is specified for running elsewhere:
+`summary_metrics`. E21 and E22 were run on 8 cores (see above). What remains for single
+faults:
 
-1. `examples/experiments/e22_defaults_error_bars.json`: 20 seeds of
-   10,000 yr for error bars on the default statistics (about 80
-   core-minutes).
-2. `examples/experiments/e21_stressdrop_deepslip.json`: stress drop 1,
-   2, 3 MPa against deep slip 0, 15, 45 km, three seeds (about 40
-   core-minutes).
-3. Optionally `examples/experiments/run_all.sh` to reproduce E5 to E10
-   with the current code (about 6 core-hours).
+1. Optionally reproduce E5 to E10 with the current code
+   (`examples/run_stochseis_tests.sh N outdir all`, about 6 core-hours).
+2. D/L restricted to the magnitude range of the compilations (needs
+   catalogs, i.e. a sweep without --no-catalogs).
+3. Calibrate K0 on the realised rather than the unrestricted magnitude
+   distribution if the branching ratio is to be a realised value (E22).
 
 The list as written before these tests follows for reference.
 

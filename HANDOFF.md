@@ -130,11 +130,13 @@ would be needed to produce stress-dependent b variations.
    dependence of site CV and Bath on fault length; the trade-off between
    Bath and site CV through the branching ratio is the main result so far
    and should be checked for robustness.
-2. **GR from state alone**: the state-only termination mode gives
-   characteristic distributions with smooth crack-like slip; test quenched
-   scale-invariant strength heterogeneity (ROADMAP step 3). The question
-   of whole-fault M >= 7 CV is resolved: superposition along strike and
-   clustering, see ROADMAP.
+2. **Single-fault tests are essentially complete** (docs/experiments.md
+   E1 to E19): resolution independence, stationarity, segmented and
+   dipping faults, emergence of GR from state (negative: GR must be
+   imposed), deep slip and moment scaling, foreshocks. Remaining: error
+   bars from more seeds, Okada check for dipping faults, a lower median
+   stress drop to match D/L, and the epicentre-based foreshock metric in
+   summary_metrics. Stage 1 (fault networks) is next.
 3. **Stress as state.** Patch-scale stress roughness (std about 18 MPa)
    is probably too large; it scales with slip_cv and the deficit
    conditioning. Options: filter the roughness at the patch scale,

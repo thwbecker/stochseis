@@ -212,7 +212,145 @@ deviation only from about 20 to 18 MPa; most of the heterogeneity comes
 from the deficit pattern. Needs repeating with the current code before
 any conclusion.
 
+## E13. Resolution (3 November)
+
+Purpose: check that statistics above the patch magnitude do not depend
+on the discretisation. 100 x 15 km fault, 3000 yr, defaults; patch size
+2 km (two seeds), 1 km (two seeds), 0.5 km (one seed).
+
+| patch | patch M | max M | Bath | Omori p | site CV 1 m | D/L | stress std [MPa] |
+|---|---|---|---|---|---|---|---|
+| 2 km | 4.79 | 7.35 to 7.41 | 1.21 to 1.25 | 0.96 | 0.56 to 0.57 | 5.8e-5 | 9.3 |
+| 1 km | 4.19 | 7.34 | 1.18 to 1.20 | 0.94 | 0.50 to 0.62 | 5.7e-5 | 14 to 15 |
+| 0.5 km | 3.58 | 7.25 | 1.25 | 0.96 | 0.58 | 5.7e-5 | 21.7 |
+
+GR holds across each patch magnitude. Conclusion: the seismicity
+statistics are resolution independent within seed noise; the backslip
+stress heterogeneity is not (it grows as roughly dx^-0.6), so stress
+must not be used as a state variable without a resolution-independent
+filter.
+
+## E14. Initial condition and stationarity (3 November)
+
+A zero initial deficit gives the same statistics as the default random
+one (100 km fault, seed 1: Bath 1.19, site CV 0.47, GR within 7 percent
+to M7). A 10,000-yr run on the 100 km fault (777,000 events), split into
+2000-yr windows: b of grown ruptures 0.99 to 1.03, Bath 1.10 to 1.25,
+site CV 0.53 to 0.66, M>=6.5 CV 0.70 to 0.92, release over load 0.97 to
+1.06, with no trend. Conclusion: no burn-in dependence beyond the first
+few hundred years; the default 10 percent burn-in suffices.
+
+## E15. Segmented fault (3 November)
+
+200 km fault cut at 70 and 140 km by step-overs of 1, 2.5 and 4 km,
+jump_max 5 km (a step-over is open for a given rupture with probability
+1 - gap/5 km); defaults otherwise, seed 1, 3000 yr.
+
+| gap | multi-segment fraction M>=6 / 6.5 / 7 | three segments, M>=7 | max M | Bath | M>=7 CV |
+|---|---|---|---|---|---|
+| 1 km | 0.24 / 0.43 / 0.76 | 0.21 | 7.49 | 1.16 | 0.75 |
+| 2.5 km | 0.18 / 0.34 / 0.62 | 0.14 | 7.41 | 1.23 | 0.79 |
+| 4 km | 0.07 / 0.17 / 0.37 | 0.06 | 7.37 | 1.21 | 0.90 |
+
+Site CVs at the segment centres are 0.46 to 0.80 (one value of 1.1).
+Conclusion: multi-segment ruptures behave as expected from the jump
+rule; the fractions are set mainly by the assumed opening probability,
+which is the natural interface to dynamic rupture results on step-over
+jumping (for example from fully dynamic rate-and-state simulations).
+
+## E16. Dipping, megathrust-like fault (3 November)
+
+200 x 100 km plane dipping 15 degrees, dip slip, 40 mm/yr, 2 km
+patches, mag_min 4, seed 1, 1500 yr; trench-breaking (top depth 0) and
+buried (top depth 5 km).
+
+| case | max M | GR ratio at M7 / 7.5 | Bath | Omori p | site CV 1 m | Dmean of M>=7.5 | closure |
+|---|---|---|---|---|---|---|---|
+| trench-breaking | 8.38 | 0.90 / 0.73 | 1.22 | 0.96 | 0.73 | 3.3 m | 1.01 |
+| buried | 8.29 | 0.97 / 0.81 | 1.23 | 0.96 | 0.71 | 3.3 m | 0.92 (still loading) |
+
+Conclusion: the model runs unchanged on a wide dipping fault and gives
+GR to M8.3 with the same clustering statistics. The free-surface image
+is only approximate for in-plane slip on a shallow dip, so the expected
+larger slip of trench-breaking ruptures does not appear; a check with
+Okada kernels is needed before using this geometry for tsunami-relevant
+slip.
+
+## E17. Can GR emerge from fault state alone? (3 November)
+
+Follow-up to E10, state-only termination (uniform constant initiation,
+no ETAS, no feedback, no cap, size hazard off, 1/10 of the calibrated
+initiation rate), seed 1, 1500 yr.
+
+| state measure | variant | N(>=M)/GR at 5.5 / 6.0 / 6.5 / 7.0 | closure |
+|---|---|---|---|
+| deficit | quenched strength ln-sigma 1, H 0.25 | 18 / 38 / 11 / 0.5 | 1.03 |
+| deficit | ln-sigma 2, H 0.25 | 19 / 39 / 8.7 / 0.5 | 1.02 |
+| deficit | ln-sigma 3, H 0.25 | 16 / 32 / 16 / 0.5 | 1.03 |
+| deficit | ln-sigma 2, H 0 | 19 / 39 / 11 / 0.5 | 1.03 |
+| stress | rho_c 0.25 | 12 / 19 / 22 / 26 | 2.16 |
+| stress | rho_c 1 | 10 / 18 / 23 / 17 | 1.62 |
+| stress | rho_c 1, strength ln-sigma 1 | 7.0 / 13 / 18 / 8.9 | 1.06 |
+
+The quenched strength field is a lognormal von Karman field with
+correlation length equal to the fault length that divides the admission
+ratio (`strength_ln_sigma`, `strength_hurst`, `strength_corr_km`).
+Conclusion: none of these variants produces a power law. Strength
+heterogeneity barely changes the characteristic bump; stress as the
+state adds edge concentrations but still gives a bump, and without
+strength heterogeneity it lets ruptures run through depleted fault so
+the budget does not close. Within this framework GR has to be imposed,
+which supports keeping the scale-free size hazard as an explicit
+assumption of the baseline.
+
+## E18. Moment-length scaling and deep slip (3 November)
+
+Deterministic crack solutions for full-width, surface-breaking ruptures
+(W = 15 km, 3 MPa) give mean slip in the locked zone of 1.69, 2.03,
+2.23 m at L = 60, 120, 240 km, i.e. M0 ~ L^1.20 (the W-model). Letting
+slip continue below the locked width (`deep_slip_km`) gives L^1.39 for
+15 km and L^1.63 for 45 km. In 3000-yr catalogs (seed 1) the median
+D/L of ruptures longer than 3W rises from 1.2e-5 to 2.5e-5 and 3.3e-5
+and the maximum magnitude from 7.60 to 7.75, with Bath, site CV and
+closure unchanged; slope fits from single catalogs are too noisy to be
+useful. Conclusion: L^2 scaling requires slip that is effectively
+unbounded in depth (the L-model); deep_slip_km is kept as an option.
+Note that the median D/L over all ruptures (5.7e-5) is about four times
+the compilation value of 1.3e-5 quoted in `docs/analysis.md`, which
+suggests a lower median stress drop; the D/L of long ruptures alone
+matches it without deep slip.
+
+## E19. Foreshocks and time-dependent b with the current code (3 November)
+
+10,000-yr catalog on the 100 km fault, 612 window-selected M>=6
+mainshocks. Foreshock defined as an event of M>=3 within a given time
+and distance of the mainshock epicentre (nucleation patch): 37 percent
+within 10 days and 10 km against a chance level of 20 percent; 18
+percent within 3 days and 5 km against 2 percent. Running b of grown
+ruptures in windows of 300 events: standard deviation 0.056 against
+0.058 from sampling, correlation with the moment balance 0.18 and with
+log time since the last M>=6.5 0.01. Conclusion: foreshocks occur at
+well above chance through ETAS triggering alone; b does not vary with
+the loading state, as expected from a state-independent size hazard
+(repeats and confirms E4). The epicentre-based definition replaces the
+earlier centroid-and-rupture-length one, whose chance level was close
+to one for large ruptures.
+
 ## Remaining single-fault tests
+
+Status 3 November: items 1 to 7 of the list below have been run (E13 to
+E19). What remains for single faults:
+
+1. More seeds and longer runs for the defaults to put error bars on
+   every number in `HANDOFF.md` (about 10 core-hours).
+2. Okada-kernel check of the free-surface treatment for dipping faults
+   (E16).
+3. A lower median stress drop (about 1 MPa) to match D/L of small and
+   moderate ruptures (E18), and its effect on the other statistics.
+4. Make the epicentre-based foreshock definition the one in
+   `summary_metrics`.
+
+The list as written before these tests follows for reference.
 
 In order of priority; details in `ROADMAP.md`.
 

@@ -195,7 +195,8 @@ class Simulation:
         else:
             sfn = lambda ii: np.ones(len(ii))  # noqa: E731
         idx, dist, code, rho, scale = grow_rupture(f, graph, i0, sfn, dsig, self.rng, p, self.w_eff,
-                                                   self.m0_table)
+                                                   self.m0_table,
+                                                   self.strength if use_state else None)
         cond = sfn(idx)
         slip, info = build_slip(f, idx, cond, dsig, self.rng, p, diagnostics=diagnostics)
         if not getattr(self, "_no_scale", False):
@@ -381,6 +382,14 @@ class Simulation:
             ax, az = mai_beroza_correlation_lengths(f.ns * f.dx, f.nz * f.dx)
             g = gaussian_field(f.ns, f.nz, f.dx, ax, az, p.hurst, self.rng)
             deficit0 = d_big * norm.cdf(g[f.col, f.row])
+        # quenched strength heterogeneity (fixed for the run)
+        self.strength = None
+        if p.strength_ln_sigma > 0:
+            srng = np.random.default_rng(p.seed + 7919)
+            corr = (p.strength_corr_km * 1e3 if p.strength_corr_km > 0 else f.ns * f.dx)
+            gs = gaussian_field(f.ns, f.nz, f.dx, corr, corr, p.strength_hurst, srng)
+            sg = p.strength_ln_sigma
+            self.strength = np.exp(sg * gs[f.col, f.row] - 0.5 * sg ** 2)
         self.state = FaultState(f, deficit0,
                                 with_stress=(p.state_measure == "stress" or p.track_stress))
         self.delta_ref = 0.5 * d_big

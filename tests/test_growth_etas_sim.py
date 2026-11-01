@@ -182,3 +182,22 @@ def test_defaults_produce_gutenberg_richter():
     b, sb, n = b_value_mle(m, cat.meta["m_patch"], 6.0)
     assert abs(b - p.b_value) < 3.0 * sb + 0.05
     assert abs(cat.meta["moment_closure"] - 1.0) < 0.25
+
+
+def test_strength_field_and_deep_slip_options():
+    """Quenched strength field has unit mean; deep slip raises slip of full-width ruptures."""
+    p = Params(fault_length_km=80, duration_yr=50, mag_min=3.5, seed=6, strength_ln_sigma=1.0)
+    sim = Simulation(p)
+    assert sim.strength is not None
+    assert abs(np.mean(sim.strength) - 1.0) < 0.5
+    from stochseis.geometry import planar_fault
+    from stochseis.slip import build_slip
+
+    out = []
+    for ext in (0.0, 15.0):
+        q = Params(fault_length_km=100, fault_width_km=15, slip_cv=0.0, deep_slip_km=ext)
+        fault = planar_fault(q)
+        idx = np.where((fault.col >= 10) & (fault.col < 90))[0]
+        slip, info = build_slip(fault, idx, np.ones(len(idx)), 3e6, np.random.default_rng(0), q)
+        out.append(slip.mean())
+    assert out[1] > 1.3 * out[0]

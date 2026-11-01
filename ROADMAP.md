@@ -103,8 +103,10 @@ Defaults unless stated (deficit-weighted nucleation, branching ratio
   1993). A test of quenched, scale-invariant strength heterogeneity is
   the natural follow-up (step 3).
 
-Remaining single-fault tests are listed at the end of
-`docs/experiments.md`; items 1 to 3 there should precede Stage 1.
+Single-fault tests E13 to E19 (resolution, stationarity, segmentation,
+dipping fault, GR from state, deep slip, foreshocks) were run on 3
+November; see `docs/experiments.md`, which also lists the few remaining
+single-fault items. Stage 1 (step 5 below) is next.
 
 ## 2. Nucleation weighted by slip deficit (implemented as an option)
 

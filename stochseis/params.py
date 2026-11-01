@@ -41,6 +41,7 @@ class Params:
     # ------------------------------------------------------------------
     stress_drop_mpa: float = 3.0          # median of lognormal stress drop
     stress_drop_ln_sigma: float = 0.25    # scatter in ln(stress drop); 0 = constant
+    deep_slip_km: float = 0.0             # crack solutions extend this far below the locked width where ruptures reach its base
     hurst: float = 0.75                   # von Karman Hurst exponent (Mai & Beroza 2002)
     slip_cv: float = 0.75                 # coefficient of variation of the lognormal slip pattern
     corr_length_scatter: float = 0.0      # ln-scatter on correlation lengths; 0 = Mai & Beroza mean
@@ -53,6 +54,9 @@ class Params:
     b_value: float = 1.0                  # GR b of the size hazard (2b/3 per ln M0 or b per ln A, see stop_measure)
     size_hazard: bool = True              # False: no scale-free size hazard; ruptures stop only by state (admission)
     stop_measure: str = "moment"          # "moment": hazard 2b/3 per ln M0 (b continuous); "area": hazard b per ln A
+    strength_ln_sigma: float = 0.0        # quenched strength heterogeneity: ln-std of a lognormal von Karman field (0 = none)
+    strength_hurst: float = 0.25          # Hurst exponent of the strength field
+    strength_corr_km: float = -1.0        # correlation length of the strength field; negative = fault length
     state_measure: str = "deficit"        # "deficit" or "stress" (tau = K deficit) drives arrest and conditioning
     track_stress: bool = True             # compute the backslip stress field for heterogeneity diagnostics
     arrest_scale: float = 0.25            # rho_c: patch admitted with prob 1 - exp(-(rho/rho_c)^2); 0 disables state-dependent arrest

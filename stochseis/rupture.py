@@ -66,7 +66,7 @@ def _implied_slip(area, w_eff, dsig, mu):
                (np.pi / 4.0) * dsig / mu * w_eff)
 
 
-def grow_rupture(fault, graph, i0, state_values_fn, dsig, rng, p, w_eff, m0_table=None):
+def grow_rupture(fault, graph, i0, state_values_fn, dsig, rng, p, w_eff, m0_table=None, strength=None):
     """Grow a rupture from patch ``i0``.
 
     state_values_fn(idx) returns the state measure (stress [Pa] or deficit
@@ -75,6 +75,9 @@ def grow_rupture(fault, graph, i0, state_values_fn, dsig, rng, p, w_eff, m0_tabl
     the pilot ensemble); with the moment hazard it replaces the analytic
     crack law for patch counts it covers, so that the hazard is defined
     on the moments the discretised crack solutions actually produce.
+    ``strength`` (optional, per patch, mean one) is a quenched strength
+    field: the admission ratio is divided by it, so strong patches need a
+    proportionally larger deficit to be admitted.
     Returns (patch indices in growth order, distances [m] from the
     nucleation patch, stop code, rho of the last considered patch,
     scale), where scale multiplies the slip to represent the continuous
@@ -130,6 +133,8 @@ def grow_rupture(fault, graph, i0, state_values_fn, dsig, rng, p, w_eff, m0_tabl
                     rho = vals[i] / dsig
                 else:
                     rho = vals[i] / _implied_slip(a_new, w_eff, dsig, mu)
+                if strength is not None:
+                    rho = rho / strength[i]
                 rho_last = rho
                 q = 1.0 - np.exp(-(rho / rho_c) ** 2)
                 if rng.random() >= q:

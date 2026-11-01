@@ -22,6 +22,7 @@ years, days (Omori c). Section numbers refer to `docs/design.md`.
 |---|---|---|
 | stress_drop_mpa | 3 | median macroscopic stress drop of the crack solution |
 | stress_drop_ln_sigma | 0.25 | lognormal scatter (0.25 is a factor 1.28 at one sigma; 0.5 gave site-recurrence CVs near 0.8); 0 for constant stress drop |
+| deep_slip_km | 0 | crack solutions of ruptures reaching the base of the locked width extend this far below it (E18) |
 | hurst | 0.75 | von Karman H (Mai and Beroza, 2002) |
 | slip_cv | 0.75 | coefficient of variation of the lognormal roughness pattern |
 | corr_length_scatter | 0 | ln-scatter on the Mai and Beroza correlation lengths |
@@ -35,6 +36,7 @@ years, days (Omori c). Section numbers refer to `docs/design.md`.
 | b_value | 1.0 | size hazard per unit ln area, equal to the GR b below width saturation |
 | stop_measure | "moment" | "moment" keeps b continuous through width saturation, "area" raises it by a factor 1.5 |
 | size_hazard | True | False: no scale-free size hazard, ruptures stop only when no neighbour is admitted (state-only termination; gives characteristic size distributions, see ROADMAP) |
+| strength_ln_sigma, strength_hurst, strength_corr_km | 0, 0.25, -1 | quenched strength heterogeneity dividing the admission ratio (E17); off by default |
 | state_measure | "deficit" | state used for admission and slip conditioning; "stress" uses the backslip stress (noisy, see design.md) |
 | arrest_scale | 0.25 | rho_c of the admission rule; 0 disables the budget control of ruptures. Ruptures percolate where deficit exceeds about 0.73 rho_c times the implied slip; 0.5 confines the budget release to M < 7 on the test fault |
 | track_stress | True | compute the backslip stress field for heterogeneity diagnostics |

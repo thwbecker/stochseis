@@ -81,7 +81,18 @@ def build_slip(fault, idx, condition, dsig, rng, p, diagnostics=True):
     surface = bool(fault.reaches_surface and r0 == 0)
 
     # --- smooth crack solution ----------------------------------------
-    Dc = unit_crack(mask, dx, fault.slip_dir, surface) * (dsig / mu)
+    # optional deep extension: columns that reach the base of the locked
+    # width continue to slip over deep_slip_km below it (Shaw-type
+    # argument for L^2 moment scaling); only the locked part is kept, so
+    # the extension raises slip and moment in the seismogenic zone
+    n_ext = int(round(p.deep_slip_km * 1e3 / dx)) if p.deep_slip_km > 0 else 0
+    if n_ext > 0 and r1 == fault.nz - 1:
+        mask_x = np.zeros((nx, nz + n_ext), bool)
+        mask_x[:, :nz] = mask
+        mask_x[:, nz:] = mask[:, -1:]
+        Dc = unit_crack(mask_x, dx, fault.slip_dir, surface)[:, :nz] * (dsig / mu)
+    else:
+        Dc = unit_crack(mask, dx, fault.slip_dir, surface) * (dsig / mu)
     dc = Dc[ic, ir]
 
     # --- roughness ----------------------------------------------------

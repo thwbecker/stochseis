@@ -35,6 +35,10 @@ class Params:
     # piecewise-linear slip rate along strike, [[s_km, rate_mm_yr], ...]; empty = slip_rate_mm_yr everywhere
     slip_rate_profile: list = field(default_factory=list)
     section_breaks_km: list = field(default_factory=list)   # segment labels along strike (mesh geometries)
+    segments_file: str = ""               # segment table with end points, rake, slip rate (overrides the profile)
+    segment_taper_km: float = 10.0        # linear blending of rates across segment boundaries
+    segment_max_dist_km: float = 10.0     # segments farther than this from the trace are ignored
+    segment_include: list = field(default_factory=list)     # name prefixes of segments to use; empty = all
     # paleoseismic sites for summary statistics (CSV, see data/nz_alpine/paleo_sites.csv); empty = none
     sites_file: str = ""
     site_thresholds_m: list = field(default_factory=lambda: [1.0, 2.0, 4.0])

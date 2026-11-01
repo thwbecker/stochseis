@@ -261,10 +261,68 @@ def build_fault(p: Params) -> Fault:
     if p.geometry_file:
         from .mesh import load_mesh_section
 
-        return load_mesh_section(p.geometry_file, p.patch_km * 1e3, units=p.geometry_units,
-                                 slip_rate=slip_rate_function(p), rake_deg=p.rake_deg,
-                                 rigidity=p.rigidity_pa, section_breaks_km=p.section_breaks_km)
+        f = load_mesh_section(p.geometry_file, p.patch_km * 1e3, units=p.geometry_units,
+                              slip_rate=slip_rate_function(p), rake_deg=p.rake_deg,
+                              rigidity=p.rigidity_pa, section_breaks_km=p.section_breaks_km)
+        if p.segments_file:
+            v, rk, table = segment_slip_rates(f, p.segments_file, p.segment_taper_km,
+                                              p.segment_max_dist_km, p.segment_include or None)
+            f.slip_rate = v
+            f.rake = rk
+            f.segment_table = table
+        return f
     f = planar_fault(p)
     if len(p.slip_rate_profile):
         f.slip_rate = slip_rate_function(p)(f.s)
     return f
+
+
+def segment_slip_rates(fault, path, taper_km=10.0, max_dist_km=10.0, include=None):
+    """Slip rate and rake per patch from a segment table (CSV).
+
+    The table lists segments by the NZTM (or other map) coordinates of
+    their end points, with a preferred rake and slip rate (columns
+    start_x_m, start_y_m, end_x_m, end_y_m, rake_deg, slip_rate_mm_yr, name).
+    Segments whose names start with one of the prefixes in ``include`` (all
+    segments if None) and whose end points both lie within ``max_dist_km``
+    of the fault trace are projected onto it; each patch takes the rate of the segment
+    covering its along-strike position, rates are blended linearly over
+    ``taper_km`` either side of segment boundaries, and positions beyond
+    the outermost segments take the nearest segment's values.  Returns
+    (rate [m/yr], rake [deg], list of (name, s0_km, s1_km, rate, rake)).
+    """
+    import csv
+
+    from .mesh import _project_on_polyline
+
+    tr = fault.trace[:, :2]
+    segs = []
+    with open(path) as f:
+        for r in csv.DictReader(f):
+            if include and not any(r["name"].startswith(x) for x in include):
+                continue
+            p = np.array([[float(r["start_x_m"]), float(r["start_y_m"])],
+                          [float(r["end_x_m"]), float(r["end_y_m"])]])
+            s_, h_, _ = _project_on_polyline(p, tr)
+            if np.all(np.abs(h_) <= max_dist_km * 1e3):
+                segs.append((r["name"], min(s_), max(s_), float(r["slip_rate_mm_yr"]), float(r["rake_deg"])))
+    if not segs:
+        raise ValueError("no segment lies on the fault trace")
+    segs.sort(key=lambda x: x[1])
+    # breakpoints between consecutive segments (midpoint of any gap or overlap)
+    bounds = [0.5 * (segs[k][2] + segs[k + 1][1]) for k in range(len(segs) - 1)]
+    rates = np.array([x[3] for x in segs]) * 1e-3
+    rakes = np.array([x[4] for x in segs])
+    s = fault.s
+    k = np.searchsorted(bounds, s)
+    v = rates[k].astype(float)
+    rk = rakes[k].astype(float)
+    if taper_km > 0 and len(bounds):
+        t = taper_km * 1e3
+        for j, b in enumerate(bounds):
+            m = np.abs(s - b) < t
+            w = (s[m] - (b - t)) / (2 * t)
+            v[m] = (1 - w) * rates[j] + w * rates[j + 1]
+            rk[m] = (1 - w) * rakes[j] + w * rakes[j + 1]
+    table = [(n, s0 / 1e3, s1 / 1e3, r, rk_) for n, s0, s1, r, rk_ in segs]
+    return v, rk, table

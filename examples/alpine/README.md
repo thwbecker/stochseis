@@ -18,3 +18,16 @@
 
    (the aggregation script lists the generic metrics; the site keys are in
    the JSON and CSV summaries).
+
+## Approximate Bayesian computation (with the segment slip rates)
+
+    python3 -m stochseis.cli sweep examples/alpine/abc1_planar.json abc1_planar --nproc N --no-catalogs
+    python3 -m stochseis.cli sweep examples/alpine/abc1_variable_dip.json abc1_vardip --nproc N --no-catalogs
+    python3 examples/alpine/abc_accept.py abc1_planar/sweep_summary.json 2
+
+Each spec is 400 runs (200 parameter vectors x 2 seeds) of 5000 yr at
+2 km patches, about 1 minute each on one core, i.e. under an hour on 8
+cores. The acceptance script scores each vector against RI, CV and SED at
+the three sites for a chosen detection threshold (1, 2 or 4 m) and prints
+the best vectors and the accepted ranges. The tune1 specs predate the
+segment slip rates and are superseded.

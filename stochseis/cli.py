@@ -88,6 +88,8 @@ def cmd_analyze(args):
 
 def _sweep_one(job):
     pdict, out_path, mmain, save = job
+    pdict = dict(pdict)
+    design_index = pdict.pop("design_index", None)
     p = Params.from_dict(pdict)
     t0 = time.time()
     cat = Simulation(p).run()
@@ -96,6 +98,8 @@ def _sweep_one(job):
     m = summary_metrics(cat, mmain=mmain)
     m = _json_safe(m)
     m["file"] = out_path if save else ""
+    if design_index is not None:
+        m["design_index"] = design_index
     m["wall_seconds"] = time.time() - t0
     for k, v in pdict.items():
         m["p_" + k] = v
@@ -112,7 +116,25 @@ def cmd_sweep(args):
     os.makedirs(args.outdir, exist_ok=True)
     keys = list(grid)
     jobs = []
-    for combo in itertools.product(*[grid[k] for k in keys]):
+    if spec.get("design") == "random":
+        # random design: n_samples parameter vectors, uniform in "ranges" (log-uniform for keys in
+        # "log_ranges"), uniform choice from "choices"; each vector runs for every seed
+        rng = np.random.default_rng(spec.get("design_seed", 0))
+        for i in range(int(spec["n_samples"])):
+            d0 = dict(base)
+            for k, (lo, hi) in spec.get("ranges", {}).items():
+                d0[k] = float(rng.uniform(lo, hi))
+            for k, (lo, hi) in spec.get("log_ranges", {}).items():
+                d0[k] = float(np.exp(rng.uniform(np.log(lo), np.log(hi))))
+            for k, opts in spec.get("choices", {}).items():
+                d0[k] = opts[int(rng.integers(len(opts)))]
+            for seed in seeds:
+                d = dict(d0)
+                d["seed"] = seed
+                d["design_index"] = i
+                jobs.append((d, os.path.join(args.outdir, f"cat_r{i:04d}_s{seed}.npz"), mmain,
+                             not args.no_catalogs))
+    for combo in (itertools.product(*[grid[k] for k in keys]) if spec.get("design") != "random" else []):
         for seed in seeds:
             d = dict(base)
             d.update(dict(zip(keys, combo)))

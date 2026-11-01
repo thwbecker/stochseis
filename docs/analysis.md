@@ -43,9 +43,13 @@ Differences between the two measure the effect of selection.
 * `bath_gaps`, `bath_gaps_genealogy`: M_main minus largest aftershock,
   observer and genealogy views; the summary records the mean, median
   and the number of mainshocks without any aftershock above completeness.
-* `foreshock_fraction`: fraction of mainshocks preceded within 30 days
-  by an event of M >= mmain - 2 inside the mainshock radius, together
-  with the chance level from random times at the same locations.
+* `foreshock_fraction`: fraction of window-selected mainshocks preceded
+  by an event of M >= mag_min within 10 days and 10 km of the mainshock
+  epicentre (summary also reports 3 days and 5 km), together with the
+  chance level from random times at the same epicentres. Epicentres are
+  nucleation patches. An earlier definition used centroid distances and
+  a rupture-length radius; its chance level approached one for large
+  ruptures.
 * `realised_branching_ratio` (metadata): fraction of triggered events.
 
 ## Recurrence and budget

@@ -131,12 +131,13 @@ would be needed to produce stress-dependent b variations.
    Bath and site CV through the branching ratio is the main result so far
    and should be checked for robustness.
 2. **Single-fault tests are essentially complete** (docs/experiments.md
-   E1 to E19): resolution independence, stationarity, segmented and
+   E1 to E21): resolution independence, stationarity, segmented and
    dipping faults, emergence of GR from state (negative: GR must be
-   imposed), deep slip and moment scaling, foreshocks. Remaining: error
-   bars from more seeds, Okada check for dipping faults, a lower median
-   stress drop to match D/L, and the epicentre-based foreshock metric in
-   summary_metrics. Stage 1 (fault networks) is next.
+   imposed), deep slip and moment scaling, foreshocks, half-space check
+   (exact for vertical faults, up to 35 percent too little slip for
+   shallow thrusts), lower stress drop. Remaining runs that need more
+   cores are specified in docs/experiments.md. Stage 1 (fault networks)
+   is next.
 3. **Stress as state.** Patch-scale stress roughness (std about 18 MPa)
    is probably too large; it scales with slip_cv and the deficit
    conditioning. Options: filter the roughness at the patch scale,

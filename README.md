@@ -51,7 +51,8 @@ versions.
 
 ## Requirements
 
-Python 3.10 or later, numpy, scipy, matplotlib; pytest for the tests.
+Python 3.10 or later, numpy, scipy, matplotlib; pytest for the tests;
+optionally cutde for the half-space check in `examples/checks/`.
 No compiled code. A 1500-year catalog on a 200 x 15 km fault at 1 km
 patch size (about 160,000 events above M3) takes under a minute on one
 core.
@@ -60,7 +61,7 @@ core.
 
 ```bash
 pip install -e .            # or set PYTHONPATH to the repository root
-python -m pytest tests      # 22 tests, about 30 s
+python -m pytest tests      # 23 tests, about 30 s
 
 # one run with defaults, 1500 years, seed 3
 python -m stochseis.cli run - cat.npz --set duration_yr=1500 seed=3 --summary cat.json

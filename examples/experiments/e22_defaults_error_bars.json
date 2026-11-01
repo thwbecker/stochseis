@@ -1,0 +1,32 @@
+{
+ "_comment": "Error bars for the default statistics: 20 seeds x 10,000 yr on the 200 km fault (about 4 min per run on one core).",
+ "base": {
+  "duration_yr": 10000,
+  "pilot_events": 300,
+  "store_slip_min_mag": 6.5
+ },
+ "grid": {},
+ "seeds": [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20
+ ],
+ "mmain": 6.0
+}

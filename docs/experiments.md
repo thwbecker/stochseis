@@ -336,19 +336,63 @@ the loading state, as expected from a state-independent size hazard
 earlier centroid-and-rupture-length one, whose chance level was close
 to one for large ruptures.
 
+## E20. Free-surface treatment versus half-space kernels (3 November)
+
+`examples/checks/halfspace_check.py` solves the uniform-stress-drop
+crack (3 MPa) on rectangular ruptures with the spectral operator used by
+stochseis (full space, free surface by an image) and with half-space
+triangular-dislocation kernels (cutde; Nikkhoo and Walter, 2015).
+
+| case | mean slip half-space | mean slip FFT | ratio | max slip half-space / FFT |
+|---|---|---|---|---|
+| vertical strike-slip, surface, 60 x 15 km | 1.67 m | 1.69 m | 1.01 | 2.50 / 2.53 m |
+| vertical strike-slip, buried 5 km | 1.06 m | 1.04 m | 0.98 | 1.50 / 1.48 m |
+| 15 degree thrust, trench-breaking, 60 x 40 km | 4.36 m | 2.84 m | 0.65 | 7.83 / 4.29 m |
+| 15 degree thrust, buried 5 km | 2.22 m | 1.89 m | 0.85 | 3.38 / 2.75 m |
+| 45 degree thrust, surface, 40 x 20 km | 1.86 m | 1.61 m | 0.87 | 2.88 / 2.43 m |
+
+Conclusion: for vertical strike-slip faults, the geometry of all other
+single-fault experiments, the spectral solution with the image agrees
+with the half-space to 2 percent. For dipping faults it underestimates
+slip by 13 to 35 percent and the near-trench peak by nearly a factor of
+two, so the dipping-fault results of E16 are qualitative only and
+megathrust applications need half-space kernels (ROADMAP step 6).
+
+## E21. Lower median stress drop (3 November)
+
+200 km fault, seed 1, 3000 yr, median stress drop 1 MPa instead of 3 MPa.
+
+| median stress drop | patch M | max M | median D/L all / L > 3W | Bath | Omori p | site CV 1 m | M>=7 CV |
+|---|---|---|---|---|---|---|---|
+| 3 MPa | 4.19 | 7.60 | 5.7e-5 / 1.2e-5 | 1.30 | 0.97 | 0.58 | 0.62 |
+| 1 MPa | 3.87 | 7.21 | 1.9e-5 / 5.4e-6 | 1.10 | 0.87 | 0.51 | 0.96 |
+
+Conclusion: with a saturating width, D/L falls with rupture length, so no
+single stress drop matches the roughly constant D/L of about 1.3e-5 in
+compilations: 1 MPa fits the median over all ruptures and 3 MPa the long
+ones. This is the same W-model limitation as in E18. The lower Omori p
+and Bath gap at 1 MPa probably reflect the higher event rate (530,000
+versus 320,000 events) and therefore more background inside the
+selection windows; not yet checked with the genealogy view.
+`examples/experiments/e21_stressdrop_deepslip.json` maps stress drop
+against deep slip with three seeds.
+
 ## Remaining single-fault tests
 
-Status 3 November: items 1 to 7 of the list below have been run (E13 to
-E19). What remains for single faults:
+Status 3 November: items 1 to 7 of the original list below have been
+run (E13 to E21), the half-space check is done (E20), and the
+epicentre-based foreshock definition is now the one in
+`summary_metrics`. What remains for single faults needs more compute
+than a single core and is specified for running elsewhere:
 
-1. More seeds and longer runs for the defaults to put error bars on
-   every number in `HANDOFF.md` (about 10 core-hours).
-2. Okada-kernel check of the free-surface treatment for dipping faults
-   (E16).
-3. A lower median stress drop (about 1 MPa) to match D/L of small and
-   moderate ruptures (E18), and its effect on the other statistics.
-4. Make the epicentre-based foreshock definition the one in
-   `summary_metrics`.
+1. `examples/experiments/e22_defaults_error_bars.json`: 20 seeds of
+   10,000 yr for error bars on the default statistics (about 80
+   core-minutes).
+2. `examples/experiments/e21_stressdrop_deepslip.json`: stress drop 1,
+   2, 3 MPa against deep slip 0, 15, 45 km, three seeds (about 40
+   core-minutes).
+3. Optionally `examples/experiments/run_all.sh` to reproduce E5 to E10
+   with the current code (about 6 core-hours).
 
 The list as written before these tests follows for reference.
 

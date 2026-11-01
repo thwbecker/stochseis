@@ -176,6 +176,10 @@ mean slip versus length against the Blaser et al. (2010) data.
 
 ## 6. Later
 
+* Half-space kernels for dipping faults (E20: the spectral solution with
+  an image underestimates thrust slip by up to 35 percent). Options: a
+  precomputed half-space stiffness matrix per fault (cutde or Okada),
+  used in the crack solver with the spectral operator as preconditioner.
 * Megathrust meshes (triangulated, dipping, widths near 100 km); the
   KL/lognormal construction of LeVeque et al. (2016) and Melgar et al.
   (2016) on triangles as an alternative to the FFT field.

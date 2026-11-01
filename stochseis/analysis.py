@@ -309,39 +309,44 @@ def bath_gaps_genealogy(cat: Catalog, mmain=6.0):
 # ----------------------------------------------------------------------
 # foreshocks
 # ----------------------------------------------------------------------
-def foreshock_fraction(cat: Catalog, mmain=6.0, t_fore_yr=30.0 / DAYS_PER_YEAR, mc_fore=None,
-                       r_min_km=10.0, f_len=1.0, t_window_yr=1.0, n_random=200, seed=0,
-                       t_start=0.0):
-    """Fraction of mainshocks preceded by at least one event within the
-    foreshock window, and the same fraction for random times (chance level)."""
+def foreshock_fraction(cat: Catalog, mmain=6.0, t_fore_days=10.0, r_km=10.0, mc_fore=None,
+                       t_window_yr=1.0, n_random=5, seed=0, t_start=0.0, **win):
+    """Fraction of window-selected mainshocks preceded by a foreshock.
+
+    A foreshock is an event with M >= mc_fore (default mag_min) within
+    ``t_fore_days`` before the mainshock and within ``r_km`` of the
+    mainshock epicentre (its nucleation patch), measured between
+    epicentres.  The chance level repeats the test at ``n_random`` random
+    times per mainshock at the same epicentre.  This replaced (3 November
+    2026) a definition with centroid distances and a rupture-length
+    radius, whose chance level approached one for large ruptures.
+    """
     ev = cat.events
-    mains = select_mainshocks(cat, mmain, t_window_yr, r_min_km, f_len, t_start)
+    f = cat.fault
+    if mc_fore is None:
+        mc_fore = cat.params.mag_min
+    mains = select_mainshocks(cat, mmain, t_window_yr, t_start=t_start, **win)
     if len(mains) == 0:
         return dict(fraction=np.nan, chance=np.nan, n_mainshocks=0)
-    hit = 0
-    for i in mains:
-        if len(foreshocks_of(cat, i, t_fore_yr, r_min_km, f_len, mc_fore)) > 0:
-            hit += 1
-    # chance level: same mainshock locations and radii, random times
-    rng = np.random.default_rng(seed)
     t = ev["t"]
-    chance_hits = 0
-    trials = 0
-    for i in mains:
-        R = max(r_min_km * 1e3, f_len * ev["length"][i])
-        for _ in range(max(1, n_random // len(mains))):
-            tr = rng.uniform(t_fore_yr + t_start, cat.duration)
-            lo = np.searchsorted(t, tr - t_fore_yr)
-            hi = np.searchsorted(t, tr)
-            j = np.arange(lo, hi)
-            if mc_fore is not None:
-                j = j[ev["mag"][j] >= mc_fore]
-            d = np.hypot(ev["cs"][j] - ev["cs"][i], ev["czd"][j] - ev["czd"][i])
-            trials += 1
-            if np.any(d <= R):
-                chance_hits += 1
-    return dict(fraction=hit / len(mains), chance=chance_hits / max(1, trials),
-                n_mainshocks=len(mains))
+    es = f.s[ev["nuc"]]
+    ez = f.zd[ev["nuc"]]
+    dt = t_fore_days / DAYS_PER_YEAR
+    r = r_km * 1e3
+
+    def any_before(t0, s0, z0):
+        lo = np.searchsorted(t, t0 - dt)
+        hi = np.searchsorted(t, t0)
+        j = np.arange(lo, hi)
+        j = j[ev["mag"][j] >= mc_fore]
+        return bool(np.any(np.hypot(es[j] - s0, ez[j] - z0) <= r))
+
+    hit = np.mean([any_before(t[i], es[i], ez[i]) for i in mains])
+    rng = np.random.default_rng(seed)
+    t_lo = max(t_start, dt)
+    trials = [any_before(rng.uniform(t_lo, cat.duration), es[i], ez[i])
+              for i in mains for _ in range(n_random)]
+    return dict(fraction=float(hit), chance=float(np.mean(trials)), n_mainshocks=len(mains))
 
 
 # ----------------------------------------------------------------------
@@ -441,9 +446,12 @@ def summary_metrics(cat: Catalog, mmain=6.0, t_start=None) -> dict:
     out["bath_median"] = float(np.median(gaps)) if len(gaps) else np.nan
     out["bath_n"] = len(gaps)
     out["bath_no_aftershock"] = none
-    fs = foreshock_fraction(cat, mmain=mmain, t_start=t_start, mc_fore=mmain - 2.0)
+    fs = foreshock_fraction(cat, mmain=mmain, t_start=t_start)
     out["foreshock_fraction"] = fs["fraction"]
     out["foreshock_chance"] = fs["chance"]
+    fs = foreshock_fraction(cat, mmain=mmain, t_start=t_start, t_fore_days=3.0, r_km=5.0)
+    out["foreshock_fraction_3d_5km"] = fs["fraction"]
+    out["foreshock_chance_3d_5km"] = fs["chance"]
     cv = interevent_cv(cat, mmin=6.5, t_start=t_start)
     out["cv_m6.5_declustered"] = cv["cv"]
     out["recurrence_m6.5_yr"] = cv["mean_yr"]

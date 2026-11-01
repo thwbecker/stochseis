@@ -50,12 +50,12 @@ class Params:
     # ------------------------------------------------------------------
     # Rupture growth, arrest and kinematics
     # ------------------------------------------------------------------
-    b_value: float = 1.0                  # stopping hazard per unit ln(area) (= GR b below W saturation)
+    b_value: float = 1.0                  # GR b of the size hazard (2b/3 per ln M0 or b per ln A, see stop_measure)
     size_hazard: bool = True              # False: no scale-free size hazard; ruptures stop only by state (admission)
     stop_measure: str = "moment"          # "moment": hazard 2b/3 per ln M0 (b continuous); "area": hazard b per ln A
     state_measure: str = "deficit"        # "deficit" or "stress" (tau = K deficit) drives arrest and conditioning
     track_stress: bool = True             # compute the backslip stress field for heterogeneity diagnostics
-    arrest_scale: float = 0.25            # rho_c: state hazard b (rho_c/rho)^2 per ln A; 0 disables state-dependent arrest
+    arrest_scale: float = 0.25            # rho_c: patch admitted with prob 1 - exp(-(rho/rho_c)^2); 0 disables state-dependent arrest
     vs_km_s: float = 3.5                  # shear wave speed used for rupture kinematics
     rupture_speed_frac: float = 0.8       # sub-Rayleigh rupture speed as a fraction of vs
     supershear_prob: float = 0.1          # probability that a rupture runs supershear

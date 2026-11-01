@@ -1,0 +1,26 @@
+{
+ "base": {
+  "duration_yr": 1500,
+  "pilot_events": 300,
+  "store_slip_min_mag": 6.5,
+  "nucleation_weighting": "uniform",
+  "rate_feedback": false,
+  "cap_by_deficit": false,
+  "size_hazard": false,
+  "budget_scale": 0.1
+ },
+ "grid": {
+  "arrest_scale": [
+   0.25,
+   2.0
+  ],
+  "etas": [
+   false,
+   true
+  ]
+ },
+ "seeds": [
+  1
+ ],
+ "mmain": 6.0
+}

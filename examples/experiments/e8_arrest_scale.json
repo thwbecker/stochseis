@@ -1,0 +1,19 @@
+{
+ "base": {
+  "duration_yr": 3000,
+  "pilot_events": 300,
+  "store_slip_min_mag": 6.5
+ },
+ "grid": {
+  "arrest_scale": [
+   0.25,
+   2.0
+  ]
+ },
+ "seeds": [
+  1,
+  2,
+  3
+ ],
+ "mmain": 6.0
+}

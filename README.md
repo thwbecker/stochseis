@@ -42,6 +42,9 @@ versions.
   provenance, known limitations and references.
 * `docs/parameters.md`: every parameter with its default and role.
 * `docs/analysis.md`: the statistics and figures.
+* `docs/experiments.md`: log of the single-fault experiments, with
+  settings, results, conclusions and the specs in `examples/experiments/`
+  that reproduce them.
 * `HANDOFF.md`: decisions and their reasons, rejected alternatives,
   current behaviour, open issues in order of importance.
 * `ROADMAP.md`: concrete next steps.
@@ -57,7 +60,7 @@ core.
 
 ```bash
 pip install -e .            # or set PYTHONPATH to the repository root
-python -m pytest tests      # 20 tests, about 20 s
+python -m pytest tests      # 22 tests, about 30 s
 
 # one run with defaults, 1500 years, seed 3
 python -m stochseis.cli run - cat.npz --set duration_yr=1500 seed=3 --summary cat.json

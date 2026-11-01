@@ -1,6 +1,7 @@
 # Handoff: stochseis, state as of 31 October 2026
 
-Repository: https://github.com/thwbecker/stochseis. Written by Claude
+Repository: https://github.com/thwbecker/stochseis. All experiments are
+logged in `docs/experiments.md`. Written by Claude
 (Anthropic) in a chat session with Thorsten Becker; see README.md.
 
 Purpose: a stochastic seismicity generator on fault patch graphs,

@@ -1,0 +1,21 @@
+{
+ "base": {
+  "duration_yr": 3000,
+  "pilot_events": 300,
+  "store_slip_min_mag": 6.5
+ },
+ "grid": {
+  "fault_length_km": [
+   50,
+   100,
+   200,
+   400
+  ]
+ },
+ "seeds": [
+  1,
+  2,
+  3
+ ],
+ "mmain": 6.0
+}

@@ -166,3 +166,19 @@ def test_state_only_termination_and_nucleation_exponent():
     c2 = Simulation(p2).run()
     assert c2.meta["background_bound_violations"] < 0.01
     assert np.all(c2.events["mag"] >= p2.mag_min - 1e-9)
+
+
+def test_defaults_produce_gutenberg_richter():
+    """Regression: with default parameters the FMD follows GR across the patch magnitude."""
+    from stochseis.analysis import b_value_mle
+
+    p = Params(duration_yr=800, mag_min=3.5, seed=2, fault_length_km=100, pilot_events=200)
+    cat = Simulation(p).run()
+    m = cat.events["mag"]
+    m = m[m >= p.mag_min]
+    for M in (4.0, 4.5, 5.0, 5.5):
+        ratio = np.mean(m >= M) / 10.0 ** (-p.b_value * (M - p.mag_min))
+        assert 0.75 < ratio < 1.3, (M, ratio)
+    b, sb, n = b_value_mle(m, cat.meta["m_patch"], 6.0)
+    assert abs(b - p.b_value) < 3.0 * sb + 0.05
+    assert abs(cat.meta["moment_closure"] - 1.0) < 0.25

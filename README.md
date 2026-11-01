@@ -26,11 +26,13 @@ It runs and its tests pass, but the statistics it produces have only
 begun to be explored and several modelling choices are provisional. On a
 single 200 x 15 km strike-slip fault with default parameters the
 frequency-magnitude distribution follows Gutenberg-Richter from M3 to M6
-within a few percent (b = 1 by construction), Bath's gap and Omori decay
-emerge with plausible values, site recurrence coefficients of variation
-are about 0.5 to 0.6, and the slip budget closes. The large-magnitude
-end depends on how strongly the budget controls rupture arrest, and that
-choice has not been settled. Figures in `runs/` come from intermediate
+up to the fault-size limit near M7.5 (b = 1 by construction below width
+saturation), Bath's gap (about 1.25) and Omori decay emerge, site
+recurrence coefficients of variation are about 0.6 for slip of 1 m or
+more, and the slip budget closes. These values come from a reduced
+parameter study on one fault geometry (ROADMAP step 1). A calibration
+error that affected all results before 1 November 2026 has been fixed
+(`docs/design.md` section 2.5). Figures in `runs/` come from intermediate
 versions of the code and single seeds and should not be compared across
 versions.
 
@@ -48,14 +50,14 @@ versions.
 
 Python 3.10 or later, numpy, scipy, matplotlib; pytest for the tests.
 No compiled code. A 1500-year catalog on a 200 x 15 km fault at 1 km
-patch size (about 350,000 events above M3) takes about one minute on
-one core.
+patch size (about 160,000 events above M3) takes under a minute on one
+core.
 
 ## Installation and quick start
 
 ```bash
 pip install -e .            # or set PYTHONPATH to the repository root
-python -m pytest tests      # 18 tests, about 20 s
+python -m pytest tests      # 20 tests, about 20 s
 
 # one run with defaults, 1500 years, seed 3
 python -m stochseis.cli run - cat.npz --set duration_yr=1500 seed=3 --summary cat.json

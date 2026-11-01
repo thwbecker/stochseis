@@ -31,6 +31,34 @@ events even though the background is quiet.  g is applied by thinning:
 background candidates are generated with a bound G >= g and accepted
 with probability g/G at their own time.
 
+Deficit-weighted nucleation (``nucleation_weighting = "deficit"``):
+the local nucleation intensity is proportional to the positive slip
+deficit, w_i = (max(deficit_i, 0) / delta_ref)^gamma with gamma =
+``nucleation_exponent`` (1 by default; larger values sharpen the
+dependence on loading, akin to a renewal hazard).  The background
+process has total intensity bg_rate * mean_i(w_i); candidate times are
+drawn at rate bg_rate * G with G = max(W_MIN, 1.5 mean_i w_i) refreshed at
+every candidate, accepted with probability mean_i(w_i) / G at the
+candidate time, and an accepted candidate is placed on patch i with
+probability w_i / sum(w).  This is exact as long as the mean weight does
+not grow by more than the 1.5 margin between candidates, which the
+loading over one interevent time cannot do (violations are counted).
+An earlier implementation thinned against the fault maximum of w; it was
+equivalent but became very slow for gamma > 1.  Triggered events keep their number (ETAS
+productivity is unchanged) but their location is resampled: for each
+offspring N_LOC candidate locations are drawn from the spatial kernel
+and one is chosen with probability proportional to w at the parent's
+origin time (uniformly if all candidates are relaxed).  An earlier
+version thinned triggered events by min(1, w) at their own location and
+rescaled productivity by the global acceptance fraction; because
+acceptance inside a fresh rupture is far below average, that reduced the
+productivity of large events relative to small ones (halving the direct
+aftershocks of M >= 6 events and raising Bath's gap to about 1.3).  The fault-mean of w plays
+the role of the global factor g(t), so ``rate_feedback`` is not applied
+in this mode, and nucleations on relaxed patches do not occur, so
+``cap_by_deficit`` is no longer needed to keep the budget.  W_MIN is a
+numerical bound for the thinning, not a parameter.
+
 Kinematics: each rupture is assigned a rupture speed (sub-Rayleigh, or
 supershear with a small probability) and every patch an onset time equal
 to its graph distance from the nucleation point divided by that speed.
@@ -52,7 +80,7 @@ import numpy as np
 from scipy.stats import norm
 
 from . import etas
-from .catalog import EVENT_DTYPE, Catalog, moment_magnitude
+from .catalog import EVENT_DTYPE, Catalog, moment_from_magnitude, moment_magnitude
 from .geometry import Fault, planar_fault
 from .params import Params
 from .randomfield import gaussian_field, mai_beroza_correlation_lengths
@@ -62,6 +90,8 @@ from .state import FaultState
 from .stiffness import implied_mean_slip
 
 SECONDS_PER_YEAR = 365.25 * 86400.0
+W_MIN = 1.0          # lower limit of the thinning bound for deficit-weighted background nucleation
+N_LOC = 8            # candidate locations per offspring for deficit-weighted placement
 
 
 class Simulation:
@@ -78,13 +108,28 @@ class Simulation:
         self.d_m = p.spatial_d_km * 1e3
         self.mu_ref = float(np.mean(f.mu))
         self.vs = p.vs_km_s * 1e3
+        if p.nucleation_weighting not in ("uniform", "deficit"):
+            raise ValueError(f"unknown nucleation_weighting: {p.nucleation_weighting}")
+        self.weighted = p.nucleation_weighting == "deficit"
         self.meta = {}
         self._setup()
 
     # ------------------------------------------------------------------
+    def local_weight(self, t, i):
+        """Local nucleation weight (max(deficit, 0) / delta_ref)^gamma of patch i."""
+        return (max(float(self.state.deficit(t, i)), 0.0) / self.delta_ref) ** self.p.nucleation_exponent
+
+    def weights(self, t):
+        """(max(deficit, 0) / delta_ref)^gamma on all patches."""
+        return (np.maximum(self.state.deficit(t), 0.0) / self.delta_ref) ** self.p.nucleation_exponent
+
+    def _weight_bound(self, t):
+        """Thinning bound on the fault-mean weight for background nucleation."""
+        return max(W_MIN, 1.5 * float(np.mean(self.weights(t))))
+
     def g_rate(self, t):
         """Global nucleation-rate factor <deficit>(t) / delta_ref (1 without feedback)."""
-        if not self.p.rate_feedback:
+        if not self.p.rate_feedback or self.weighted:
             return 1.0
         return max(self.state.mean_deficit(t), 0.0) / self.delta_ref
 
@@ -142,7 +187,8 @@ class Simulation:
 
     def _grow_and_slip(self, i0, t, dsig, use_state=True, diagnostics=False):
         f = self.fault
-        p = self.p if use_state else self.p.replace(arrest_scale=0.0)
+        # calibration ruptures always use the size hazard and no state arrest
+        p = self.p if use_state else self.p.replace(arrest_scale=0.0, size_hazard=True)
         graph = f.graph(self.open_connections())
         if use_state:
             sfn = lambda ii: self.state_values(t, ii)  # noqa: E731
@@ -243,6 +289,83 @@ class Simulation:
         self.m0_ratio_bins = (ks, rs)
         return table
 
+    def _m0_by_patch_count(self):
+        """Median-stress-drop moment of a k-patch rupture, k = 1 .. n (same law as rupture.ln_m0)."""
+        f = self.fault
+        n = f.n
+        a_p = float(np.mean(f.area))
+        mu = self.mu_ref
+        k = np.arange(1, n + 1, dtype=float)
+        a = k * a_p
+        an = mu * a * np.minimum((16.0 / (7.0 * np.pi)) * self.dsig_med / mu * np.sqrt(a / np.pi),
+                                 (np.pi / 4.0) * self.dsig_med / mu * self.w_eff)
+        if self.m0_table is None:
+            return an
+        nt = min(len(self.m0_table), n)
+        out = an * (self.m0_table[nt - 1] / an[nt - 1])
+        out[:nt] = self.m0_table[:nt]
+        return np.maximum.accumulate(out)
+
+    @staticmethod
+    def _seg_power_mean(r, beta, gamma):
+        """E[x^gamma] for x on [1, r] with survival x^-beta truncated at r (r >= 1, arrays ok)."""
+        r = np.asarray(r, float)
+        lr = np.log(np.maximum(r, 1.0 + 1e-12))
+        norm = -np.expm1(-beta * lr)
+        d = gamma - beta
+        if abs(d) < 1e-9:
+            num = beta * lr
+        else:
+            num = beta * np.expm1(d * lr) / d
+        return num / norm
+
+    def expected_moments(self, n_quad=15):
+        """Analytic E[M0] and E[10^(alpha (M - mag_min))] per nucleation without state arrest.
+
+        Valid for stop_measure = "moment".  Sub-patch sizes follow the
+        truncated power law in moment between the mag_min moment and the
+        patch moment; grown ruptures survive from k to k+1 patches with
+        probability (M_k / M_k+1)^beta, beta = 2b/3, stop at a continuous
+        moment within that increment, and stop at the fault boundary with
+        the remaining probability.  The stress-drop distribution is
+        integrated by Gauss-Hermite quadrature.  This replaces the Monte
+        Carlo pilot mean, which is dominated by rare large events and was
+        biased low (rate biased high) for pilot sizes of 10^3.
+        """
+        from numpy.polynomial.hermite_e import hermegauss
+
+        p = self.p
+        beta = 2.0 * p.b_value / 3.0
+        gam = 2.0 * self.alpha / 3.0
+        m0_min = moment_from_magnitude(p.mag_min)
+        Mk = self._m0_by_patch_count()
+        ratio = Mk[1:] / Mk[:-1]
+        surv = np.concatenate([[1.0], np.cumprod(ratio ** (-beta))])      # P(K >= k)
+        p_stop_k = surv[:-1] * (1.0 - ratio ** (-beta))                  # stop between k and k+1
+        e1 = self._seg_power_mean(ratio, beta, 1.0)
+        eg = self._seg_power_mean(ratio, beta, gam)
+        grown_m0_med = np.sum(p_stop_k * Mk[:-1] * e1) + surv[-1] * Mk[-1]
+        grown_g_med = np.sum(p_stop_k * Mk[:-1] ** gam * eg) + surv[-1] * Mk[-1] ** gam
+        z, w = hermegauss(n_quad)
+        w = w / w.sum()
+        e_m0 = 0.0
+        e_prod = 0.0
+        p_grown = 0.0
+        for zi, wi in zip(z, w):
+            fac = np.exp(p.stress_drop_ln_sigma * zi)
+            dsig = self.dsig_med * fac
+            p_sub, _ = self.subpatch_fraction(dsig)
+            m0p = self.m0_patch * fac
+            r_sub = max(m0p / m0_min, 1.0)
+            sub_m0 = m0_min * self._seg_power_mean(r_sub, beta, 1.0)
+            sub_g = self._seg_power_mean(r_sub, beta, gam)
+            gr_m0 = fac * grown_m0_med
+            gr_g = fac ** gam * grown_g_med / m0_min ** gam
+            e_m0 += wi * (p_sub * sub_m0 + (1.0 - p_sub) * gr_m0)
+            e_prod += wi * (p_sub * sub_g + (1.0 - p_sub) * gr_g)
+            p_grown += wi * (1.0 - p_sub)
+        return float(e_m0), float(e_prod), float(p_grown), float(surv[-1])
+
     def _setup(self):
         p, f = self.p, self.fault
         t0 = time.time()
@@ -264,24 +387,33 @@ class Simulation:
         self.m0_table = self._build_m0_table() if p.stop_measure == "moment" else None
         pilot_m0, pilot_kind, _, _ = self._pilot()
         pilot_mag = moment_magnitude(pilot_m0)
+        if p.stop_measure == "moment":
+            e_m0, e_prod, p_grown, p_whole = self.expected_moments()
+            calib = "analytic"
+        else:
+            e_m0 = float(pilot_m0.mean())
+            e_prod = float(np.mean(10.0 ** (self.alpha * (pilot_mag - p.mag_min))))
+            p_grown, p_whole = float(pilot_kind.mean()), np.nan
+            calib = "pilot"
         budget = f.moment_rate
         if p.nucleation_rate_per_km2_yr > 0:
             nu_tot = p.nucleation_rate_per_km2_yr * f.area.mean() / 1e6 / self.p_fault
         else:
-            nu_tot = budget / (f.n * pilot_m0.mean()) * p.budget_scale
+            nu_tot = budget / (f.n * e_m0) * p.budget_scale
         self.nu_tot = nu_tot                         # all nucleations per patch per yr
         self.nu_fault = nu_tot * self.p_fault        # grown ruptures per patch per yr
         n_br = p.branching_ratio if p.etas else 0.0
         self.bg_rate = self.nu_tot * f.n * (1.0 - n_br)   # background rate, whole fault
         if p.etas:
-            expectation = float(np.mean(10.0 ** (self.alpha * (pilot_mag - p.mag_min))))
-            self.K0 = p.branching_ratio / expectation
+            self.K0 = p.branching_ratio / e_prod
         else:
             self.K0 = 0.0
         self.meta.update(dict(
             m0_patch=self.m0_patch, m_patch=self.m_patch, p_fault=self.p_fault,
             nu_fault_per_patch_yr=self.nu_fault, nu_total_per_patch_yr=self.nu_tot,
             background_rate_yr=self.bg_rate, K0=self.K0, moment_rate=budget,
+            calibration=calib, expected_m0_per_nucleation=e_m0, expected_productivity=e_prod,
+            expected_grown_fraction=p_grown, whole_fault_probability_per_grown=p_whole,
             pilot_mean_m0=float(pilot_m0.mean()), pilot_max_mag=float(pilot_mag.max()),
             pilot_mean_mag=float(pilot_mag.mean()), pilot_fault_fraction=float(pilot_kind.mean()),
             m0_table_length=0 if self.m0_table is None else len(self.m0_table),
@@ -302,10 +434,15 @@ class Simulation:
         heap = []
         seq = 0
         # heap entries: (t, seq, patch, parent, generation, is_background, G)
-        G0 = max(1.0, 1.5 * self.g_rate(0.0))
+        weighted = self.weighted
+        G0 = self._weight_bound(0.0) if weighted else max(1.0, 1.5 * self.g_rate(0.0))
         heapq.heappush(heap, (rng.exponential(1.0 / (self.bg_rate * G0)), seq,
                               int(rng.integers(f.n)), -1, 0, True, G0))
         n_candidates = 0
+        n_trig_all_relaxed = 0
+        n_trig = 0
+        n_bg_clipped = 0
+        n_bg_cand = 0
         events = []
         slip_ptr = [0]
         slip_idx = []
@@ -323,12 +460,22 @@ class Simulation:
             g_now = self.g_rate(t)
             if is_bg:
                 seq += 1
-                Gn = max(1.0, 1.5 * g_now)
+                Gn = self._weight_bound(t) if weighted else max(1.0, 1.5 * g_now)
                 heapq.heappush(heap, (t + rng.exponential(1.0 / (self.bg_rate * Gn)), seq,
                                       int(rng.integers(f.n)), -1, 0, True, Gn))
             n_candidates += 1
-            # thinning of background candidates for the rate feedback
-            if is_bg and p.rate_feedback and g_now < G and rng.random() * G >= g_now:
+            if weighted and is_bg:
+                w_all = self.weights(t)
+                w_mean = float(np.mean(w_all))
+                n_bg_cand += 1
+                if w_mean > G:
+                    n_bg_clipped += 1
+                if rng.random() * G >= min(w_mean, G):
+                    continue
+                cw = np.cumsum(w_all)
+                i0 = int(min(np.searchsorted(cw, rng.random() * cw[-1], side="right"), f.n - 1))
+            # thinning of background candidates for the global rate feedback
+            elif is_bg and p.rate_feedback and g_now < G and rng.random() * G >= g_now:
                 continue
             eid = len(events)
             dsig = self.draw_stress_drop()
@@ -395,8 +542,24 @@ class Simulation:
                     if n_keep > 0:
                         tc = tc[keep]
                         src = src[keep]
-                        ds, dz = etas.spatial_offsets(n_keep, self.d_m, p.spatial_q, rng)
-                        child = f.nearest_patch(f.s[src] + ds, f.zd[src] + dz)
+                        if weighted:
+                            srcm = np.repeat(src, N_LOC)
+                            ds, dz = etas.spatial_offsets(n_keep * N_LOC, self.d_m, p.spatial_q, rng)
+                            cand = f.nearest_patch(f.s[srcm] + ds, f.zd[srcm] + dz).reshape(n_keep, N_LOC)
+                            wc = np.maximum(self.state.deficit(t, cand.ravel()), 0.0).reshape(n_keep, N_LOC)
+                            wc = wc ** p.nucleation_exponent
+                            tot = wc.sum(axis=1)
+                            relaxed = tot <= 0
+                            n_trig += n_keep
+                            n_trig_all_relaxed += int(relaxed.sum())
+                            wc[relaxed] = 1.0
+                            cw = np.cumsum(wc, axis=1)
+                            u = rng.random(n_keep) * cw[:, -1]
+                            pick = (cw < u[:, None]).sum(axis=1)
+                            child = cand[np.arange(n_keep), np.minimum(pick, N_LOC - 1)]
+                        else:
+                            ds, dz = etas.spatial_offsets(n_keep, self.d_m, p.spatial_q, rng)
+                            child = f.nearest_patch(f.s[src] + ds, f.zd[src] + dz)
                         for k in range(n_keep):
                             seq += 1
                             heapq.heappush(heap, (float(tc[k]), seq, int(child[k]), eid, gen + 1, False, Gc))
@@ -425,6 +588,9 @@ class Simulation:
             n_candidates=n_candidates,
             final_mean_deficit=self.state.mean_deficit(T),
             final_g=self.g_rate(T),
+            triggered_all_relaxed_fraction=(n_trig_all_relaxed / max(n_trig, 1)) if weighted else 0.0,
+            background_bound_violations=(n_bg_clipped / max(n_bg_cand, 1)) if weighted else 0.0,
+            frac_below_mag_min=float(np.mean(ev["mag"] < p.mag_min - 1e-9)) if n_ev else 0.0,
             run_seconds=time.time() - t0))
         if self.state.with_stress:
             m, s, fneg = self.state.stress_heterogeneity(T)

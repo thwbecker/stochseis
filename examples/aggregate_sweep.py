@@ -16,7 +16,7 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)   # all-nan metrics i
 METRICS = ["max_mag", "n_m7", "b_fault_below_sat", "b_fault_above_sat", "bath_mean",
            "omori_p", "site_cv_slip0.3", "site_cv_slip1.0", "cv_m7_declustered",
            "slope_m0_L_large", "frac_stop_deficit_m6", "final_mean_deficit",
-           "closure_after_burnin"]
+           "closure_after_burnin", "frac_below_mag_min"]
 
 rows = json.load(open(sys.argv[1]))
 keys = sys.argv[2:]

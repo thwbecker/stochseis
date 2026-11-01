@@ -26,7 +26,7 @@ years, days (Omori c). Section numbers refer to `docs/design.md`.
 | slip_cv | 0.75 | coefficient of variation of the lognormal roughness pattern |
 | corr_length_scatter | 0 | ln-scatter on the Mai and Beroza correlation lengths |
 | condition_weight | 1 | exponent of the state weighting of slip inside the rupture; 0 switches it off |
-| cap_by_deficit | True | mean slip of an event cannot exceed the mean positive deficit on its rupture (roughness still overshoots locally); prevents forced release in relaxed zones |
+| cap_by_deficit | False | mean slip of an event cannot exceed the mean positive deficit on its rupture (roughness still overshoots locally); prevents forced release in relaxed zones |
 
 ## Growth, arrest, kinematics (A4, A5, A6)
 
@@ -34,6 +34,7 @@ years, days (Omori c). Section numbers refer to `docs/design.md`.
 |---|---|---|
 | b_value | 1.0 | size hazard per unit ln area, equal to the GR b below width saturation |
 | stop_measure | "moment" | "moment" keeps b continuous through width saturation, "area" raises it by a factor 1.5 |
+| size_hazard | True | False: no scale-free size hazard, ruptures stop only when no neighbour is admitted (state-only termination; gives characteristic size distributions, see ROADMAP) |
 | state_measure | "deficit" | state used for admission and slip conditioning; "stress" uses the backslip stress (noisy, see design.md) |
 | arrest_scale | 0.25 | rho_c of the admission rule; 0 disables the budget control of ruptures. Ruptures percolate where deficit exceeds about 0.73 rho_c times the implied slip; 0.5 confines the budget release to M < 7 on the test fault |
 | track_stress | True | compute the backslip stress field for heterogeneity diagnostics |
@@ -46,13 +47,15 @@ years, days (Omori c). Section numbers refer to `docs/design.md`.
 |---|---|---|
 | mag_min | 3.0 | completeness of the synthetic catalog |
 | etas | True | False gives stationary Poisson nucleation |
-| branching_ratio | 0.8 | mean direct offspring per event |
+| branching_ratio | 0.5 | mean direct offspring per event; controls both Bath's gap and site recurrence CV (ROADMAP step 1) |
 | alpha | -1 (= b) | productivity exponent |
 | omori_p, omori_c_days | 1.1, 0.01 | temporal kernel |
 | spatial_d_km, spatial_q | 1.0, 1.5 | distance kernel r (r^2 + d^2)^-q |
 | nucleation_rate_per_km2_yr | -1 (auto) | fault-event nucleation rate; negative means budget calibration |
 | budget_scale | 1.0 | multiplier on the calibrated rate |
-| rate_feedback | True | background rate proportional to fault-mean deficit |
+| rate_feedback | True | background rate proportional to fault-mean deficit (uniform nucleation only; ignored with deficit weighting) |
+| nucleation_exponent | 1.0 | gamma in the deficit weight (deficit / delta_ref)^gamma; 3 makes large events markedly more periodic (ROADMAP) |
+| nucleation_weighting | "deficit" | "deficit": local nucleation intensity proportional to positive deficit, offspring placed preferentially on loaded patches; makes rate_feedback and cap_by_deficit unnecessary (design.md section 2.6) |
 
 ## Run control
 
@@ -61,9 +64,22 @@ years, days (Omori c). Section numbers refer to `docs/design.md`.
 | duration_yr | 3000 | |
 | seed | 1 | numpy Generator seed; runs are deterministic |
 | store_slip_min_mag | 6.0 | slip maps stored for events at or above this |
-| pilot_events | 2000 | growths used for the budget calibration |
+| pilot_events | 2000 | pilot ruptures; used for the calibration only with the area hazard, otherwise for diagnostics (the moment hazard is calibrated analytically) |
 | initial_deficit | "random" | smooth random field in [0, fault-wide slip]; "zero" |
 | verbose | False | |
+
+## How the defaults were chosen
+
+After the calibration fix (design.md section 2.5), a reduced regime sweep
+(ROADMAP step 1, three seeds of 3000 yr per setting) showed that
+arrest_scale, stress-drop scatter and the nucleation mode change site
+recurrence CVs by at most 0.1, while the branching ratio controls both
+the CV and Bath's gap. branching_ratio = 0.5 gives Bath 1.25 and a site
+CV of 0.62 for slip >= 1 m; 0.8 gives 1.05 and 0.76. Deficit-weighted
+nucleation is the default because it closes the budget without the
+global feedback and the slip cap and produces no events below mag_min.
+stress_drop_ln_sigma = 0.25 and arrest_scale = 0.25 are kept; they are
+not well constrained by these statistics.
 
 ## What is effectively free
 

@@ -1,7 +1,9 @@
 {
-  "_comment": "ROADMAP step 1: budget-control regime. 4 x 3 x 3 = 36 runs of 3000 yr; run with --no-catalogs and as many processes as cores.",
-  "base": {"duration_yr": 3000, "mag_min": 3.0, "pilot_events": 1000, "store_slip_min_mag": 6.5},
-  "grid": {"arrest_scale": [0.1, 0.25, 0.5, 1.0], "stress_drop_ln_sigma": [0.0, 0.25, 0.5]},
+  "_comment": "ROADMAP step 1: budget-control regime with the corrected calibration. 4 x 2 x 2 x 3 = 48 runs of 3000 yr (about 2 min each); run with --no-catalogs and as many processes as cores.",
+  "base": {"duration_yr": 3000, "mag_min": 3.0, "pilot_events": 500, "store_slip_min_mag": 6.5},
+  "grid": {"arrest_scale": [0.25, 0.5, 1.0, 2.0],
+           "nucleation_weighting": ["uniform", "deficit"],
+           "stress_drop_ln_sigma": [0.25, 0.5]},
   "seeds": [1, 2, 3],
   "mmain": 6.0
 }

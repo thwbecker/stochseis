@@ -36,6 +36,13 @@ before reaching the next patch) and returned as ``area_scale`` = A / A_k;
 the caller rescales slip by sqrt(area_scale) (crack scaling D ~ sqrt(A)),
 which removes the discreteness of magnitudes at small patch counts.
 
+State-only termination (``size_hazard = False``): the size hazard is
+switched off and a rupture stops only when its frontier is exhausted,
+i.e. when no neighbouring patch is admitted.  Because rho compares the
+local deficit with the mean slip implied by the current rupture size,
+admission becomes harder as the rupture grows, so termination is a
+function of the fault state alone.
+
 Cost per event: one shortest-path computation for the ordering plus a
 heap flood that is linear in the number of admitted patches.
 """
@@ -85,6 +92,7 @@ def grow_rupture(fault, graph, i0, state_values_fn, dsig, rng, p, w_eff, m0_tabl
     rho_c = p.arrest_scale
     use_state = rho_c > 0
     use_moment = p.stop_measure == "moment"
+    use_hazard = p.size_hazard
     n_tab = 0 if m0_table is None else len(m0_table)
 
     def ln_m0(k, a):
@@ -128,8 +136,10 @@ def grow_rupture(fault, graph, i0, state_values_fn, dsig, rng, p, w_eff, m0_tabl
                     status[i] = _BLOCKED
                     any_blocked = True
                     continue
-            # size hazard
-            if use_moment:
+            # size hazard (switched off in the state-only termination mode)
+            if not use_hazard:
+                pass
+            elif use_moment:
                 lnm = ln_m0(k + 1, a_new)
                 if lnm_prev is None:
                     lnm_prev = ln_m0(k, cumA)

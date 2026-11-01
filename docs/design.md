@@ -142,7 +142,11 @@ regardless of the budget, which drives the fault to a depleted
 equilibrium once the nucleation rate is high.
 
 With rho_c = 0 the admission rule is off and the size distribution on an
-unbounded fault is N(>A) proportional to A^-b exactly. rho_c therefore
+unbounded fault is N(>A) proportional to A^-b exactly. With
+``size_hazard = False`` the size hazard is off instead and ruptures stop
+only when no neighbouring patch is admitted; this state-only mode
+produces characteristic rather than GR size distributions (ROADMAP,
+tests of 2 November 2026). rho_c therefore
 controls how strongly the slip budget shapes ruptures: small values give
 a pure epidemic GR model with ruptures independent of the budget, large
 values give budget-controlled, quasi-periodic behaviour. Two earlier
@@ -164,16 +168,57 @@ crack solution. The realised moment-weighted stress drop of the rough
 field (Noda et al., 2013) is larger than the macroscopic value and is
 recorded as a diagnostic.
 
-### 2.5 State update and feedback
+### 2.5 Rate calibration
+
+The total nucleation rate is chosen so that the expected moment release
+per nucleation, absent any state-dependent arrest, times the rate equals
+the tectonic moment rate. For the moment-based size hazard the expected
+moment is computed analytically: sub-patch sizes follow a truncated
+power law in moment; a grown rupture survives from k to k+1 patches with
+probability (M0_k / M0_{k+1})^(2b/3), using the realised moment versus
+patch count from the pilot, stops at a continuous moment inside that
+increment, and stops at the fault boundary otherwise; the stress-drop
+distribution is integrated by quadrature. The same calculation gives the
+expected ETAS productivity that sets K0. Before 1 November 2026 both
+expectations were Monte Carlo means over 10^3 pilot ruptures. Because
+the moment distribution is heavy-tailed (survival M0^(-2/3)), such means
+are dominated by events that a pilot of that size rarely contains; they
+were typically several times, in one case ten times, too small, so the
+nucleation rate was too high and the feedback below held the fault at a
+low mean deficit (0.5 m instead of about 3 m). The resulting shortage of
+M >= 6.5 events relative to GR, attributed earlier to the arrest rule,
+was largely this calibration error. The pilot is still used for the
+area-based hazard and for diagnostics.
+
+### 2.6 State update and feedback
 
 After each event the released slip is added per patch and the backslip
-stress is updated (one FFT, buffered for small events). The background
-rate is multiplied by g(t) = fault-mean deficit / delta_ref with
-delta_ref = half the slip of a fault-wide event; triggered events are
-not modulated, so aftershock sequences continue when the background is
-quiet. Without this feedback the deficit drifts, because nucleations in
-the shadow of a recent rupture release less moment than the pilot
-calibration assumes.
+stress is updated (one FFT, buffered for small events). Two ways of
+letting the state feed back on nucleation are available.
+
+Uniform nucleation (``nucleation_weighting = "uniform"``): the
+background rate is multiplied by g(t) = fault-mean deficit / delta_ref
+with delta_ref = half the slip of a fault-wide event; triggered events
+are not modulated, so aftershock sequences continue when the background
+is quiet. Without this feedback the deficit drifts, because nucleations
+in the shadow of a recent rupture release less moment than the
+calibration assumes. Event mean slip is capped by the available deficit
+(``cap_by_deficit``), and nucleations on relaxed patches therefore give
+events below mag_min (3 to 8 percent with the corrected calibration).
+
+Deficit-weighted nucleation (default, ``nucleation_weighting = "deficit"``): the
+local background intensity is proportional to w_i = (max(deficit_i, 0) /
+delta_ref)^gamma (gamma = ``nucleation_exponent``, 1 by default),
+implemented by thinning on the fault-mean weight against an adaptive
+bound and choosing the patch with probability proportional to w_i. The fault mean of w replaces g(t). Triggered events keep
+their number, so ETAS productivity is unchanged, but each offspring is
+placed at one of eight candidate locations from the spatial kernel,
+chosen with probability proportional to w. Neither the global feedback
+nor the slip cap is needed, and no events fall below mag_min. A first
+version thinned triggered events at their location and rescaled
+productivity by the global acceptance; because acceptance inside a fresh
+rupture is far below average, that halved the direct aftershocks of
+M >= 6 events and raised Bath's gap to about 1.3, and it was replaced.
 
 ## 3. Parameters and their provenance
 
@@ -197,7 +242,7 @@ Free, physically meaningful:
 | stress_drop_mpa, stress_drop_ln_sigma | 3, 0.25 | amplitude and scatter of slip |
 | b_value | 1.0 | size hazard, GR slope |
 | arrest_scale (rho_c) | 0.25 | strength of budget control on ruptures |
-| branching_ratio | 0.8 | clustering strength |
+| branching_ratio | 0.5 | clustering strength; sets Bath's gap and site recurrence CV together |
 | spatial_d_km, spatial_q | 1, 1.5 | aftershock distance kernel |
 
 Choices that are conventions rather than parameters: patch size (1 km),
@@ -225,6 +270,10 @@ of a run should be treated as burn-in.
   below the maximum).
 * Single-fault results depend on the fault length through the maximum
   magnitude; a fault network changes this.
+* The analytic calibration assumes every patch of the fault is reachable
+  from every nucleation point; on segmented faults with step-overs that
+  are open only some of the time it overestimates the boundary-limited
+  sizes slightly.
 
 ## 5. References
 

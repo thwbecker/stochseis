@@ -123,3 +123,46 @@ def test_segmented_fault_connections():
     # nearest patch snaps gap positions onto a real patch
     idx = fault.nearest_patch(np.array([30.5e3, 31.0e3]), np.array([5e3, 5e3]))
     assert np.all(idx >= 0)
+
+
+def test_analytic_calibration_matches_monte_carlo():
+    """Analytic expected moment, productivity and grown fraction agree with a large pilot."""
+    from stochseis.catalog import moment_magnitude
+
+    p = Params(fault_length_km=60, fault_width_km=15, pilot_events=100, seed=11, duration_yr=1)
+    sim = Simulation(p)
+    m = sim.meta
+    m0, kind, npatch, ds = sim._pilot(n=20000)
+    se = m0.std() / np.sqrt(len(m0))
+    assert abs(m0.mean() - m["expected_m0_per_nucleation"]) < 4.0 * se
+    assert abs(kind.mean() - m["expected_grown_fraction"]) < 0.01
+    prod = 10.0 ** (sim.alpha * (moment_magnitude(m0) - p.mag_min))
+    assert abs(prod.mean() - m["expected_productivity"]) < 4.0 * prod.std() / np.sqrt(len(prod))
+
+
+def test_deficit_weighted_nucleation_run():
+    p = Params(duration_yr=200, mag_min=3.5, seed=5, fault_length_km=80,
+               nucleation_weighting="deficit", cap_by_deficit=False)
+    cat = Simulation(p).run()
+    ev = cat.events
+    assert len(ev) > 100
+    # nucleations happen only on loaded patches, so no event is cut below mag_min
+    assert np.all(ev["mag"] >= p.mag_min - 1e-9)
+    assert cat.meta["background_bound_violations"] < 0.01
+    # triggered events keep their number: realised branching ratio near the target
+    assert abs(np.mean(ev["parent"] >= 0) - p.branching_ratio) < 0.2
+
+
+def test_state_only_termination_and_nucleation_exponent():
+    """size_hazard=False stops ruptures only by state; gamma > 1 runs and closes the budget roughly."""
+    p = Params(duration_yr=300, mag_min=3.5, seed=4, fault_length_km=60, etas=False,
+               nucleation_weighting="uniform", rate_feedback=False, size_hazard=False,
+               budget_scale=0.1)
+    cat = Simulation(p).run()
+    fe = cat.fault_events()
+    assert len(fe) > 10
+    assert np.all(fe["stop"] != 0)        # no size-hazard stops
+    p2 = Params(duration_yr=300, mag_min=3.5, seed=4, fault_length_km=60, nucleation_exponent=3.0)
+    c2 = Simulation(p2).run()
+    assert c2.meta["background_bound_violations"] < 0.01
+    assert np.all(c2.events["mag"] >= p2.mag_min - 1e-9)

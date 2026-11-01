@@ -64,21 +64,54 @@ next. Read `docs/design.md` first for the model itself.
    (`cap_by_deficit`). Without it, once the nucleation rate is high the
    forced release by nucleations in relaxed zones drives the fault to a
    near-zero deficit in which large events cannot percolate.
-7. Defaults: stress drop 3 MPa with ln-scatter 0.25 (0.5 gave site
+7. Defaults (provisional, see docs/parameters.md): stress drop 3 MPa with ln-scatter 0.25 (0.5 gave site
    recurrence CVs near 0.8; 0.25 gives about 0.5 to 0.6, the
    paleoseismic range), b = 1, rho_c = 0.25, slip CV 0.75, moment
    hazard (b continuous through width saturation), branching ratio 0.8.
 
-## 3. Current behaviour of the defaults (200 x 15 km, 20 mm/yr, 1500 yr, seed 1)
+8. Rate calibration for the moment hazard is analytic (design.md
+   section 2.5). The Monte Carlo pilot mean it replaces was dominated by
+   rare large events and typically several times too small, which made
+   the nucleation rate too high and, through the feedback, held the fault
+   at a low mean deficit with too few large events. This affected every
+   result before 1 November 2026.
+9. Deficit-weighted nucleation with productivity-preserving placement of
+   triggered events is the default; it closes the budget without the
+   global feedback and the slip cap (both kept as options for uniform
+   nucleation).
+10. Branching ratio 0.5: the reduced regime sweep showed that the ETAS
+   branching ratio, not arrest or stress-drop scatter, sets the site
+   recurrence CV and Bath's gap, in opposite directions; 0.5 gives about
+   0.6 and 1.25.
+11. Options added on 2 November: ``nucleation_exponent`` (renewal-like
+   sharpening; 3 lowers the M>=7 CV from 0.82 to 0.58) and
+   ``size_hazard = False`` (state-only termination; yields characteristic
+   size distributions). Neither is a default. The background sampler was
+   rewritten (thinning on the fault-mean weight, then weighted patch
+   choice) because thinning on the fault maximum was too slow for
+   gamma > 1. Test results are in ROADMAP step 1.
 
-* FMD flat relative to GR from M3 to M6 within 3 percent; b = 1.00 /
-  0.98 / 1.7 in the sub-patch, grown-below-saturation and
-  above-saturation ranges (corrected estimator, see below); above M6.5 the rate falls below GR (0.85 at
-  6.5, 0.36 at 7.0) with maximum M7.1 and 11 events above M7.
-* Bath 0.96, Omori p about 0.93 (input 1.1), site recurrence CV 0.57
-  (slip >= 0.3 m) and 0.49 (>= 1 m), whole-fault M >= 7 CV 0.63, closure
-  1.02, mean deficit 0.55 m.
-* Runtime: about 60 s per 1500 years, 360 k events, one core.
+## 3. Current behaviour of the defaults (200 x 15 km, 20 mm/yr, 3000 yr, seed 1)
+
+Defaults as of 1 November 2026: deficit-weighted nucleation, no slip cap,
+branching ratio 0.5, stress drop 3 MPa with ln-scatter 0.25, b = 1,
+arrest_scale 0.25, slip CV 0.75, moment hazard. Figures in
+`runs/defaults_2026-11-01/`.
+
+* FMD on the GR line from M3 to M7.5 (b = 1.00 in the sub-patch range
+  and below width saturation, 1.35 above it), maximum M7.52, 27 events
+  above M7, none below mag_min.
+* Bath 1.25, Omori p 0.96 (observer view), site recurrence CV 0.74
+  (slip >= 0.3 m) and 0.62 (>= 1 m), whole-fault M >= 7 CV 0.81,
+  closure 0.98, mean deficit 2.1 m, M0 versus L slope above saturation
+  1.76.
+* Runtime: about 70 s per 3000 years, 330,000 events, one core.
+* Multi-seed statistics for neighbouring settings are in ROADMAP step 1
+  and `runs/regime_2026-11-01/`.
+
+Results quoted before 1 November 2026, the figures in `runs/sweep1`,
+`runs/sweep2` and the top level of `runs/`, and the reasoning that led to
+the earlier defaults were produced with the miscalibrated rate.
 
 Note on b-values: before 31 October the estimator applied the Utsu
 half-bin correction to continuous synthetic magnitudes (b biased about
@@ -91,31 +124,16 @@ would be needed to produce stress-dependent b variations.
 
 ## 4. Open issues, in order of importance
 
-1. **Large-magnitude end and the budget regime.** With the final scheme
-   the fault runs at a lower mean deficit (0.5 m) than before the
-   continuity fix (1.7 m) and releases its budget through more frequent
-   M6 to M7 events; M7.5 fault-wide events, present earlier, are now
-   rare. The percolation threshold (deficit above about 0.73 rho_c times
-   the implied slip) acts as a size ceiling that self-organises with the
-   budget. Whether this regime or the earlier one is the better baseline
-   is a modelling question: redo the rho_c (0.1 to 0.5) by stress-drop
-   scatter sweep with the final code, 3000 years or longer and several
-   seeds, and look at max magnitude, b above saturation, site CV and the
-   FMD ratio to GR together. `examples/sweep_arrest_stressdrop.json` is
-   the template; `runs/cv` and `runs/sweep2` hold figures from
-   intermediate code versions and should not be compared across versions.
-2. **Nucleation location.** Nucleations are uniform in space (background)
-   or follow the ETAS kernel (triggered), independent of state. Weighting
-   nucleation by positive deficit (background sampling proportional to
-   deficit, triggered candidates accepted with probability
-   min(1, deficit/delta_ref)) is parameter-free, physically motivated
-   (aftershocks concentrate at rupture peripheries and low-slip patches),
-   would make the global rate feedback unnecessary, and would remove the
-   need for the slip cap. It changes realised ETAS productivity, so K0
-   would need recalibration on acceptance. Recommended next step. The
-   size of the issue: in the default runs 10 to 20 percent of all
-   nucleations are capped to below mag_min because they fall on relaxed
-   patches; the analysis filters them out, but they should not exist.
+1. **Finish the regime study** (ROADMAP step 1, remaining items): more
+   seeds and longer runs for the chosen defaults, arrest_scale 2, and the
+   dependence of site CV and Bath on fault length; the trade-off between
+   Bath and site CV through the branching ratio is the main result so far
+   and should be checked for robustness.
+2. **GR from state alone**: the state-only termination mode gives
+   characteristic distributions with smooth crack-like slip; test quenched
+   scale-invariant strength heterogeneity (ROADMAP step 3). The question
+   of whole-fault M >= 7 CV is resolved: superposition along strike and
+   clustering, see ROADMAP.
 3. **Stress as state.** Patch-scale stress roughness (std about 18 MPa)
    is probably too large; it scales with slip_cv and the deficit
    conditioning. Options: filter the roughness at the patch scale,
@@ -124,9 +142,13 @@ would be needed to produce stress-dependent b variations.
 4. **M0 versus L above saturation** goes as L^1.2 to 1.8 against the
    observed L^2 (W-model limitation). One extra parameter (effective
    depth extent of slip below the locked zone) would test the fix.
-5. **Omori p** in the observer view is 0.92 to 0.97 for input 1.1;
-   understand how much is selection versus secondary triggering before
-   comparing to data.
+5. **Omori p** (largely resolved): in a 1500-yr run the direct offspring
+   of M >= 6 mainshocks recover the input p = 1.10; secondary
+   triggering flattens the all-generation stack to 0.96 (the known ETAS
+   effect, Helmstetter and Sornette, 2002), and the background inside the
+   observer window lowers it further to 0.93 to 0.98. Comparisons with
+   data should use the observer view and fit p jointly with a background
+   term.
 6. **Foreshock statistic**: defined as an event of M >= M_main - 2
    within 30 days and max(10 km, L); chance level is computed, but the
    definition should be settled with the user.

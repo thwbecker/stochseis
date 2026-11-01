@@ -45,12 +45,13 @@ class Params:
     slip_cv: float = 0.75                 # coefficient of variation of the lognormal slip pattern
     corr_length_scatter: float = 0.0      # ln-scatter on correlation lengths; 0 = Mai & Beroza mean
     condition_weight: float = 1.0         # exponent on the state measure used to condition the slip pattern; 0 = none
-    cap_by_deficit: bool = True           # mean slip of an event cannot exceed the mean positive deficit on its rupture
+    cap_by_deficit: bool = False          # mean slip of an event cannot exceed the mean positive deficit on its rupture
 
     # ------------------------------------------------------------------
     # Rupture growth, arrest and kinematics
     # ------------------------------------------------------------------
     b_value: float = 1.0                  # stopping hazard per unit ln(area) (= GR b below W saturation)
+    size_hazard: bool = True              # False: no scale-free size hazard; ruptures stop only by state (admission)
     stop_measure: str = "moment"          # "moment": hazard 2b/3 per ln M0 (b continuous); "area": hazard b per ln A
     state_measure: str = "deficit"        # "deficit" or "stress" (tau = K deficit) drives arrest and conditioning
     track_stress: bool = True             # compute the backslip stress field for heterogeneity diagnostics
@@ -65,7 +66,7 @@ class Params:
     # ------------------------------------------------------------------
     mag_min: float = 3.0                  # smallest simulated magnitude (completeness of the synthetic catalog)
     etas: bool = True                     # if False, nucleation is a stationary Poisson process
-    branching_ratio: float = 0.8          # mean number of direct offspring per event
+    branching_ratio: float = 0.5          # mean number of direct offspring per event
     alpha: float = -1.0                   # productivity exponent; negative means alpha = b_value
     omori_p: float = 1.1
     omori_c_days: float = 0.01
@@ -74,6 +75,8 @@ class Params:
     nucleation_rate_per_km2_yr: float = -1.0  # fault-event nucleation rate; negative = set from moment budget
     budget_scale: float = 1.0             # multiplies the budget-derived nucleation rate
     rate_feedback: bool = True            # scale background nucleation rate by fault-mean deficit / reference deficit
+    nucleation_exponent: float = 1.0      # gamma: deficit-weighted intensity ~ (deficit/delta_ref)^gamma; >1 is more renewal-like
+    nucleation_weighting: str = "deficit" # "uniform" or "deficit": local nucleation intensity proportional to positive deficit
 
     # ------------------------------------------------------------------
     # Run control

@@ -8,3 +8,6 @@ dist/
 *.npz
 sweep_out*/
 plots/
+
+# large input geometries (see data/nz_alpine/README.md)
+data/nz_alpine/*.stl

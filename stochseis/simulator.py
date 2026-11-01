@@ -81,7 +81,7 @@ from scipy.stats import norm
 
 from . import etas
 from .catalog import EVENT_DTYPE, Catalog, moment_from_magnitude, moment_magnitude
-from .geometry import Fault, planar_fault
+from .geometry import Fault, build_fault
 from .params import Params
 from .randomfield import gaussian_field, mai_beroza_correlation_lengths
 from .rupture import grow_rupture
@@ -97,7 +97,7 @@ N_LOC = 8            # candidate locations per offspring for deficit-weighted pl
 class Simulation:
     def __init__(self, params: Params, fault: Fault | None = None):
         self.p = params
-        self.fault = fault if fault is not None else planar_fault(params)
+        self.fault = fault if fault is not None else build_fault(params)
         self.rng = np.random.default_rng(params.seed)
         f = self.fault
         p = params

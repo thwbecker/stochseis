@@ -155,6 +155,16 @@ would be needed to produce stress-dependent b variations.
    exact for antiplane components only. Sub-patch events carry 2 percent
    of the moment.
 
+## 4b. Alpine Fault intercomparison (started 1 November 2026)
+
+See docs/alpine.md and docs/networks.md. STL geometries load as section
+grids (stochseis/mesh.py), paleo-site statistics are computed by
+stochseis/sites.py and included in sweep summaries when sites_file is
+set. First runs with the defaults give single-event displacements of 3 to
+5 m against 7 m observed and recurrence CVs of 0.5 to 0.8 against 0.2 to
+0.4. Missing inputs: segment slip rates, truncated and Alpine-Hope
+geometries.
+
 ## 5. Next stages (from the original plan; concrete steps in ROADMAP.md)
 
 Stage 1: UCERF3 or NZ CFM subsection loader producing the patch graph

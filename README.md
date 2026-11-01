@@ -42,6 +42,9 @@ versions.
   provenance, known limitations and references.
 * `docs/parameters.md`: every parameter with its default and role.
 * `docs/analysis.md`: the statistics and figures.
+* `docs/networks.md`: design for 3-D geometries, fault networks, UCERF3
+  and probabilistic networks; `docs/alpine.md`: the New Zealand Alpine
+  Fault intercomparison (inputs, status, plan).
 * `docs/experiments.md`: log of the single-fault experiments, with
   settings, results, conclusions and the specs in `examples/experiments/`
   that reproduce them.
@@ -61,7 +64,7 @@ core.
 
 ```bash
 pip install -e .            # or set PYTHONPATH to the repository root
-python -m pytest tests      # 23 tests, about 30 s
+python -m pytest tests      # 26 tests, about 60 s
 
 # one run with defaults, 1500 years, seed 3
 python -m stochseis.cli run - cat.npz --set duration_yr=1500 seed=3 --summary cat.json
@@ -91,7 +94,9 @@ cat.save("cat.npz")
 ```
 stochseis/
   params.py      all parameters, JSON I/O
-  geometry.py    patch-graph fault interface and planar builder
+  geometry.py    patch-graph fault interface, planar builder, fault factory
+  mesh.py        triangulated surfaces (STL) to section grids
+  sites.py       synthetic paleoseismic records and comparison with data
   stiffness.py   spectral static stiffness, crack solver, analytic checks
   randomfield.py von Karman fields
   slip.py        slip distribution for a rupture outline

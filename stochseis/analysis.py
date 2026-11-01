@@ -469,6 +469,19 @@ def summary_metrics(cat: Catalog, mmain=6.0, t_start=None) -> dict:
     out["sub_patch_moment_fraction"] = mc["sub_patch_fraction"]
     out["n_m6"] = int(np.sum(ev["mag"] >= 6.0))
     out["n_m7"] = int(np.sum(ev["mag"] >= 7.0))
+    if getattr(cat.params, "sites_file", ""):
+        from .sites import co_rupture, compare, load_sites
+
+        sites = load_sites(cat.params.sites_file)
+        for th in cat.params.site_thresholds_m:
+            for r in compare(cat, sites, threshold=th, t_start=t_start):
+                for k in ("n", "ri", "ri_z", "cv", "sed"):
+                    out[f"site_{r['name']}_{k}_th{th:g}"] = r[k]
+        names, M = co_rupture(cat, sites, threshold=cat.params.site_thresholds_m[0], t_start=t_start)
+        for i, a in enumerate(names):
+            for j, b in enumerate(names):
+                if i < j:
+                    out[f"site_corupture_{a}_{b}"] = float(M[i, j])
     fe = cat.fault_events()
     if len(fe):
         out["frac_stop_hazard"] = float(np.mean(fe["stop"] == 0))

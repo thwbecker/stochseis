@@ -246,3 +246,25 @@ def planar_fault(p: Params) -> Fault:
     return Fault(s, zd, x, y, z, area, v, mu, secs, cols, rows, dx, ns, nz,
                  p.top_depth_km * 1e3, p.dip_deg, p.rake_deg, intra,
                  connections, col_s, jmax)
+
+
+def slip_rate_function(p: Params):
+    """Slip rate [m/yr] as a function of along-strike position s [m]."""
+    prof = np.asarray(p.slip_rate_profile, float)
+    if prof.size == 0:
+        return lambda s: np.full(np.shape(s), p.slip_rate_mm_yr * 1e-3)
+    return lambda s: np.interp(np.asarray(s) / 1e3, prof[:, 0], prof[:, 1]) * 1e-3
+
+
+def build_fault(p: Params) -> Fault:
+    """Fault from the parameters: a mesh file if given, otherwise the planar builder."""
+    if p.geometry_file:
+        from .mesh import load_mesh_section
+
+        return load_mesh_section(p.geometry_file, p.patch_km * 1e3, units=p.geometry_units,
+                                 slip_rate=slip_rate_function(p), rake_deg=p.rake_deg,
+                                 rigidity=p.rigidity_pa, section_breaks_km=p.section_breaks_km)
+    f = planar_fault(p)
+    if len(p.slip_rate_profile):
+        f.slip_rate = slip_rate_function(p)(f.s)
+    return f

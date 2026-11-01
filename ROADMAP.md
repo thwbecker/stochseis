@@ -158,6 +158,11 @@ mean slip versus length against the Blaser et al. (2010) data.
 
 ## 5. Stage 1: fault networks
 
+Superseded in detail by `docs/networks.md` (stages N1 to N5) and
+`docs/alpine.md` (the Alpine Fault intercomparison, the first 3-D
+application). N1, triangulated surfaces to section grids and paleo-site
+observables, is implemented. The original notes follow.
+
 * Loader for UCERF3 fault subsections (OpenSHA fault model and
   deformation model files; trace, dip, depths, rake, slip rate, aseismic
   fraction) and for the New Zealand community fault model, producing the

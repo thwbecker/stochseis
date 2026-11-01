@@ -29,6 +29,15 @@ class Params:
     rake_deg: float = 180.0
     slip_rate_mm_yr: float = 20.0
     rigidity_pa: float = 3.0e10
+    # geometry from a file (triangulated surface, STL); empty = planar builder
+    geometry_file: str = ""
+    geometry_units: str = "auto"          # "m", "km" or "auto"
+    # piecewise-linear slip rate along strike, [[s_km, rate_mm_yr], ...]; empty = slip_rate_mm_yr everywhere
+    slip_rate_profile: list = field(default_factory=list)
+    section_breaks_km: list = field(default_factory=list)   # segment labels along strike (mesh geometries)
+    # paleoseismic sites for summary statistics (CSV, see data/nz_alpine/paleo_sites.csv); empty = none
+    sites_file: str = ""
+    site_thresholds_m: list = field(default_factory=lambda: [1.0, 2.0, 4.0])
     # list of [position_km, gap_km]: the fault is cut at position_km along
     # strike and the two segments are separated by a step-over of gap_km
     segment_gaps_km: list = field(default_factory=list)

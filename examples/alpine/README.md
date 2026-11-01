@@ -25,6 +25,12 @@
     python3 -m stochseis.cli sweep examples/alpine/abc1_variable_dip.json abc1_vardip --nproc N --no-catalogs
     python3 examples/alpine/abc_accept.py abc1_planar/sweep_summary.json 2
 
+Sweeps can be restarted after an interruption: each run writes its
+summary to `<outdir>/runs/` when it finishes, and a rerun of the same
+command skips runs that are already there. A run whose simulation or
+summary fails records the error in its summary (key `error`) instead of
+stopping the sweep.
+
 Each spec is 400 runs (200 parameter vectors x 2 seeds) of 5000 yr at
 2 km patches, about 1 minute each on one core, i.e. under an hour on 8
 cores. The acceptance script scores each vector against RI, CV and SED at

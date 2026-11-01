@@ -87,15 +87,28 @@ def cmd_analyze(args):
 
 
 def _sweep_one(job):
+    """Run one sweep member; never raises (errors are recorded in the summary).
+
+    The summary is also written to <outdir>/runs/<name>.json as soon as the
+    run finishes, so an interrupted sweep can be resumed.
+    """
     pdict, out_path, mmain, save = job
     pdict = dict(pdict)
     design_index = pdict.pop("design_index", None)
-    p = Params.from_dict(pdict)
     t0 = time.time()
-    cat = Simulation(p).run()
-    if save:
-        cat.save(out_path)
-    m = summary_metrics(cat, mmain=mmain)
+    m = {}
+    try:
+        p = Params.from_dict(pdict)
+        cat = Simulation(p).run()
+        if save:
+            cat.save(out_path)
+        try:
+            m = summary_metrics(cat, mmain=mmain)
+        except Exception as e:  # keep the run even if a metric fails
+            m = dict(cat.meta)
+            m["error"] = f"summary_metrics: {type(e).__name__}: {e}"
+    except Exception as e:
+        m = {"error": f"simulation: {type(e).__name__}: {e}"}
     m = _json_safe(m)
     m["file"] = out_path if save else ""
     if design_index is not None:
@@ -103,6 +116,10 @@ def _sweep_one(job):
     m["wall_seconds"] = time.time() - t0
     for k, v in pdict.items():
         m["p_" + k] = v
+    rdir = os.path.join(os.path.dirname(out_path), "runs")
+    os.makedirs(rdir, exist_ok=True)
+    with open(os.path.join(rdir, os.path.basename(out_path).replace(".npz", ".json")), "w") as f:
+        json.dump(m, f)
     return m
 
 
@@ -142,13 +159,26 @@ def cmd_sweep(args):
             tag = "_".join(f"{k}{v}" for k, v in zip(keys, combo)) + f"_s{seed}"
             tag = tag.replace("/", "-")
             jobs.append((d, os.path.join(args.outdir, f"cat_{tag}.npz"), mmain, not args.no_catalogs))
-    print(f"{len(jobs)} runs on {args.nproc} processes")
+    # resume: runs whose summary already exists are not repeated
+    rdir = os.path.join(args.outdir, "runs")
+    done, todo = [], []
+    for j in jobs:
+        fj = os.path.join(rdir, os.path.basename(j[1]).replace(".npz", ".json"))
+        if os.path.exists(fj):
+            with open(fj) as f:
+                done.append(json.load(f))
+        else:
+            todo.append(j)
+    print(f"{len(jobs)} runs ({len(done)} already done) on {args.nproc} processes")
     t0 = time.time()
     if args.nproc > 1:
         with Pool(args.nproc) as pool:
-            rows = pool.map(_sweep_one, jobs, chunksize=1)
+            rows = done + list(pool.imap_unordered(_sweep_one, todo, chunksize=1))
     else:
-        rows = [_sweep_one(j) for j in jobs]
+        rows = done + [_sweep_one(j) for j in todo]
+    n_err = sum(1 for r in rows if "error" in r)
+    if n_err:
+        print(f"warning: {n_err} runs recorded an error (key 'error' in the summary)")
     with open(os.path.join(args.outdir, "sweep_summary.json"), "w") as f:
         json.dump(rows, f, indent=1)
     cols = sorted({k for r in rows for k in r})

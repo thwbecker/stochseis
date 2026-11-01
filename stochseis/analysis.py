@@ -61,14 +61,26 @@ def b_value_mle(mags, mc, mmax=None, dm=0.0):
         from scipy.optimize import brentq
 
         w = mmax - lo
+        if w <= 0 or not (0.0 < mbar < 0.5 * w):
+            # no interior maximum (empty window, or data not decreasing within it)
+            return (0.0 if mbar >= 0.5 * w > 0 else np.nan), np.nan, n
 
-        def g(beta):
-            # d/dbeta of the mean log-likelihood of a truncated exponential
-            return 1.0 / beta - w * np.exp(-beta * w) / (1.0 - np.exp(-beta * w)) - mbar
+        def h(x):
+            # 1/x - 1/(e^x - 1), evaluated stably; decreases from 1/2 at x = 0 to 0
+            x = float(x)
+            if x < 1e-4:
+                return 0.5 - x / 12.0 + x ** 3 / 720.0
+            return 1.0 / x - 1.0 / np.expm1(x)
 
-        if mbar >= w / 2.0:
-            return 0.0, np.nan, n
-        beta = brentq(g, 1e-6, 50.0 / w + 1.0 / mbar)
+        def g(x):
+            # score of the doubly truncated exponential in x = beta * w
+            return w * h(x) - mbar
+
+        try:
+            x = brentq(g, 1e-10, 2.0 * w / mbar + 50.0)
+        except ValueError:
+            return np.nan, np.nan, n
+        beta = x / w
     b = beta / np.log(10.0)
     return float(b), float(b / np.sqrt(n)), n
 
@@ -79,7 +91,8 @@ def b_value_regimes(cat: Catalog, dm=0.0):
     m_patch = cat.meta["m_patch"]
     m_sat = saturation_magnitude(cat)
     out = {}
-    out["b_sub"] = b_value_mle(ev["mag"], cat.params.mag_min, m_patch, dm)[0]
+    out["b_sub"] = (b_value_mle(ev["mag"], cat.params.mag_min, m_patch, dm)[0]
+                    if m_patch > cat.params.mag_min + 0.2 else np.nan)
     out["b_fault_below_sat"] = b_value_mle(ev["mag"], m_patch, m_sat, dm)[0]
     out["b_fault_above_sat"] = b_value_mle(ev["mag"], m_sat, None, dm)[0]
     out["b_all"] = b_value_mle(ev["mag"], cat.params.mag_min, None, dm)[0]

@@ -201,3 +201,18 @@ def test_strength_field_and_deep_slip_options():
         slip, info = build_slip(fault, idx, np.ones(len(idx)), 3e6, np.random.default_rng(0), q)
         out.append(slip.mean())
     assert out[1] > 1.3 * out[0]
+
+
+def test_b_value_mle_edge_cases():
+    """Truncated b estimator: narrow, empty, inverted and flat windows return values or nan, never raise."""
+    from stochseis.analysis import b_value_mle
+
+    rng = np.random.default_rng(0)
+    m = 5.0 + rng.exponential(1 / np.log(10), 5000)
+    b, sb, n = b_value_mle(m, 5.0, 7.0)
+    assert abs(b - 1.0) < 0.06
+    for lo, hi in ((5.0, 5.0001), (5.0, 5.01), (5.0, 4.9), (8.0, 9.0)):
+        b_value_mle(m, lo, hi)
+    flat = 5.0 + rng.uniform(0, 0.3, 500)
+    assert b_value_mle(flat, 5.0, 5.3)[0] in (0.0,) or np.isnan(b_value_mle(flat, 5.0, 5.3)[0]) \
+        or b_value_mle(flat, 5.0, 5.3)[0] < 0.5

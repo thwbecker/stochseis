@@ -164,12 +164,15 @@ def cmd_sweep(args):
     done, todo = [], []
     for j in jobs:
         fj = os.path.join(rdir, os.path.basename(j[1]).replace(".npz", ".json"))
+        prev = None
         if os.path.exists(fj):
             with open(fj) as f:
-                done.append(json.load(f))
-        else:
+                prev = json.load(f)
+        if prev is not None and "error" not in prev:
+            done.append(prev)
+        else:                                 # not run yet, or failed: (re)run
             todo.append(j)
-    print(f"{len(jobs)} runs ({len(done)} already done) on {args.nproc} processes")
+    print(f"{len(jobs)} runs ({len(done)} already done; failed runs are repeated) on {args.nproc} processes")
     t0 = time.time()
     if args.nproc > 1:
         with Pool(args.nproc) as pool:

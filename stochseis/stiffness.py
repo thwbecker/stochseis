@@ -143,7 +143,10 @@ def crack_solution(mask, dx, mu, slip_dir="strike", mirror_top=False,
     def cb(xk):
         it[0] += 1
 
-    x, info = cg(A, rhs, x0=x0, M=M, rtol=rtol, maxiter=maxiter, callback=cb)
+    try:
+        x, info = cg(A, rhs, x0=x0, M=M, rtol=rtol, maxiter=maxiter, callback=cb)
+    except TypeError:                     # scipy < 1.12 calls the tolerance "tol"
+        x, info = cg(A, rhs, x0=x0, M=M, tol=rtol, maxiter=maxiter, callback=cb)
     D = np.zeros((nx, nz))
     D[cells] = x
     return D, it[0]

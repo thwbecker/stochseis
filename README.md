@@ -54,8 +54,14 @@ versions.
 
 ## Requirements
 
-Python 3.10 or later, numpy, scipy, matplotlib; pytest for the tests;
-optionally cutde for the half-space check in `examples/checks/`.
+Python 3.10 or later, numpy (1.22 or later), scipy (1.10 or later; 1.12
+or later recommended), matplotlib; pytest for the tests; optionally cutde
+for the half-space check in `examples/checks/`. Installing with
+
+    python3 -m pip install --user -e ".[test]"
+
+from the repository root pulls in suitable versions; `".[test,halfspace]"`
+adds cutde.
 No compiled code. A 1500-year catalog on a 200 x 15 km fault at 1 km
 patch size (about 160,000 events above M3) takes under a minute on one
 core.

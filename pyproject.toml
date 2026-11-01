@@ -7,10 +7,12 @@ name = "stochseis"
 version = "0.1.0"
 description = "Stochastic seismicity generator on fault patch graphs (baseline for earthquake cycle models)"
 requires-python = ">=3.10"
-dependencies = ["numpy", "scipy", "matplotlib"]
+dependencies = ["numpy>=1.22", "scipy>=1.10", "matplotlib>=3.5"]
 
 [project.optional-dependencies]
 test = ["pytest"]
+halfspace = ["cutde"]
+xlsx = ["openpyxl"]
 
 [tool.setuptools.packages.find]
 include = ["stochseis*"]

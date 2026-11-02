@@ -61,7 +61,7 @@ class Params:
     slip_cv: float = 0.75                 # coefficient of variation of the lognormal slip pattern
     corr_length_scatter: float = 0.0      # ln-scatter on correlation lengths; 0 = Mai & Beroza mean
     condition_weight: float = 1.0         # exponent on the state measure used to condition the slip pattern; 0 = none
-    slip_mode: str = "stress_drop"        # "stress_drop": crack slip set by stress drop; "deficit": slip-predictable, slip = slip_fraction x local deficit
+    slip_mode: str = "stress_drop"        # "stress_drop": crack slip; "deficit": slip = slip_fraction x local deficit; "local_cap": crack slip capped per patch at slip_fraction x local deficit
     slip_fraction: float = 1.0            # fraction of the local positive deficit released in slip_mode "deficit"
     cap_by_deficit: bool = False          # mean slip of an event cannot exceed the mean positive deficit on its rupture
 
@@ -69,6 +69,7 @@ class Params:
     # Rupture growth, arrest and kinematics
     # ------------------------------------------------------------------
     b_value: float = 1.0                  # GR b of the size hazard (2b/3 per ln M0 or b per ln A, see stop_measure)
+    hazard_max_area_km2: float = -1.0     # size hazard acts only below this rupture area; above it ruptures stop by state only (negative = always)
     size_hazard: bool = True              # False: no scale-free size hazard; ruptures stop only by state (admission)
     stop_measure: str = "moment"          # "moment": hazard 2b/3 per ln M0 (b continuous); "area": hazard b per ln A
     strength_ln_sigma: float = 0.0        # quenched strength heterogeneity: ln-std of a lognormal von Karman field (0 = none)
@@ -76,6 +77,8 @@ class Params:
     strength_corr_km: float = -1.0        # correlation length of the strength field; negative = fault length
     state_measure: str = "deficit"        # "deficit" or "stress" (tau = K deficit) drives arrest and conditioning
     track_stress: bool = True             # compute the backslip stress field for heterogeneity diagnostics
+    state_smoothing_km: float = 0.0       # Gaussian smoothing (sd) of the deficit seen by admission and nucleation; mimics elastic coupling
+    admission_exponent: float = 2.0       # m in q = 1 - exp(-(rho/rho_c)^m); larger = sharper deficit threshold
     arrest_scale: float = 0.25            # rho_c: patch admitted with prob 1 - exp(-(rho/rho_c)^2); 0 disables state-dependent arrest
     vs_km_s: float = 3.5                  # shear wave speed used for rupture kinematics
     rupture_speed_frac: float = 0.8       # sub-Rayleigh rupture speed as a fraction of vs

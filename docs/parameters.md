@@ -37,7 +37,10 @@ years, days (Omori c). Section numbers refer to `docs/design.md`.
 | stop_measure | "moment" | "moment" keeps b continuous through width saturation, "area" raises it by a factor 1.5 |
 | size_hazard | True | False: no scale-free size hazard, ruptures stop only when no neighbour is admitted (state-only termination; gives characteristic size distributions, see ROADMAP) |
 | segments_file, segment_include, segment_max_dist_km, segment_taper_km | "", [], 10, 10 | segment table with end points, rake and slip rate; projected onto mesh traces (docs/alpine.md) |
-| slip_mode, slip_fraction | "stress_drop", 1 | "deficit": slip-predictable alternative, each patch releases slip_fraction of its positive deficit (docs/alpine.md) |
+| slip_mode, slip_fraction | "stress_drop", 1 | "deficit": each patch releases slip_fraction of its positive deficit; "local_cap": stress-drop crack slip capped patch by patch at slip_fraction of the deficit (docs/alpine.md) |
+| hazard_max_area_km2 | -1 | hybrid sizes: scale-free size hazard only below this area, state-only termination above |
+| admission_exponent | 2 | m in the admission probability 1 - exp(-(rho/rho_c)^m) |
+| state_smoothing_km | 0 | Gaussian smoothing of the deficit seen by admission and nucleation |
 | segment_boundary_strength, segment_boundary_width_km | 1, 4 | strength factor of patches near segment boundaries, dividing the admission ratio (rupture-passage control) |
 | sites_file, site_thresholds_m | "", [1, 2, 4] | paleoseismic sites and detection thresholds for the summary statistics |
 | strength_ln_sigma, strength_hurst, strength_corr_km | 0, 0.25, -1 | quenched strength heterogeneity dividing the admission ratio (E17); off by default |

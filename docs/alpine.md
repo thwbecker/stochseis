@@ -228,6 +228,125 @@ intercomparison is that the Alpine records require slip-predictable
 behaviour, which constant-stress-drop slip with a scale-free size
 distribution does not provide.
 
+## What controls site CV (assessment, 1 November)
+
+Method: single-seed 10,000-yr runs on the planar geometry with catalogs
+kept, decomposed with `examples/alpine/decompose_site_cv.py`. For each
+site and detection threshold (2 m) it reports the CV of intervals T, the
+CV of single-event displacements (SED), the CV of the deficit just
+before each recorded event (the "failure deficit"), the ratio of slip to
+that deficit, and the correlations corr(SED_i, T_next) (time-predictable
+behaviour) and corr(T_prev, SED_i) (slip-predictable behaviour).
+Single-seed CVs carry about +-0.07.
+
+### 1. The variance budget
+
+For a site that fails when its deficit reaches some level and releases
+part of it, CV(T)^2 is roughly CV(failure deficit)^2 plus CV(released
+slip)^2 plus a contribution from slip released in events below the
+detection threshold (fragmentation). In the best round-2 model (stress-
+drop slip):
+
+| site | CV(T) | CV(SED) | CV(failure deficit) | corr(SED_i, T_next) | slip in recorded events |
+|---|---|---|---|---|---|
+| central | 0.71 | 0.71 | 0.29 | +0.64 | 94 % |
+| south | 0.56 | 0.57 | 0.29 | +0.78 | 93 % |
+| north | 0.69 | 0.38 | 0.35 | -0.05 | 77 % |
+
+At the 27 mm/yr sites the model is time-predictable: sites fail at a
+fairly consistent deficit but release very different amounts of slip, so
+the interval CV equals the slip CV. At the north site, a quarter of the
+slip is released in events below the threshold.
+
+### 2. Sources of released-slip variability, and what removes them
+
+* Slip roughness at the site (von Karman pattern, CV 0.75) and stress-
+  drop scatter: reducing them to 0.2 and 0.05 lowers central CV(SED)
+  from 0.71 to 0.44 and CV(T) to 0.46. Not varied in rounds 1 and 2.
+* Crack taper when a rupture ends near the site (random rupture extents
+  under scale-free sizes): remains in the south (CV 0.62) after
+  smoothing.
+* Partial release: in stress-drop mode a rupture releases 50 to 80 % of
+  the local deficit, with large scatter.
+* Releasing the local deficit (slip-predictable modes) removes most of
+  this, but the plain slip-predictable mode has a flaw: any small
+  rupture that includes a loaded site releases its whole deficit, so
+  moderate events reset sites at random times. The new `local_cap` mode
+  (stress-drop crack slip capped patch by patch at the local deficit,
+  with a high stress drop so that large ruptures reach the cap) keeps
+  small events stress-drop limited.
+
+### 3. The remaining floor: variability of the failure deficit
+
+With released slip tied to the deficit, CV(T) approaches CV(failure
+deficit), which stays at about 0.3 to 0.4 whatever else is done:
+
+| variant (single seeds) | central CV(T) | south | north | central CV(failure deficit) |
+|---|---|---|---|---|
+| characteristic (no size hazard), local cap, exponent 3 | 0.35 | 0.35 | 0.41 | 0.36 |
+| as above, nucleation exponent 10 | 0.34 | 0.36 | 0.33 | 0.29 |
+| as above, deficit smoothed over 20 km | 0.41 | 0.32 | 0.29 | 0.34 |
+| as above, deficit smoothed over 60 km | 0.38 | 0.42 | 0.46 | 0.34 |
+| sharp admission threshold (exponent 8), local cap, scale-free sizes | 0.58 | 0.80 | 0.70 | 0.41 |
+
+Its cause is along-strike phase heterogeneity: ruptures end at different
+places, leave deficit steps, and neighbouring stretches of the fault
+drift out of phase, so a site joins ruptures at different points of its
+own cycle. Sharper nucleation and admission rules do not remove it, nor
+does smoothing the deficit as a stand-in for elastic coupling. The
+likely missing ingredient is genuine stress interaction (load transfer
+to rupture ends that pulls stretches back into phase), which the level-2
+half-space operator of `docs/networks.md` would provide; this is
+untested.
+
+### 4. Hybrid sizes: Gutenberg-Richter below, characteristic above
+
+`hazard_max_area_km2` (new) applies the scale-free size hazard only to
+ruptures smaller than a given area; larger ruptures stop only by state.
+With 700 km^2 (about width-saturated M7), local-cap slip, 8 MPa, slip
+CV 0.3, branching 0.1, admission scale 0.5 with exponent 4, at 0.3 of
+the calibrated initiation rate (2 m threshold, RI / CV / SED):
+
+| nucleation exponent | south | central | north | FMD |
+|---|---|---|---|---|
+| 3 | 318 / 0.28 / 8.4 | 286 / 0.43 / 7.5 | 692 / 0.32 / 6.9 | GR (b = 1.00) to M7, x2 at M7.5, x5 at M8 |
+| 8 | 235 / 0.38 / 6.1 | 276 / 0.33 / 6.6 | 549 / 0.35 / 4.9 | GR (b = 0.97) to M7, x2.3 at M7.5, x5.4 at M8 |
+
+The hybrid keeps Gutenberg-Richter below M7, gives site CVs of 0.28 to
+0.43, and switches the sites from time-predictable to slip-predictable
+behaviour (central: corr(T_prev, SED_i) = +0.77, corr(SED_i, T_next) =
++0.15). The north interval is still too long.
+
+### 5. How far from the data is the floor?
+
+The observed CVs come from 13 to 14 intervals. A gamma-renewal estimate
+of their sampling error is 0.05 (central) and 0.09 (south), but
+bootstrapped uncertainties of Alpine Fault records are larger (0.10 for
+Hokuri Creek and 0.13 for Lake Paringa in Becker, Tectonic Geodynamics,
+Fig. 3.34). Against those, a model floor of 0.30 to 0.35 is about one
+standard error above the central record, not three as stated for round 2.
+
+### 6. Conclusions
+
+1. With stress-drop slip and scale-free sizes (rounds 1 and 2), the site
+   CV is dominated by point-slip variability and cannot fall below about
+   0.4.
+2. Getting closer to the Alpine values needs two changes together: slip
+   at a site tied to its accumulated deficit, with low roughness and
+   stress-drop scatter; and large ruptures that span the loaded segment
+   (characteristic at the segment scale), which the hybrid size rule
+   provides while keeping GR below M7.
+3. The remaining floor of about 0.3 comes from along-strike phase
+   heterogeneity and probably needs elastic interaction to remove.
+4. The decomposition gives a testable signature: the stress-drop
+   baseline predicts time-predictable records (displacement correlates
+   with the following interval), the hybrid predicts slip-predictable
+   records (displacement correlates with the preceding interval). Where
+   paleoseismic records resolve per-event displacement, this
+   discriminates between the two.
+5. Round 4 (`examples/alpine/abc4_planar_hybrid.json`) maps the hybrid
+   mode with the ABC machinery; round 3 (slip-predictable) is running.
+
 ## Status (1 November 2026)
 
 * Both geometries load as section grids at 1 km (19,630 and 17,142

@@ -136,13 +136,14 @@ def grow_rupture(fault, graph, i0, state_values_fn, dsig, rng, p, w_eff, m0_tabl
                 if strength is not None:
                     rho = rho / strength[i]
                 rho_last = rho
-                q = 1.0 - np.exp(-(rho / rho_c) ** 2)
+                q = 1.0 - np.exp(-(rho / rho_c) ** p.admission_exponent)
                 if rng.random() >= q:
                     status[i] = _BLOCKED
                     any_blocked = True
                     continue
-            # size hazard (switched off in the state-only termination mode)
-            if not use_hazard:
+            # size hazard (switched off in the state-only termination mode, or above
+            # hazard_max_area_km2 in the hybrid mode)
+            if not use_hazard or (p.hazard_max_area_km2 > 0 and cumA > p.hazard_max_area_km2 * 1e6):
                 pass
             elif use_moment:
                 lnm = ln_m0(k + 1, a_new)

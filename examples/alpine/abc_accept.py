@@ -35,7 +35,8 @@ sites = list(csv.DictReader(open(os.path.join(here, "..", "..", "data", "nz_alpi
 
 params = ["stress_drop_mpa", "stress_drop_ln_sigma", "nucleation_exponent", "branching_ratio",
           "deep_slip_km", "condition_weight", "arrest_scale", "cap_by_deficit", "b_value",
-          "segment_boundary_strength", "budget_scale", "slip_fraction"]
+          "segment_boundary_strength", "budget_scale", "slip_fraction", "slip_cv", "admission_exponent",
+          "hazard_max_area_km2", "state_smoothing_km"]
 groups = defaultdict(list)
 for r in rows:
     groups[r.get("design_index", r.get("file"))].append(r)

@@ -53,3 +53,12 @@ in docs/alpine.md.
 
 300 runs of 10,000 yr; this mode is faster (about 30 to 60 s per run on
 one core, roughly 3 to 5 core-hours in total).
+
+## Round 4 (planar, hybrid sizes with deficit-capped slip)
+
+    python3 -m stochseis.cli sweep examples/alpine/abc4_planar_hybrid.json abc4_planar --nproc N --no-catalogs
+    python3 examples/alpine/abc_accept.py abc4_planar/sweep_summary.json 2
+
+300 runs of 10,000 yr, about 20 to 40 s each. For any single run kept
+with its catalog, `examples/alpine/decompose_site_cv.py catalog.npz 2`
+decomposes the site variability (docs/alpine.md).

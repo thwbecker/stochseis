@@ -230,3 +230,16 @@ def test_slip_predictable_mode():
     bound = cat.fault.slip_rate.max() * p.duration_yr + cat.deficit0.max() + 1e-6
     assert np.all(cat.slip_val <= bound * 1.2)
     assert abs(cat.meta["moment_closure"] - 1.0) < 0.5
+
+
+def test_hybrid_sizes_local_cap_and_smoothing_options():
+    """New Alpine options run and keep basic invariants."""
+    p = Params(duration_yr=200, mag_min=3.5, seed=9, fault_length_km=80, slip_mode="local_cap",
+               stress_drop_mpa=8.0, hazard_max_area_km2=200.0, admission_exponent=4.0, arrest_scale=0.5,
+               state_smoothing_km=10.0)
+    cat = Simulation(p).run()
+    fe = cat.fault_events()
+    assert len(fe) > 5
+    big = fe[fe["area"] > 250e6]
+    assert np.all(big["stop"] != 0)            # no size-hazard stops above the hybrid area
+    assert abs(cat.meta["moment_closure"] - 1.0) < 0.5

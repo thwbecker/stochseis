@@ -119,9 +119,26 @@ class Simulation:
         """Local nucleation weight (max(deficit, 0) / delta_ref)^gamma of patch i."""
         return (max(float(self.state.deficit(t, i)), 0.0) / self.delta_ref) ** self.p.nucleation_exponent
 
+    def smoothed_deficit(self, t, idx=None):
+        """Deficit, optionally smoothed along strike and dip (state_smoothing_km), at patches idx."""
+        d = self.state.deficit(t)
+        if self.p.state_smoothing_km > 0:
+            from scipy.ndimage import gaussian_filter
+
+            f = self.fault
+            g = np.zeros((f.ns, f.nz))
+            m = np.zeros((f.ns, f.nz))
+            g[f.col, f.row] = d
+            m[f.col, f.row] = 1.0
+            sig = self.p.state_smoothing_km * 1e3 / f.dx
+            gs = gaussian_filter(g, sig, mode="constant")
+            ms = gaussian_filter(m, sig, mode="constant")
+            d = gs[f.col, f.row] / np.maximum(ms[f.col, f.row], 1e-9)
+        return d if idx is None else d[idx]
+
     def weights(self, t):
         """(max(deficit, 0) / delta_ref)^gamma on all patches."""
-        return (np.maximum(self.state.deficit(t), 0.0) / self.delta_ref) ** self.p.nucleation_exponent
+        return (np.maximum(self.smoothed_deficit(t), 0.0) / self.delta_ref) ** self.p.nucleation_exponent
 
     def _weight_bound(self, t):
         """Thinning bound on the fault-mean weight for background nucleation."""
@@ -174,6 +191,8 @@ class Simulation:
     def state_values(self, t, idx):
         if self.p.state_measure == "stress" and self.state.with_stress:
             return self.state.stress(t, idx)
+        if self.p.state_smoothing_km > 0:
+            return self.smoothed_deficit(t, idx)
         return self.state.deficit(t, idx)
 
     # ------------------------------------------------------------------
@@ -199,6 +218,13 @@ class Simulation:
                                                    self.strength if use_state else None)
         cond = sfn(idx)
         slip, info = build_slip(f, idx, cond, dsig, self.rng, p, diagnostics=diagnostics)
+        if use_state and p.slip_mode == "local_cap":
+            # crack slip set by stress drop, but no patch slips more than slip_fraction of its
+            # positive deficit: small ruptures are stress-drop limited, large ones release the deficit
+            d_loc = np.maximum(self.state.deficit(t, idx), 0.0)
+            slip = np.maximum(np.minimum(slip, p.slip_fraction * d_loc), 1e-6)
+            info["dmean"] = float(slip.mean())
+            info["dmax"] = float(slip.max())
         if use_state and p.slip_mode == "deficit":
             # slip-predictable alternative: each patch releases a fixed fraction of its
             # accumulated positive deficit; the rupture extent still comes from growth and arrest
@@ -570,7 +596,7 @@ class Simulation:
                             srcm = np.repeat(src, N_LOC)
                             ds, dz = etas.spatial_offsets(n_keep * N_LOC, self.d_m, p.spatial_q, rng)
                             cand = f.nearest_patch(f.s[srcm] + ds, f.zd[srcm] + dz).reshape(n_keep, N_LOC)
-                            wc = np.maximum(self.state.deficit(t, cand.ravel()), 0.0).reshape(n_keep, N_LOC)
+                            wc = np.maximum(self.smoothed_deficit(t, cand.ravel()), 0.0).reshape(n_keep, N_LOC)
                             wc = wc ** p.nucleation_exponent
                             tot = wc.sum(axis=1)
                             relaxed = tot <= 0

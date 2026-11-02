@@ -243,3 +243,20 @@ def test_hybrid_sizes_local_cap_and_smoothing_options():
     big = fe[fe["area"] > 250e6]
     assert np.all(big["stop"] != 0)            # no size-hazard stops above the hybrid area
     assert abs(cat.meta["moment_closure"] - 1.0) < 0.5
+
+
+def test_sweep_list_design(tmp_path):
+    import json
+    import subprocess
+    import sys
+
+    spec = {"design": "list", "base": {"duration_yr": 30, "mag_min": 4.0, "pilot_events": 50, "fault_length_km": 40},
+            "vectors": [{"stress_drop_mpa": 2.0}, {"stress_drop_mpa": 4.0}], "seeds": [1], "mmain": 5.0}
+    f = tmp_path / "spec.json"
+    f.write_text(json.dumps(spec))
+    out = tmp_path / "out"
+    subprocess.run([sys.executable, "-m", "stochseis.cli", "sweep", str(f), str(out), "--nproc", "1",
+                    "--no-catalogs"], check=True, capture_output=True)
+    rows = json.loads((out / "sweep_summary.json").read_text())
+    assert sorted(r["p_stress_drop_mpa"] for r in rows) == [2.0, 4.0]
+    assert all("error" not in r for r in rows)

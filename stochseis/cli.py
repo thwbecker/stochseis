@@ -151,7 +151,17 @@ def cmd_sweep(args):
                 d["design_index"] = i
                 jobs.append((d, os.path.join(args.outdir, f"cat_r{i:04d}_s{seed}.npz"), mmain,
                              not args.no_catalogs))
-    for combo in (itertools.product(*[grid[k] for k in keys]) if spec.get("design") != "random" else []):
+    if spec.get("design") == "list":
+        # explicit parameter vectors (e.g. an accepted ABC ensemble); each runs for every seed
+        for i, vec in enumerate(spec["vectors"]):
+            for seed in seeds:
+                d = dict(base)
+                d.update(vec)
+                d["seed"] = seed
+                d["design_index"] = i
+                jobs.append((d, os.path.join(args.outdir, f"cat_v{i:04d}_s{seed}.npz"), mmain,
+                             not args.no_catalogs))
+    for combo in (itertools.product(*[grid[k] for k in keys]) if spec.get("design") not in ("random", "list") else []):
         for seed in seeds:
             d = dict(base)
             d.update(dict(zip(keys, combo)))

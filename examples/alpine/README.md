@@ -62,3 +62,15 @@ one core, roughly 3 to 5 core-hours in total).
 300 runs of 10,000 yr, about 20 to 40 s each. For any single run kept
 with its catalog, `examples/alpine/decompose_site_cv.py catalog.npz 2`
 decomposes the site variability (docs/alpine.md).
+
+## Round 4 on the variable-dip geometry, and the posterior ensemble
+
+    python3 -m stochseis.cli sweep examples/alpine/abc4_variable_dip_hybrid.json abc4_vardip --nproc N --no-catalogs
+    python3 -m stochseis.cli sweep examples/alpine/posterior4_planar.json posterior4_planar --nproc N
+
+The posterior run keeps catalogs (no --no-catalogs): 100 runs of
+20,000 yr, roughly 1 to 2 minutes each and 20 to 40 MB per catalog.
+`examples/alpine/make_posterior_spec.py summary base_spec out_spec
+[threshold] [n_best] [n_seeds] [duration]` builds the same kind of spec
+from any ABC summary (CSV or JSON). The sweep tool now also accepts
+"design": "list" with explicit parameter vectors.

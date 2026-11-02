@@ -157,6 +157,13 @@ would be needed to produce stress-dependent b variations.
 
 ## 4b. Alpine Fault intercomparison (started 1 November 2026)
 
+Update after ABC round 4: hybrid sizes (scale-free below a threshold
+area, state-only termination above) with slip capped at the local deficit
+match mean recurrence, CV and single-event displacement at all three
+paleoseismic sites (55 of 100 vectors accepted); details in docs/alpine.md.
+Next: variable-dip round 4 and a posterior ensemble with catalogs.
+The paragraph below describes the starting point.
+
 See docs/alpine.md and docs/networks.md. STL geometries load as section
 grids (stochseis/mesh.py), paleo-site statistics are computed by
 stochseis/sites.py and included in sweep summaries when sites_file is

@@ -347,6 +347,68 @@ standard error above the central record, not three as stated for round 2.
 5. Round 4 (`examples/alpine/abc4_planar_hybrid.json`) maps the hybrid
    mode with the ABC machinery; round 3 (slip-predictable) is running.
 
+## ABC round 4: hybrid sizes with deficit-capped slip (run by T. Becker)
+
+100 vectors x 3 seeds x 10,000 yr, planar geometry
+(`examples/alpine/abc4_planar_hybrid.json`; summary in
+`runs/alpine_abc4_planar/`), no failed runs. Slip mode `local_cap`,
+hybrid size rule with the area threshold drawn from 300 to 3000 km^2.
+
+Acceptance (mean squared standardized misfit below 4): 55 of 100 at a
+2 m detection threshold, 48 at 1 m, 1 at 4 m. Best vector at 2 m (misfit
+0.57): stress drop 7.6 MPa, ln-sigma 0.19, slip CV 0.15, nucleation
+exponent 4.4, branching 0.27, arrest scale 0.29 with exponent 3.8, b 0.86,
+initiation rate 0.89 x calibrated, threshold area 810 km^2:
+
+| site | RI [yr] | CV | SED [m] | observed |
+|---|---|---|---|---|
+| south | 246 | 0.31 | 6.6 | 268 / 0.40 / 7.5 |
+| central | 255 | 0.26 | 6.8 | 249 / 0.23 / 7.1 |
+| north | 458 | 0.28 | 4.0 | 413 / 0.25 / 4.0 |
+
+Accepted ranges (2 m): stress drop 5.2 to 10 MPa, ln-sigma up to 0.2,
+slip CV 0.12 to 0.50, nucleation exponent 2.6 to 12, branching 0.05 to
+0.30, arrest scale 0.23 to 0.99, admission exponent 2 to 8, b 0.80 to
+1.10, initiation rate 0.10 to 0.95 x calibrated, threshold area 310 to
+2900 km^2. Site CVs over the accepted set: medians 0.38 to 0.40, lowest
+0.16 (central) to 0.23 (north); over the whole prior the 5th percentile
+of the central CV is 0.23. The CV floor of rounds 1 and 2 is gone.
+
+Controls (regression over the 100 design means, per standard deviation
+of each parameter, R^2 0.86 to 0.90 for the south and central sites):
+
+* CV: threshold area (+0.08, the strongest: the smaller the area above
+  which ruptures stop only by state, the more regular), arrest scale
+  (+0.04), stress drop (+0.03 to 0.04), admission exponent (-0.02).
+* RI and SED: stress drop (+), nucleation exponent (-), initiation rate
+  (-), b (-).
+* North RI: additionally arrest scale (+54 yr per standard deviation).
+
+Event statistics of the accepted ensemble (medians, 5 to 95 percent):
+Bath 1.41 (1.16 to 1.88), Omori p 1.01 (0.88 to 1.09), b below
+saturation 0.91 (0.80 to 1.08), maximum M 8.31 (8.13 to 8.41), 1190 M>=6
+and 139 M>=7 per 10,000 yr with N(M>=7) / N(M>=6) = 0.119, as for GR
+with the accepted b (the characteristic excess is above M7.5), whole-fault
+M>=7 CV 0.90, realised branching ratio 0.17. Co-rupture at 1 m: 42
+percent of central events also rupture the south site, 19 percent the
+north site; 7 percent of south events reach the north site.
+
+Interpretation: with slip tied to the local deficit and large ruptures
+terminated by fault state, the stochastic model reproduces mean
+recurrence, regularity and single-event displacement at all three sites
+with Gutenberg-Richter statistics below about M7, a characteristic
+excess above M7.5, and standard aftershock statistics. Many parameter
+combinations do this (55 of 100 draws), so the paleoseismic data
+constrain the model class strongly but individual parameters weakly.
+Round 3 (slip-predictable mode) results have not been received.
+
+Next: the same round on the variable-dip geometry
+(`examples/alpine/abc4_variable_dip_hybrid.json`) and a posterior
+ensemble with catalogs for the intercomparison statistics
+(`examples/alpine/posterior4_planar.json`: the 20 best vectors x 5 seeds x
+20,000 yr; regenerate it for other summaries with
+`examples/alpine/make_posterior_spec.py`).
+
 ## Status (1 November 2026)
 
 * Both geometries load as section grids at 1 km (19,630 and 17,142

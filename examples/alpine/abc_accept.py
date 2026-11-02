@@ -34,7 +34,8 @@ tol = float(sys.argv[3]) if len(sys.argv) > 3 else 2.0
 sites = list(csv.DictReader(open(os.path.join(here, "..", "..", "data", "nz_alpine", "paleo_sites.csv"))))
 
 params = ["stress_drop_mpa", "stress_drop_ln_sigma", "nucleation_exponent", "branching_ratio",
-          "deep_slip_km", "condition_weight", "arrest_scale", "cap_by_deficit"]
+          "deep_slip_km", "condition_weight", "arrest_scale", "cap_by_deficit", "b_value",
+          "segment_boundary_strength", "budget_scale", "slip_fraction"]
 groups = defaultdict(list)
 for r in rows:
     groups[r.get("design_index", r.get("file"))].append(r)
@@ -57,7 +58,7 @@ for key, rs in groups.items():
             d2 += ((val - obs) / sig) ** 2 if np.isfinite(val) else 25.0
             nobs += 1
         detail[n] = (ri, cv, sed)
-    scored.append((d2 / nobs, key, {p: rs[0].get("p_" + p) for p in params}, detail))
+    scored.append((d2 / nobs, key, {p: rs[0].get("p_" + p) for p in params if "p_" + p in rs[0]}, detail))
 scored.sort(key=lambda x: x[0])
 
 print(f"{len(scored)} design vectors, threshold {th} m; best ten (mean squared standardized misfit):")
@@ -68,6 +69,6 @@ acc = [x for x in scored if x[0] < tol ** 2]
 print(f"\naccepted (mean squared misfit < {tol ** 2:g}): {len(acc)}")
 if acc:
     for p in params:
-        v = np.array([float(x[2][p]) for x in acc if x[2][p] is not None])
+        v = np.array([float(x[2][p]) for x in acc if x[2].get(p) is not None])
         if len(v):
             print(f"  {p:22s} median {np.median(v):7.3g}  range {v.min():7.3g} to {v.max():7.3g}")

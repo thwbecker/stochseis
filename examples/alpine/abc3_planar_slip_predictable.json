@@ -1,0 +1,71 @@
+{
+ "_comment": "ABC round 3, planar, slip-predictable mode (slip = slip_fraction x local deficit): 100 vectors x 3 seeds x 10,000 yr at 2 km (about 30 to 60 s per run).",
+ "design": "random",
+ "design_seed": 3,
+ "n_samples": 100,
+ "base": {
+  "geometry_file": "data/nz_alpine/alpine_planar_1km_26Jan.stl",
+  "segments_file": "data/nz_alpine/segments.csv",
+  "segment_max_dist_km": 40.0,
+  "segment_include": [
+   "Alpine",
+   "Wairau"
+  ],
+  "patch_km": 2.0,
+  "rake_deg": 160.0,
+  "mag_min": 5.0,
+  "duration_yr": 10000,
+  "pilot_events": 300,
+  "store_slip_min_mag": 6.0,
+  "sites_file": "data/nz_alpine/paleo_sites.csv",
+  "site_thresholds_m": [
+   1.0,
+   2.0,
+   4.0
+  ],
+  "slip_mode": "deficit"
+ },
+ "ranges": {
+  "slip_fraction": [
+   0.7,
+   1.0
+  ],
+  "branching_ratio": [
+   0.05,
+   0.4
+  ],
+  "b_value": [
+   0.7,
+   1.1
+  ],
+  "stress_drop_mpa": [
+   2.0,
+   6.0
+  ]
+ },
+ "log_ranges": {
+  "budget_scale": [
+   0.03,
+   0.5
+  ],
+  "nucleation_exponent": [
+   1.0,
+   10.0
+  ],
+  "arrest_scale": [
+   0.05,
+   1.0
+  ]
+ },
+ "choices": {
+  "cap_by_deficit": [
+   true
+  ]
+ },
+ "seeds": [
+  1,
+  2,
+  3
+ ],
+ "mmain": 6.0
+}

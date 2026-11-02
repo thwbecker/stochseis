@@ -61,6 +61,8 @@ class Params:
     slip_cv: float = 0.75                 # coefficient of variation of the lognormal slip pattern
     corr_length_scatter: float = 0.0      # ln-scatter on correlation lengths; 0 = Mai & Beroza mean
     condition_weight: float = 1.0         # exponent on the state measure used to condition the slip pattern; 0 = none
+    slip_mode: str = "stress_drop"        # "stress_drop": crack slip set by stress drop; "deficit": slip-predictable, slip = slip_fraction x local deficit
+    slip_fraction: float = 1.0            # fraction of the local positive deficit released in slip_mode "deficit"
     cap_by_deficit: bool = False          # mean slip of an event cannot exceed the mean positive deficit on its rupture
 
     # ------------------------------------------------------------------

@@ -199,6 +199,13 @@ class Simulation:
                                                    self.strength if use_state else None)
         cond = sfn(idx)
         slip, info = build_slip(f, idx, cond, dsig, self.rng, p, diagnostics=diagnostics)
+        if use_state and p.slip_mode == "deficit":
+            # slip-predictable alternative: each patch releases a fixed fraction of its
+            # accumulated positive deficit; the rupture extent still comes from growth and arrest
+            d_loc = np.maximum(self.state.deficit(t, idx), 0.0)
+            slip = np.maximum(p.slip_fraction * d_loc, 1e-6)
+            info["dmean"] = float(slip.mean())
+            info["dmax"] = float(slip.max())
         if not getattr(self, "_no_scale", False):
             slip = slip * scale                  # continuous stopping size within the last increment
         else:

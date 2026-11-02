@@ -168,6 +168,66 @@ region with acceptable RI and SED, plus the size-hazard b-value (0.7 to
 x 10,000 yr for smaller CV errors. The variable-dip round 1
 (`abc1_variable_dip.json`) is still to be run.
 
+## ABC round 2, planar geometry (run by T. Becker)
+
+100 vectors x 3 seeds x 10,000 yr, priors narrowed to the round-1
+region plus the size-hazard b-value and the segment-boundary strength
+(`examples/alpine/abc2_planar.json`; summary in
+`runs/alpine_abc2_planar/`), no failed runs.
+
+* Threshold 2 m: 4 vectors accepted. Posterior ranges: stress drop 3.1
+  to 6.4 MPa (trading off against deep slip 13 to 25 km), ln-sigma 0.03
+  to 0.24, nucleation exponent 1.8 to 4.8, branching 0.15 to 0.26, slip
+  weight 1.1 to 1.5, arrest scale 0.10 to 0.80, b 0.75 to 0.99,
+  boundary strength 1.4 to 2.3. Best: RI / CV / SED 254 / 0.60 / 6.4
+  (south), 261 / 0.61 / 6.6 (central), 583 / 0.54 / 4.9 (north).
+* With three 10,000-yr seeds the seed-to-seed standard deviation of a
+  site CV is 0.06, so the design means are known to about 0.035. The
+  lowest central CV over the prior is 0.41 (5th percentile 0.45), about
+  three combined standard errors above the observed 0.23 +- 0.05; the
+  south record (0.40) remains within reach.
+* The nucleation exponent is now the strongest control of CV (-0.07 per
+  standard deviation of log exponent), but it also shortens intervals
+  and reduces SED, which a higher stress drop has to compensate.
+* The north interval (488 to 1100 yr, median 750, against 413) is not
+  fixed by the boundary strength, which lengthens it further (+62 yr per
+  standard deviation): the north site is ruptured too often with small
+  slip, so its slip is fragmented into events below the detection
+  threshold. The budget at that site (SED / slip rate) is met only if
+  almost all slip comes in about 4 m events.
+* Bath (1.04 to 1.41) is set by branching ratio and b; the b-value below
+  saturation equals the input b; Omori p 0.70 to 1.01.
+
+Conclusion: with stress-drop-controlled slip, the model family cannot
+produce both the central regularity and the north interval.
+
+## Slip-predictable alternative (single-seed tests, 1 November)
+
+`slip_mode = "deficit"` (new): each patch in a rupture releases a fixed
+fraction (`slip_fraction`) of its positive deficit; rupture extent still
+comes from growth and arrest, and nucleation remains deficit-weighted.
+With the round-2 parameters (exponent 2.6, branching 0.2, arrest 0.12,
+b 0.8), 5000 yr, threshold 2 m (RI / CV / SED):
+
+| initiation rate (budget_scale) | south | central | north |
+|---|---|---|---|
+| 1 (calibrated) | 230 / 0.45 / 4.8 | 173 / 0.33 / 4.6 | 349 / 0.25 / 2.9 |
+| 0.3 | 269 / 0.42 / 7.0 | 199 / 0.47 / 5.1 | 576 / 0.32 / 4.6 |
+| 0.1 | 265 / 0.47 / 6.6 | 294 / 0.55 / 8.2 | 409 / 0.48 / 4.2 |
+| 0.1, exponent 6 | 207 / 0.58 / 4.9 | 183 / 0.39 / 4.4 | 517 / 0.31 / 3.9 |
+| observed | 268 / 0.40 / 7.5 | 249 / 0.23 / 7.1 | 413 / 0.25 / 4.0 |
+
+In this mode the initiation rate sets how much deficit accumulates before
+release and therefore SED and RI; at a tenth of the calibrated rate all
+three sites, including the north, match in mean interval and SED. The
+CVs (0.25 to 0.58, single seeds with errors of about 0.07 to 0.1) are in
+the range of the stress-drop runs or lower. Round 3
+(`examples/alpine/abc3_planar_slip_predictable.json`) maps this mode
+properly. If it matches the regularity as well, the result for the
+intercomparison is that the Alpine records require slip-predictable
+behaviour, which constant-stress-drop slip with a scale-free size
+distribution does not provide.
+
 ## Status (1 November 2026)
 
 * Both geometries load as section grids at 1 km (19,630 and 17,142

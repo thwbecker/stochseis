@@ -45,3 +45,11 @@ segment slip rates and are superseded.
 300 runs of 10,000 yr, about 2 to 4 minutes each on one core (10 to 20
 core-hours). Round 1 results and the reasons for the narrowed priors are
 in docs/alpine.md.
+
+## Round 3 (planar, slip-predictable mode)
+
+    python3 -m stochseis.cli sweep examples/alpine/abc3_planar_slip_predictable.json abc3_planar --nproc N --no-catalogs
+    python3 examples/alpine/abc_accept.py abc3_planar/sweep_summary.json 2
+
+300 runs of 10,000 yr; this mode is faster (about 30 to 60 s per run on
+one core, roughly 3 to 5 core-hours in total).

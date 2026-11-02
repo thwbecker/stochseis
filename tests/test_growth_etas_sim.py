@@ -216,3 +216,17 @@ def test_b_value_mle_edge_cases():
     flat = 5.0 + rng.uniform(0, 0.3, 500)
     assert b_value_mle(flat, 5.0, 5.3)[0] in (0.0,) or np.isnan(b_value_mle(flat, 5.0, 5.3)[0]) \
         or b_value_mle(flat, 5.0, 5.3)[0] < 0.5
+
+
+def test_slip_predictable_mode():
+    """slip_mode='deficit': ruptures release (at most) the local positive deficit."""
+    p = Params(duration_yr=150, mag_min=3.5, seed=8, fault_length_km=60, slip_mode="deficit",
+               slip_fraction=1.0, budget_scale=0.3)
+    sim = Simulation(p)
+    cat = sim.run()
+    fe = cat.fault_events()
+    assert len(fe) > 5
+    # no stored slip exceeds the slip rate times the run time plus the largest initial deficit
+    bound = cat.fault.slip_rate.max() * p.duration_yr + cat.deficit0.max() + 1e-6
+    assert np.all(cat.slip_val <= bound * 1.2)
+    assert abs(cat.meta["moment_closure"] - 1.0) < 0.5

@@ -22,6 +22,18 @@
 | slip_cv | 0.336 [0.117-0.495] | 0.326 [0.117-0.495] | 0.319 [0.117-0.495] | 0.339 [0.117-0.495] | 0.32 [0.117-0.495] |
 | hazard_max_area_km2 | 1.08e+03 [308-2.82e+03] | 1.08e+03 [302-2.92e+03] | 1.11e+03 [302-2.92e+03] | 1.08e+03 [308-2.82e+03] | 1.14e+03 [302-2.92e+03] |
 
+## Posterior vectors rescored with their posterior runs (paleo + seismicity, 2 m)
+
+ABC misfit: from the ABC runs; posterior misfit: from the posterior runs of the same vector.
+
+| configuration | vectors | still accepted | best posterior misfit | its ABC rank | best: south RI / CV / SED | central | north | b | Bath | median site CV (south, central, north) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| planar_fine | 20 | 20 | 0.80 | 1 | 266 / 0.40 / 7.0 | 274 / 0.37 / 7.2 | 497 / 0.35 / 4.5 | 0.96 | 1.38 | 0.38, 0.37, 0.39 |
+| variable_dip_fine | 20 | 20 | 0.69 | 2 | 253 / 0.33 / 6.8 | 257 / 0.32 / 6.8 | 471 / 0.31 / 4.1 | 1.08 | 1.44 | 0.41, 0.40, 0.37 |
+| segmented_fine | 20 | 20 | 0.60 | 1 | 250 / 0.33 / 6.7 | 252 / 0.34 / 6.7 | 421 / 0.30 / 3.9 | 1.07 | 1.43 | 0.41, 0.39, 0.40 |
+| planar_coarse | 20 | 20 | 0.85 | 2 | 281 / 0.40 / 7.4 | 284 / 0.41 / 7.5 | 502 / 0.37 / 4.3 | 1.02 | 1.21 | 0.40, 0.39, 0.37 |
+| variable_dip_coarse | 20 | 20 | 0.41 | 2 | 260 / 0.33 / 7.0 | 261 / 0.32 / 6.9 | 430 / 0.35 / 3.9 | 1.10 | 1.29 | 0.41, 0.41, 0.39 |
+
 ## Overlap of accepted vectors (paleo + seismicity): number accepted in both
 
 | | planar_fine | variable_dip_fine | segmented_fine | planar_coarse | variable_dip_coarse |

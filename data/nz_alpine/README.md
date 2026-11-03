@@ -29,4 +29,6 @@ Inputs for the New Zealand Alpine Fault simulator intercomparison
 * `rsqsim_summary.csv`: site statistics of the RSQSim simulations of the
   same exercise (planar and varying-dip geometries, 50,000 yr), transcribed
   from the slides "RSqsim_results.pdf" provided by the organisers (sites 1
-  to 3 = south, central, north), for comparison only.
+  to 3 = south, central, north). An example of a reference table for
+  `examples/alpine/site_analysis.py --reference`; other models' results
+  can be added in the same format.

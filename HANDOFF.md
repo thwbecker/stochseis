@@ -183,8 +183,11 @@ vectors accepted in every configuration with strong overlap; accepted
 parameters close to the round-5 priors; south and central means matched,
 central CV and north RI biased high in all ensembles (RSQSim has the
 north bias too); site statistics converged at 2 km and insensitive to
-geometry. ABC best fits may be optimistic (selection bias, not yet
-demonstrated): quote the posterior rescoring (campaign_summary.py).
+geometry. Posterior rescoring: all 20 posterior vectors stay accepted in
+every configuration and the best was ranked 1 or 2 by the ABC. The
+product for the intercomparison is the calibrated envelope (docs/alpine.md);
+physics models are compared against it, RSQSim being one example
+(site_analysis.py --reference).
 The paragraph below describes the starting point.
 
 See docs/alpine.md and docs/networks.md. STL geometries load as section

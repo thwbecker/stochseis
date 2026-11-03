@@ -577,31 +577,30 @@ the L1 correction (single seed, 5000 yr, 2 m threshold): RI / CV / SED
 The full campaign (`run_full_campaign.sh`, below) covers all three
 geometries.
 
-## Site analysis in the style of the RSQSim comparison
+## Site analysis (panels used in the intercomparison, extended)
 
 `examples/alpine/site_analysis.py out_prefix label dir [label dir ...]
-[--threshold 2]` reproduces the panels of the RSQSim summary for the
-intercomparison (planar and varying-dip geometries, 50,000 yr; RSQSim
-site values in `data/nz_alpine/rsqsim_summary.csv`) for a posterior
-ensemble, and extends them:
+[--threshold 2] [--reference table.csv name]` draws, for a posterior
+ensemble, the panels used to summarize simulators in the intercomparison
+(the RSQSim slides were the template), and extends them:
 
 * `_spacetime.png`: slip-rate map with the sites and a space-time plot of
   M >= 7 ruptures (along-strike extent in northing, hypocentre coloured by
   Mw) for the best run, one row per geometry.
-* `_statistics.png`: the RSQSim panels (slip, magnitude and inter-event
+* `_statistics.png`: the intercomparison panels (slip, magnitude and inter-event
   time distributions at the sites with the paleoseismic SED ranges and
   normal interval PDFs; cumulative frequency-magnitude distribution;
   hypocentre depths; rupture area versus Mw), computed over the whole
   ensemble with the best run and a 5 to 95 percent band where useful;
   plus RI versus CV and RI versus SED for every run with the observations
-  and the RSQSim values, and the mean interval as a function of the
+  and, if given, a reference model, and the mean interval as a function of the
   detection threshold (0.5 to 4 m).
 * `_extended.png`: co-rupture matrices, time- and slip-predictability
   correlations, and interval distributions against the paleoseismic
   normal CDFs.
 * `_table.md` / `_table.csv`: per geometry and site, mean and SD of the
   intervals, CV, mean and SD of SED for the best run, ensemble median and
-  5 to 95 percent range, observations, and RSQSim.
+  5 to 95 percent range, observations, and the reference model if given.
 
 The full campaign runs it after the posteriors. For posteriors already
 computed:
@@ -609,37 +608,8 @@ computed:
     python3 examples/alpine/site_analysis.py out/sites planar_fine out/posterior_planar_fine \
         variable_dip_fine out/posterior_variable_dip_fine --threshold 2
 
-Example output for a small test ensemble (round-4 best three vectors with
-the L1 correction, 2 seeds x 8000 yr per geometry) is in
-`docs/alpine_site_analysis_*_example.*`. These are not the campaign
-results, but the comparison with RSQSim already shows where the models
-differ:
-
-| | stochseis (test ensemble, median) | RSQSim | observed |
-|---|---|---|---|
-| central RI / CV / SED, planar | 264 / 0.32 / 7.0 | 271 / 0.13 / 7.3 | 249 / 0.23 / 7.1 |
-| south RI / CV / SED, planar | 258 / 0.33 / 6.9 | 260 / 0.19 / 7.1 | 268 / 0.40 / 7.5 |
-| north RI / CV / SED, planar | 492 / 0.34 / 4.3 | 640 / 0.45 / 5.8 | 413 / 0.25 / 4.0 |
-| central RI / CV / SED, variable dip | 250 / 0.28 / 6.7 | 272 / 0.15 / 7.4 | |
-| south RI / CV / SED, variable dip | 235 / 0.32 / 6.3 | 214 / 0.24 / 5.8 | |
-| north RI / CV / SED, variable dip | 468 / 0.28 / 4.3 | 543 / 0.36 / 5.4 | |
-
-* Both models match the mean interval and displacement at the south and
-  central sites. RSQSim is more periodic than the data (CV 0.13 to 0.24
-  against 0.23 and 0.40); the stochastic ensemble brackets the
-  observations.
-* At the north site both are too slow, RSQSim more so (543 to 640 yr and
-  5.4 to 5.8 m against 413 yr and 4.0 m; stochseis about 470 to 490 yr
-  and 4.3 m).
-* Size distribution: events recorded at the sites are almost all
-  through-going M8.1 to 8.4 ruptures in stochseis, against M7.5 to 8.2 in
-  RSQSim; the space-time plots show the same, a characteristic
-  population of fault-length ruptures in stochseis (the hybrid size rule)
-  and more partial M7.5 to 8 ruptures in RSQSim. Both frequency-magnitude
-  distributions depart from Gutenberg-Richter above about M7.
-* Hypocentres are spread over depth on the planar geometry in stochseis
-  but concentrate at the base of the fault on the variable-dip geometry;
-  RSQSim nucleates mostly between 13 and 20 km on both.
+Example output for a small test ensemble is in
+`docs/alpine_site_analysis_*_example.*` (not campaign results).
 
 ## Full campaign: three geometries at fine and two at coarse resolution
 
@@ -689,7 +659,8 @@ configurations; `campaign_summary.py`) and two kinds of figures:
   and mean slip versus rupture length. Best vector as line or large
   symbol, all posterior runs as band or small symbols, one colour per
   configuration;
-* the RSQSim-style site analysis (`site_analysis.py`, `sites_<set>_*`).
+* the site analysis with the intercomparison panels (`site_analysis.py`,
+  `sites_<set>_*`).
 
 Sets: the fine configurations (`fine`), the coarse ones (`coarse`), all
 five together (`all`, overview figures only), and fine against coarse for
@@ -749,29 +720,18 @@ Ensemble medians and 5 to 95 percent ranges over all posterior runs:
 | planar_coarse | 252 [218-291] / 0.37 [0.25-0.51] / 6.6 | 257 [226-295] / 0.39 [0.25-0.50] / 6.6 | 545 [422-657] / 0.37 / 4.7 |
 | variable_dip_coarse | 251 [224-276] / 0.41 [0.31-0.53] / 6.6 | 260 [230-309] / 0.40 [0.31-0.52] / 6.8 | 511 [413-642] / 0.39 / 4.7 |
 | observed | 268 / 0.40 / 7.5 | 249 / 0.23 / 7.1 | 413 / 0.25 / 4.0 |
-| RSQSim planar / variable dip | 260 / 0.19 / 7.1; 214 / 0.24 / 5.8 | 271 / 0.13 / 7.3; 272 / 0.15 / 7.4 | 640 / 0.45 / 5.8; 543 / 0.36 / 5.4 |
 
 1. Mean intervals at the south and central sites are matched in every
    configuration; single-event displacements are 0.4 to 0.9 m below the
    observed means, with the observations inside or at the upper edge of
    the 5 to 95 percent ranges.
 2. The south CV (0.40) is matched. The central CV (0.23) lies at or
-   below the 5th percentile of every ensemble (0.25 to 0.31), and the
-   ensemble medians (0.38 to 0.41) are close to the typical CV of the
-   model class found in rounds 4 and 5. For the top-ranked vector the
-   central CV changes from the ABC (three seeds) to its first posterior
-   run as 0.37 to 0.38 (planar fine), 0.41 to 0.44 (variable dip fine),
-   0.27 to 0.37 (segmented), 0.31 to 0.30 (planar coarse) and 0.41 to
-   0.37 (variable dip coarse). Only the segmented case shows a clear
-   increase, and single-run CVs carry about +-0.07, so selection bias
-   (ranking 100 vectors by short-run statistics favours lucky ones) is
-   plausible but not demonstrated by these numbers.
-   `campaign_summary.py` now rescores the posterior vectors with all
-   their posterior runs; those misfits are the ones to quote.
+   below the 5th percentile of every ensemble (0.25 to 0.31); the
+   ensemble medians (0.37 to 0.41) are the typical CV of this model
+   class.
 3. The north site is too slow in every configuration (medians 511 to 545
    yr against 413, with the observation at the 5th percentile), with a
-   mean SED of 4.7 to 4.9 m against 4.0 m. RSQSim has the same bias, more
-   strongly (543 to 640 yr, 5.4 to 5.8 m).
+   mean SED of 4.7 to 4.9 m against 4.0 m.
 4. Resolution: fine and coarse ensembles agree within about 10 yr in RI,
    0.02 in CV and 0.2 m in SED at every site, so site statistics are
    converged at 2 km patches.
@@ -782,18 +742,58 @@ Ensemble medians and 5 to 95 percent ranges over all posterior runs:
    the size distribution of system events are in the figures
    (`fig_*`, `sites_*_extended.png`), which are not summarized here.
 
-### Comparison with RSQSim
+### Rescoring of the posterior vectors
 
-At the south and central sites both models reproduce the mean intervals
-and displacements. RSQSim is more periodic (CV 0.13 to 0.24) than the
-stochastic ensembles (0.37 to 0.41): RSQSim matches the central record
-(0.23) better and the south record (0.40) worse. The stochastic model's
-single-event displacements are more variable at a site (SD 1.7 to 2.6 m
-for the best vectors against 1.0 to 1.6 m in RSQSim). At the north site
-both models are too slow with too much slip per event, RSQSim more so.
-A stochastic model calibrated to the paleoseismic records thus spans the
-range between the RSQSim regularity and the more irregular records, and
-the central and north records are the ones that discriminate.
+Each posterior vector was rescored with its own posterior runs (5 seeds
+x 20,000 yr instead of 3 x 10,000 yr; `campaign_summary.py`, rerun on 3
+November):
+
+| configuration | still accepted | best rescored misfit | its ABC rank | best: south RI / CV / SED | central | north | median CV (S, C, N) |
+|---|---|---|---|---|---|---|---|
+| planar_fine | 20 of 20 | 0.80 | 1 | 266 / 0.40 / 7.0 | 274 / 0.37 / 7.2 | 497 / 0.35 / 4.5 | 0.38, 0.37, 0.39 |
+| variable_dip_fine | 20 of 20 | 0.69 | 2 | 253 / 0.33 / 6.8 | 257 / 0.32 / 6.8 | 471 / 0.31 / 4.1 | 0.41, 0.40, 0.37 |
+| segmented_fine | 20 of 20 | 0.60 | 1 | 250 / 0.33 / 6.7 | 252 / 0.34 / 6.7 | 421 / 0.30 / 3.9 | 0.41, 0.39, 0.40 |
+| planar_coarse | 20 of 20 | 0.85 | 2 | 281 / 0.40 / 7.4 | 284 / 0.41 / 7.5 | 502 / 0.37 / 4.3 | 0.40, 0.39, 0.37 |
+| variable_dip_coarse | 20 of 20 | 0.41 | 2 | 260 / 0.33 / 7.0 | 261 / 0.32 / 6.9 | 430 / 0.35 / 3.9 | 0.41, 0.41, 0.39 |
+
+All posterior vectors remain accepted and the best rescored vector was
+ranked first or second by the ABC, so the ranking is robust to the
+longer runs. Individual statistics of the top vectors regress somewhat
+toward the class typical values (segmented: central CV 0.27 in the ABC,
+0.34 rescored), which is the expected effect of selecting from noisy
+estimates, but it does not change acceptance. The best rescored vectors
+reach central CVs of 0.32 to 0.34 and north intervals of 421 to 430 yr,
+so the observed records are within reach of individual parameter
+vectors, while the ensembles centre on CV 0.4 and north intervals of
+510 to 545 yr.
+
+### The calibrated baseline as a reference for physics-based models
+
+The product for the intercomparison is the envelope of the calibrated
+stochastic model: what a model with no fault mechanics beyond the slip
+budget, deficit-capped slip, hybrid sizes and clustering produces once
+it is tuned to the paleoseismic records. Union of the 5 to 95 percent
+ranges of all five posterior ensembles (2 m threshold; median of the
+configuration medians in front):
+
+| site | RI [yr] | CV | SED [m] | observed |
+|---|---|---|---|---|
+| south | 254 [216-292] | 0.40 [0.25-0.54] | 6.6 [5.6-7.7] | 268 / 0.40 / 7.5 |
+| central | 260 [226-314] | 0.39 [0.25-0.53] | 6.7 [5.7-8.1] | 249 / 0.23 / 7.1 |
+| north | 543 [413-683] | 0.38 [0.26-0.57] | 4.7 [3.7-6.0] | 413 / 0.25 / 4.0 |
+
+A physics-based simulator that falls inside this envelope at the sites
+is not distinguished from the stochastic baseline by these observables;
+the comparison then has to rest on the event statistics (frequency-
+magnitude distribution, aftershock and Bath statistics, moment release,
+co-rupture, rupture lengths, hypocentre depths), for which the posterior
+ensembles give the same kind of envelope in `fig_*` and `sites_*`.
+Outside the envelope, the observables that carry most information are
+the central-site regularity and the north-site recurrence, the two that
+the stochastic baseline matches only at the edge of its range.
+`site_analysis.py --reference table.csv name` overlays any model's site
+statistics (RSQSim's slides are one example, in
+`data/nz_alpine/rsqsim_summary.csv`).
 
 ## Status (1 November 2026)
 

@@ -1,12 +1,19 @@
-"""Site and system statistics for posterior ensembles, in the style of the
-RSQSim intercomparison slides and extended.
+"""Site and system statistics for posterior ensembles: the panels used to
+summarize physics-based simulators in the intercomparison, extended with
+ensemble ranges and further diagnostics.
 
     python3 examples/alpine/site_analysis.py out_prefix label1 dir1 [label2 dir2 ...] [--threshold 2]
+        [--reference table.csv name]
 
 Each dir holds the catalogs of a posterior sweep (design "list", files
-cat_vNNNN_sS.npz; vector 0000 is the best-fitting one). Labels that are or
-start with "planar" or "variable_dip" (e.g. planar_fine) get the RSQSim
-values of data/nz_alpine/rsqsim_summary.csv shown alongside.
+cat_vNNNN_sS.npz; vector 0000 is the best-fitting one).
+
+--reference adds site statistics of another model (for example a
+physics-based simulator) to the RI-CV and RI-SED panels and to the table.
+The CSV has columns geometry, site, ri_mean_yr, ri_sd_yr, slip_mean_m,
+slip_sd_m; a configuration label that is or starts with the geometry name
+(planar_fine for planar) is matched to it. Example:
+data/nz_alpine/rsqsim_summary.csv (RSQSim, planar and variable dip).
 
 Outputs
   <out_prefix>_spacetime.png   map of slip rate with the sites and a space-time plot of M >= 7
@@ -14,13 +21,13 @@ Outputs
                                for the best run, one row per geometry
   <out_prefix>_statistics.png  slip, magnitude and inter-event time distributions at the sites,
                                cumulative frequency-magnitude distribution, hypocentre depths,
-                               area versus Mw (as in the RSQSim summary), plus RI versus CV and SED
-                               for every run with observations and RSQSim values, and the
+                               area versus Mw, plus RI versus CV and SED for every run with the
+                               observations (and the reference model, if given), and the
                                dependence of the mean interval on the detection threshold
   <out_prefix>_extended.png    co-rupture of sites, time- and slip-predictability correlations,
                                interval distributions against the paleoseismic normal PDFs
   <out_prefix>_table.md / .csv per site: best model (pooled over its seeds), ensemble median and 5-95 percent range,
-                               observations, RSQSim
+                               observations, reference model (if given)
 Distributions labelled "ensemble" pool all posterior runs.
 """
 import csv
@@ -54,11 +61,16 @@ THRESHOLDS = [0.5, 1.0, 2.0, 3.0, 4.0]
 
 def parse_args(argv):
     th = 2.0
+    ref = None
     if "--threshold" in argv:
         k = argv.index("--threshold")
         th = float(argv[k + 1])
         argv = argv[:k] + argv[k + 2:]
-    return argv[1], list(zip(argv[2::2], argv[3::2])), th
+    if "--reference" in argv:
+        k = argv.index("--reference")
+        ref = (argv[k + 1], argv[k + 2])
+        argv = argv[:k] + argv[k + 3:]
+    return argv[1], list(zip(argv[2::2], argv[3::2])), th, ref
 
 
 def run_stats(path, sites, th):
@@ -122,17 +134,16 @@ def run_stats(path, sites, th):
 
 
 def rsqsim_for(rsq, label, site):
-    """RSQSim values for a label such as planar, planar_fine or variable_dip_coarse."""
+    """Reference-model values for a label such as planar, planar_fine or variable_dip_coarse."""
     for (geom, st), v in rsq.items():
         if st == site and (label == geom or label.startswith(geom + "_")):
             return v
     return None
 
 
-def load_rsqsim():
-    path = os.path.join(DATA, "rsqsim_summary.csv")
+def load_rsqsim(path):
     out = {}
-    if os.path.exists(path):
+    if path and os.path.exists(path):
         for r in csv.DictReader(open(path)):
             out[(r["geometry"], r["site"])] = {k: float(v) for k, v in r.items() if k not in ("geometry", "site")}
     return out
@@ -144,10 +155,11 @@ def pct(v, q):
 
 
 def main():
-    out_prefix, pairs, th = parse_args(sys.argv)
+    out_prefix, pairs, th, ref = parse_args(sys.argv)
     sites = load_sites(os.path.join(DATA, "paleo_sites.csv"))
     names = [s["name"] for s in sites]
-    rsq = load_rsqsim()
+    rsq = load_rsqsim(ref[0]) if ref else {}
+    ref_name = ref[1] if ref else ""
     G = {}
     for label, d in pairs:
         files = sorted(glob.glob(os.path.join(d, "cat_v*_s*.npz")))
@@ -272,7 +284,9 @@ def main():
     mk_h = [Line2D([], [], marker=["o", "s", "^"][i % 3], color="k", ls="", mfc="k" if i == 0 else "none",
                    label=f"{lab}: one run each") for i, lab in enumerate(G)]
     obs_h = [Line2D([], [], marker="s", color="k", ls="", label="observed"),
-             Line2D([], [], marker="X", color="k", ls="", ms=9, label="RSQSim (same geometry)")]
+             Line2D([], [], marker="X", color="k", ls="", ms=9, label=f"{ref_name} (same geometry)")]
+    if not rsq:
+        obs_h = obs_h[:1]
     axs[2, 0].legend(handles=site_h + mk_h + obs_h, fontsize=7)
     axs[2, 0].set(xlabel="mean recurrence interval [yr]", ylabel="CV of intervals", title=f"RI versus CV ({th:g} m threshold)")
     axs[2, 1].legend(handles=site_h + mk_h + obs_h, fontsize=7)
@@ -379,17 +393,27 @@ def main():
     with open(out_prefix + "_table.md", "w") as fh:
         fh.write(f"Detection threshold {th:g} m. Best: best-ranked vector, pooled over all its posterior seeds. "
                  "Ensemble: median [5-95 %] over all posterior runs.\n\n")
-        fh.write("| geometry | site | RI best (SD) | RI ensemble | RI obs (SD) | RI RSQSim (SD) | CV best | CV ensemble "
-                 "| CV obs | CV RSQSim | slip best (SD) | slip ensemble | slip obs | slip RSQSim (SD) |\n")
-        fh.write("|" + "---|" * 14 + "\n")
+        rn = ref_name or "reference"
+        cols = ["geometry", "site", "RI best (SD)", "RI ensemble", "RI obs (SD)"] + ([f"RI {rn} (SD)"] if rsq else []) \
+            + ["CV best", "CV ensemble", "CV obs"] + ([f"CV {rn}"] if rsq else []) \
+            + ["slip best (SD)", "slip ensemble", "slip obs"] + ([f"slip {rn} (SD)"] if rsq else [])
+        fh.write("| " + " | ".join(cols) + " |\n")
+        fh.write("|" + "---|" * len(cols) + "\n")
         for r in rows:
-            fh.write(f"| {r['geometry']} | {r['site']} | {r['ri_best']:.0f} ({r['ri_sd_best']:.0f}) | "
-                     f"{r['ri_ens_med']:.0f} [{r['ri_ens_lo']:.0f}-{r['ri_ens_hi']:.0f}] | "
-                     f"{r['ri_obs']:.0f} ({r['ri_sd_obs']:.0f}) | {r['ri_rsqsim']:.0f} ({r['ri_sd_rsqsim']:.0f}) | "
-                     f"{r['cv_best']:.2f} | {r['cv_ens_med']:.2f} [{r['cv_ens_lo']:.2f}-{r['cv_ens_hi']:.2f}] | "
-                     f"{r['cv_obs']:.2f} | {r['cv_rsqsim']:.2f} | {r['slip_best']:.1f} ({r['slip_sd_best']:.1f}) | "
-                     f"{r['slip_ens_med']:.1f} [{r['slip_ens_lo']:.1f}-{r['slip_ens_hi']:.1f}] | {r['slip_obs']:.1f} | "
-                     f"{r['slip_rsqsim']:.1f} ({r['slip_sd_rsqsim']:.1f}) |\n")
+            c = [r["geometry"], r["site"], f"{r['ri_best']:.0f} ({r['ri_sd_best']:.0f})",
+                 f"{r['ri_ens_med']:.0f} [{r['ri_ens_lo']:.0f}-{r['ri_ens_hi']:.0f}]",
+                 f"{r['ri_obs']:.0f} ({r['ri_sd_obs']:.0f})"]
+            if rsq:
+                c.append(f"{r['ri_rsqsim']:.0f} ({r['ri_sd_rsqsim']:.0f})")
+            c += [f"{r['cv_best']:.2f}", f"{r['cv_ens_med']:.2f} [{r['cv_ens_lo']:.2f}-{r['cv_ens_hi']:.2f}]",
+                  f"{r['cv_obs']:.2f}"]
+            if rsq:
+                c.append(f"{r['cv_rsqsim']:.2f}")
+            c += [f"{r['slip_best']:.1f} ({r['slip_sd_best']:.1f})",
+                  f"{r['slip_ens_med']:.1f} [{r['slip_ens_lo']:.1f}-{r['slip_ens_hi']:.1f}]", f"{r['slip_obs']:.1f}"]
+            if rsq:
+                c.append(f"{r['slip_rsqsim']:.1f} ({r['slip_sd_rsqsim']:.1f})")
+            fh.write("| " + " | ".join(c) + " |\n")
     print("wrote", ", ".join(out_prefix + x for x in ("_spacetime.png", "_statistics.png", "_extended.png",
                                                        "_table.md", "_table.csv")))
 

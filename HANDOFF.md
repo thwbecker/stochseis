@@ -170,6 +170,14 @@ geometry shows mainly in co-rupture between sites (much higher on the
 variable-dip geometry), not in the site statistics. Next: posterior
 ensemble with catalogs; L1 dip correction before quoting geometry effects
 on slip.
+
+Current step (3 November): L1 dip correction implemented
+(stochseis/dipcorr.py); full campaign over five configurations (planar,
+variable dip, segmented transition on 0.5 km meshes with 1 km patches;
+planar and variable dip on 1 km meshes with 2 km patches) driven by
+examples/alpine/run_full_campaign.sh, with RSQSim-style site analysis
+(site_analysis.py), overview figures and a cross-configuration summary
+(campaign_summary.py). See docs/alpine.md, "Full campaign".
 The paragraph below describes the starting point.
 
 See docs/alpine.md and docs/networks.md. STL geometries load as section

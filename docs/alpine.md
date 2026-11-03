@@ -533,13 +533,10 @@ and mean slip of a rupture, not the shape of its slip distribution near
 the trace, and it adds no cost. The default stays off so that earlier
 single-fault results are unchanged; the Alpine specs switch it on.
 
-Round 5 (`examples/alpine/abc5_{planar,variable_dip}_l1.json`) repeats
-round 4 with the correction and the same design seed, so every design
-pairs with round 4 and across geometries. `examples/alpine/
-run_l1_campaign.sh [ncpu] [outdir] [n_best] [n_seeds] [duration_yr]` runs
-both rounds, scores them with the seismicity constraints, builds and
-runs the posterior ensembles (best 20 vectors x 5 seeds x 20,000 yr, with
-catalogs) and draws the two overview figures with
+Round 5 repeats round 4 with the correction and the same design seed, so
+every design pairs with round 4 and across geometries. The round-5 spec
+(`examples/alpine/abc5_planar_l1.json`) is the base of the full campaign
+(below), whose posterior ensembles are drawn with
 `examples/alpine/overview_figures.py`:
 
 * `<outdir>/fig_seismicity.png`: frequency-magnitude distribution, Omori
@@ -577,10 +574,8 @@ the L1 correction (single seed, 5000 yr, 2 m threshold): RI / CV / SED
 249 / 0.25 / 6.7 (south), 221 / 0.39 / 6.0 (central), 454 / 0.21 / 4.3
 (north); maximum M 8.30, Bath 1.43, closure 1.01.
 
-The campaign (`run_l1_campaign.sh`) now covers all three geometries
-(`abc5_planar_l1.json`, `abc5_variable_dip_l1.json`,
-`abc5_segmented_l1.json`, same design seed) and draws them in the same
-overview figures.
+The full campaign (`run_full_campaign.sh`, below) covers all three
+geometries.
 
 ## Site analysis in the style of the RSQSim comparison
 
@@ -608,12 +603,11 @@ ensemble, and extends them:
   intervals, CV, mean and SD of SED for the best run, ensemble median and
   5 to 95 percent range, observations, and RSQSim.
 
-The campaign script now runs it after the posteriors (default geometries
-planar and variable dip; a sixth argument selects others, for example
-"planar variable_dip segmented"). For posteriors already computed:
+The full campaign runs it after the posteriors. For posteriors already
+computed:
 
-    python3 examples/alpine/site_analysis.py alpine_l1/sites planar alpine_l1/posterior5_planar \
-        variable_dip alpine_l1/posterior5_variable_dip --threshold 2
+    python3 examples/alpine/site_analysis.py out/sites planar_fine out/posterior_planar_fine \
+        variable_dip_fine out/posterior_variable_dip_fine --threshold 2
 
 Example output for a small test ensemble (round-4 best three vectors with
 the L1 correction, 2 seeds x 8000 yr per geometry) is in
@@ -646,6 +640,54 @@ differ:
 * Hypocentres are spread over depth on the planar geometry in stochseis
   but concentrate at the base of the fault on the variable-dip geometry;
   RSQSim nucleates mostly between 13 and 20 km on both.
+
+## Full campaign: three geometries at fine and two at coarse resolution
+
+Configurations (`examples/alpine/campaign_configs.json`):
+
+| configuration | mesh | patches | grid area / mesh area |
+|---|---|---|---|
+| planar_fine | alpine_planar05km.stl (0.5 km) | 1 km, 19,630 | 0.995 |
+| variable_dip_fine | variable_dip_05km_improved3.stl (0.5 km) | 1 km, 17,125 | 0.991 |
+| segmented_fine | Alpine_full_segmented_transition_05km_d20.stl (0.5 km) | 1 km, 16,995 | 0.993 |
+| planar_coarse | alpine_planar_1km_26Jan.stl (1 km) | 2 km, 4,901 | 0.994 |
+| variable_dip_coarse | variable_dip_1km_26Jan.stl (1 km) | 2 km, 4,260 | 0.986 |
+
+"Fine" and "coarse" refer to both the mesh and the simulation patch
+size: resampling a 0.5 km mesh onto the 2 km patches used so far would
+give almost the same grid as the 1 km mesh. All earlier rounds correspond
+to the coarse configurations. `alpine_planar.stl` and
+`variable_dip_1km.stl` (in metres) are the same meshes as the 1 km files
+(in km).
+
+`examples/alpine/run_full_campaign.sh [ncpu] [outdir] [n_samples]
+[abc_seeds] [abc_duration] [n_best] [post_seeds] [post_duration]
+["configurations"]` (defaults: 100 vectors x 3 seeds x 10,000 yr for the
+ABC, best 20 vectors x 5 seeds x 20,000 yr for the posteriors, all five
+configurations, fine first) does, for each configuration:
+
+1. writes the ABC spec from `abc5_planar_l1.json` (round-5 priors, L1
+   correction, design seed 4: identical parameter vectors in every
+   configuration) with the configuration's mesh and patch size
+   (`make_campaign_specs.py`);
+2. runs the ABC sweep and writes acceptance tables with and without the
+   seismicity constraints;
+3. ranks the vectors with the seismicity constraints and runs the
+   posterior ensemble with catalogs;
+
+and then writes `campaign_summary.md` (acceptance counts, best fits,
+accepted parameter ranges and overlap of accepted vectors between
+configurations; `campaign_summary.py`) and the figures and tables of
+`overview_figures.py` and `site_analysis.py` for the fine set
+(`fig_fine_*`, `sites_fine_*`), the coarse set (`*_coarse_*`) and fine
+against coarse for each geometry (`*_resolution_planar_*`,
+`*_resolution_variable_dip_*`). The scoring used by all scripts is in
+`abc_scoring.py`.
+
+Cost on one core (measured): 2.6 min per 10,000 yr at 1 km patches,
+0.6 min at 2 km. Per fine configuration about 13 core-hours for the ABC
+and 9 for the posterior; per coarse configuration about 3 and 2; about
+75 core-hours in total.
 
 ## Status (1 November 2026)
 

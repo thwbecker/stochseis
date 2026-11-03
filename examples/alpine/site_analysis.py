@@ -4,9 +4,9 @@ RSQSim intercomparison slides and extended.
     python3 examples/alpine/site_analysis.py out_prefix label1 dir1 [label2 dir2 ...] [--threshold 2]
 
 Each dir holds the catalogs of a posterior sweep (design "list", files
-cat_vNNNN_sS.npz; vector 0000 is the best-fitting one). Labels should be
-"planar" or "variable_dip" for the RSQSim values in
-data/nz_alpine/rsqsim_summary.csv to be shown alongside.
+cat_vNNNN_sS.npz; vector 0000 is the best-fitting one). Labels that are or
+start with "planar" or "variable_dip" (e.g. planar_fine) get the RSQSim
+values of data/nz_alpine/rsqsim_summary.csv shown alongside.
 
 Outputs
   <out_prefix>_spacetime.png   map of slip rate with the sites and a space-time plot of M >= 7
@@ -121,6 +121,14 @@ def run_stats(path, sites, th):
     return out
 
 
+def rsqsim_for(rsq, label, site):
+    """RSQSim values for a label such as planar, planar_fine or variable_dip_coarse."""
+    for (geom, st), v in rsq.items():
+        if st == site and (label == geom or label.startswith(geom + "_")):
+            return v
+    return None
+
+
 def load_rsqsim():
     path = os.path.join(DATA, "rsqsim_summary.csv")
     out = {}
@@ -217,7 +225,7 @@ def main():
             mk = "o" if gi == 0 else ("s" if gi == 1 else "^")
             axs[2, 0].plot(ri, cv, mk, color=c, ms=4, alpha=0.5, mfc="none" if gi else c)
             axs[2, 1].plot(ri, se, mk, color=c, ms=4, alpha=0.5, mfc="none" if gi else c)
-            q = rsq.get((label, n))
+            q = rsqsim_for(rsq, label, n)
             if q:
                 axs[2, 0].plot(q["ri_mean_yr"], q["ri_sd_yr"] / q["ri_mean_yr"], "X", color=c, mec="k", ms=11)
                 axs[2, 1].plot(q["ri_mean_yr"], q["slip_mean_m"], "X", color=c, mec="k", ms=11)
@@ -340,7 +348,7 @@ def main():
             n = s["name"]
             b = D["best"]["sites"][(n, th)]
             ens = [r["sites"][(n, th)] for r in D["runs"]]
-            q = rsq.get((label, n), {})
+            q = rsqsim_for(rsq, label, n) or {}
             row = dict(geometry=label, site=n,
                        ri_best=b["ri"], ri_sd_best=b["ri_sd"], cv_best=b["cv"], slip_best=b["sed_mean"],
                        slip_sd_best=b["sed_sd"], n_best=b["n"],

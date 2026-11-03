@@ -1,0 +1,15 @@
+{
+ "_comment": "Alpine Fault campaign configurations. fine: 0.5 km meshes resampled to 1 km patches; coarse: 1 km meshes resampled to 2 km patches. 'geometry' is the label used for the RSQSim comparison. Mesh files go in data/nz_alpine/.",
+ "configs": [
+  {"name": "planar_fine", "geometry": "planar", "resolution": "fine",
+   "geometry_file": "data/nz_alpine/alpine_planar05km.stl", "patch_km": 1.0, "segment_max_dist_km": 40.0},
+  {"name": "variable_dip_fine", "geometry": "variable_dip", "resolution": "fine",
+   "geometry_file": "data/nz_alpine/variable_dip_05km_improved3.stl", "patch_km": 1.0, "segment_max_dist_km": 10.0},
+  {"name": "segmented_fine", "geometry": "segmented", "resolution": "fine",
+   "geometry_file": "data/nz_alpine/Alpine_full_segmented_transition_05km_d20.stl", "patch_km": 1.0, "segment_max_dist_km": 10.0},
+  {"name": "planar_coarse", "geometry": "planar", "resolution": "coarse",
+   "geometry_file": "data/nz_alpine/alpine_planar_1km_26Jan.stl", "patch_km": 2.0, "segment_max_dist_km": 40.0},
+  {"name": "variable_dip_coarse", "geometry": "variable_dip", "resolution": "coarse",
+   "geometry_file": "data/nz_alpine/variable_dip_1km_26Jan.stl", "patch_km": 2.0, "segment_max_dist_km": 10.0}
+ ]
+}

@@ -187,7 +187,11 @@ geometry. Posterior rescoring: all 20 posterior vectors stay accepted in
 every configuration and the best was ranked 1 or 2 by the ABC. The
 product for the intercomparison is the calibrated envelope (docs/alpine.md);
 physics models are compared against it, RSQSim being one example
-(site_analysis.py --reference).
+(site_analysis.py --reference). Figures: event statistics independent of
+geometry; co-rupture differs by at most 0.07 between geometries (the
+round-4 co-rupture contrast is not reproduced); hypocentres at the base;
+slip-predictable sites; north RI strongly threshold dependent
+(`--site north=1` fits RI and SED but raises the north CV to 0.5).
 The paragraph below describes the starting point.
 
 See docs/alpine.md and docs/networks.md. STL geometries load as section

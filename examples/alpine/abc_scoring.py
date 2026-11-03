@@ -15,6 +15,12 @@ standardized residuals:
 
 A missing value (fewer than three recorded events) counts as a residual
 of 5 standard errors.
+
+site_thresholds ({site: threshold_m}) overrides the detection threshold
+for individual sites, e.g. {"north": 1.0}: the north record includes
+events of about 1 m (observed SED range 1 to 9.4 m). Only thresholds that
+the sweep summarized (site_thresholds_m, by default 1, 2, 4 m) are
+available.
 """
 import csv
 import json
@@ -64,7 +70,16 @@ def _mean(rows, key):
     return float(np.nanmean(v)) if v else np.nan
 
 
-def score(rows, threshold=2.0, seismicity=False, sites=None):
+def parse_site_thresholds(args):
+    """['north=1', ...] -> {'north': 1.0}"""
+    out = {}
+    for a in args:
+        k, v = a.split("=")
+        out[k] = float(v)
+    return out
+
+
+def score(rows, threshold=2.0, seismicity=False, sites=None, site_thresholds=None):
     """Misfit per design vector, sorted best first.
 
     Returns a list of dicts with keys misfit, key (design index or file), params (the varied and
@@ -83,12 +98,13 @@ def score(rows, threshold=2.0, seismicity=False, sites=None):
         detail = {}
         for s in sites:
             n = s["name"]
+            th = (site_thresholds or {}).get(n, threshold)
             ri_obs, ri_sig, n_ri = float(s["ri_yr"]), float(s["ri_sigma_yr"]), float(s["n_ri"])
             sed_obs = float(s["sed_mean_m"])
             sed_sig = 0.5 * (float(s["sed_max_m"]) - float(s["sed_min_m"]))
-            ri = _mean(rs, f"site_{n}_ri_th{threshold:g}")
-            cv = _mean(rs, f"site_{n}_cv_th{threshold:g}")
-            sed = _mean(rs, f"site_{n}_sed_th{threshold:g}")
+            ri = _mean(rs, f"site_{n}_ri_th{th:g}")
+            cv = _mean(rs, f"site_{n}_cv_th{th:g}")
+            sed = _mean(rs, f"site_{n}_sed_th{th:g}")
             for val, obs, sig in ((ri, ri_obs, ri_sig / np.sqrt(max(n_ri - 1, 1))), (cv, ri_sig / ri_obs, 0.15),
                                   (sed, sed_obs, sed_sig)):
                 d2 += ((val - obs) / sig) ** 2 if np.isfinite(val) else MISSING

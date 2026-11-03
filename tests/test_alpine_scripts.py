@@ -52,3 +52,18 @@ def test_campaign_specs(tmp_path):
     assert a["design_seed"] == b["design_seed"] and a["ranges"] == b["ranges"]       # paired designs
     assert a["base"]["dip_correction"] is True
     assert a["base"]["store_slip_min_mag"] == 5.5 and b["base"]["store_slip_min_mag"] == 6.0
+
+
+def test_site_specific_threshold():
+    good_ri = {"south": 268.0, "central": 249.0, "north": 413.0}
+    good_sed = {"south": 7.5, "central": 7.1, "north": 4.0}
+    r = _row(0, 1, good_ri, 0.3, good_sed)
+    # at 2 m the north site is too slow, at 1 m it fits
+    r["site_north_ri_th2"] = 800.0
+    for n in ("south", "central", "north"):
+        for q in ("ri", "cv", "sed"):
+            r[f"site_{n}_{q}_th1"] = r[f"site_{n}_{q}_th2"]
+    r["site_north_ri_th1"] = 413.0
+    m2 = score([r], 2.0, False)[0]["misfit"]
+    m1 = score([r], 2.0, False, site_thresholds={"north": 1.0})[0]["misfit"]
+    assert m1 < 0.5 < m2

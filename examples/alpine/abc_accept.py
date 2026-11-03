@@ -1,6 +1,7 @@
 """Accept parameter vectors whose synthetic site records match the data.
 
     python3 examples/alpine/abc_accept.py summary.(json|csv) [threshold_m] [tolerance] [--seismicity]
+        [--site north=1 ...]
 
 Scores every design vector of a sweep summary (averaged over its seeds)
 against recurrence interval, CV and single-event displacement at the three
@@ -18,7 +19,7 @@ import warnings
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from abc_scoring import accepted, load_summary, score  # noqa: E402
+from abc_scoring import accepted, load_summary, parse_site_thresholds, score  # noqa: E402
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
@@ -26,11 +27,17 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 def main():
     seis = "--seismicity" in sys.argv
     argv = [a for a in sys.argv if a != "--seismicity"]
+    site_th = {}
+    while "--site" in argv:
+        k = argv.index("--site")
+        site_th.update(parse_site_thresholds([argv[k + 1]]))
+        argv = argv[:k] + argv[k + 2:]
     rows = load_summary(argv[1])
     th = float(argv[2]) if len(argv) > 2 else 2.0
     tol = float(argv[3]) if len(argv) > 3 else 2.0
-    scored = score(rows, th, seis)
-    print(f"{len(scored)} design vectors, threshold {th} m{', with seismicity' if seis else ''}; "
+    scored = score(rows, th, seis, site_thresholds=site_th)
+    extra = "".join(f", {k} at {v:g} m" for k, v in site_th.items())
+    print(f"{len(scored)} design vectors, threshold {th} m{extra}{', with seismicity' if seis else ''}; "
           "best ten (mean squared standardized misfit):")
     for x in scored[:10]:
         pv = x["params"]

@@ -742,6 +742,82 @@ Ensemble medians and 5 to 95 percent ranges over all posterior runs:
    the size distribution of system events are in the figures
    (`fig_*`, `sites_*_extended.png`), which are not summarized here.
 
+### What the campaign figures show
+
+Figures of the fine set and the variable-dip resolution comparison are in
+`runs/alpine_full_campaign/figures/` (made before the reference overlay
+became optional, so they still show RSQSim's site values).
+
+1. Event statistics do not depend on geometry. All three geometries
+   give the same envelopes: Gutenberg-Richter with b of about 1 up to
+   M7, a plateau between M7.3 and M8.0 and a cutoff at M8.3 to 8.4;
+   Omori decay with p of about 1 over five decades in time; mean Bath
+   gaps of 1.43 to 1.47 (all runs); moment released per 100-yr window
+   with a CV of 1.1 to 1.2 (most windows release almost nothing, the rest
+   1 to 4 times the loading); intervals between whole-fault M >= 7.5
+   events of 171 to 177 yr with a CV of 0.63 to 0.65, including many
+   short intervals (sequences of large events).
+2. Events form two populations: ruptures shorter than about 60 km
+   (M <= 7.4) and through-going ruptures of 400 to 700 km (M7.9 to 8.4),
+   with few in between. Events recorded at the sites are almost all
+   M8.0 to 8.4. The best segmented vector has more long ruptures than the
+   others, but the ensemble bands overlap.
+3. Co-rupture at the 2 m threshold (fraction of row-site events that also
+   rupture the column site): central with south 0.70 to 0.76, central
+   with north 0.35 to 0.42, south with north 0.30 to 0.39, north with
+   central 0.74 to 0.84. Geometries differ by at most 0.07 (variable dip
+   lowest), and fine and coarse variable-dip ensembles agree within 0.04.
+   This does not reproduce the large geometry effect on co-rupture
+   reported for round 4 (variable dip much higher). Round 4 measured
+   co-rupture at 1 m and ran on the variable-dip grid before the
+   parametrisation fix and without the L1 correction, so the two are not
+   directly comparable, but the earlier conclusion that co-rupture is
+   the observable most sensitive to geometry is not supported by the
+   full campaign.
+4. Hypocentres concentrate at the base of the fault in all geometries
+   (about a quarter of the events in the deepest kilometre). Slip of
+   ruptures tapers to zero at the base, deficit accumulates there, and
+   deficit-weighted nucleation follows it, much as stress concentrates
+   at the base of the locked zone in mechanical models. (The striped
+   planar histogram is a binning artefact: rows sit at 0.77 km depth
+   intervals.)
+5. All sites behave in a slip-predictable way: the correlation of the
+   preceding interval with the displacement is 0.55 to 0.70, that of the
+   displacement with the following interval 0.13 to 0.30, in every
+   geometry and at both resolutions. Paleoseismic records with
+   per-event displacements can test this.
+6. Interval distributions: at the central site the model has more short
+   intervals (below about 150 yr) than the paleoseismic normal
+   distribution; at the north site it has a long tail of intervals up
+   to about 1500 yr.
+7. Detection threshold: the north interval depends strongly on the
+   threshold (ensemble medians of about 420 to 460 yr at 0.5 to 1 m, 540
+   at 2 m, 850 at 4 m), the south and central ones hardly. The observed
+   north displacements range from 1 to 9.4 m, so the north record
+   includes events of about 1 m.
+
+### Site-specific detection thresholds
+
+`abc_accept.py` and `campaign_summary.py` accept `--site north=1` (any
+site, any threshold that the sweep summarized: 1, 2 or 4 m), which
+rescoring existing summaries needs no new runs. On the round-4 summaries
+(2 m elsewhere, with seismicity):
+
+| summary | north threshold | accepted | north RI, accepted median [5-95 %] | north CV | north SED |
+|---|---|---|---|---|---|
+| round 4 planar | 2 m | 54 | 589 [451-685] | 0.40 | 4.9 |
+| round 4 planar | 1 m | 65 | 489 [383-621] | 0.50 | 4.4 |
+| round 4 variable dip | 2 m | 69 | 534 [423-640] | 0.43 | 4.9 |
+| round 4 variable dip | 1 m | 75 | 443 [365-586] | 0.50 | 4.3 |
+| observed | | | 413 | 0.25 | 4.0 |
+
+With a 1 m threshold at the north site, the interval and displacement
+fit, but the CV rises from about 0.4 to 0.5: the additional small events
+make the record less regular. The threshold choice therefore moves the
+north misfit from the interval to the regularity rather than removing it.
+To be applied to the campaign summaries with
+`campaign_summary.py alpine_full <configurations> --site north=1`.
+
 ### Rescoring of the posterior vectors
 
 Each posterior vector was rescored with its own posterior runs (5 seeds

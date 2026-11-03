@@ -79,3 +79,13 @@ Score any round with the seismicity constraints added (b of grown ruptures
 1.0 +- 0.1, Bath gap 1.2 +- 0.15):
 
     python3 examples/alpine/abc_accept.py abc4_planar/sweep_summary.csv 2 2.0 --seismicity
+
+## Round 5 with the L1 dip correction, posteriors and overview figures
+
+    examples/alpine/run_l1_campaign.sh $NR_CPUS alpine_l1
+
+runs everything in sequence (about 8 core-hours for the two ABC rounds
+and 15 to 30 core-hours for the two posterior ensembles of 100 runs of
+20,000 yr each). Shorter posteriors: `run_l1_campaign.sh N outdir 10 3 10000`.
+The figure script takes any number of label / directory pairs, so a third
+geometry can be added to the same figures.

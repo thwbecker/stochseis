@@ -93,6 +93,14 @@ def build_slip(fault, idx, condition, dsig, rng, p, diagnostics=True):
         Dc = unit_crack(mask_x, dx, fault.slip_dir, surface)[:, :nz] * (dsig / mu)
     else:
         Dc = unit_crack(mask, dx, fault.slip_dir, surface) * (dsig / mu)
+    if getattr(p, "dip_correction", False):
+        from .dipcorr import correction_factor
+
+        dips = getattr(fault, "dip", None)
+        dip = float(np.mean(dips[idx])) if isinstance(dips, np.ndarray) else float(fault.dip_deg)
+        rakes = getattr(fault, "rake", None)
+        rake = float(np.mean(rakes[idx])) if isinstance(rakes, np.ndarray) else float(fault.rake_deg)
+        Dc = Dc * correction_factor(dip, rake, surface)
     dc = Dc[ic, ir]
 
     # --- roughness ----------------------------------------------------

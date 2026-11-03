@@ -77,3 +77,22 @@ def test_curved_variable_dip_mesh(tmp_path):
 def test_record_stats():
     st = record_stats([0, 100, 200, 300, 400], [5, 5, 5, 5, 5])
     assert st["n"] == 5 and abs(st["ri"] - 100) < 1e-9 and st["cv"] == 0.0
+
+
+def test_dip_correction():
+    from stochseis.dipcorr import correction_factor
+    from stochseis.geometry import planar_fault
+    from stochseis.params import Params
+    from stochseis.slip import build_slip
+
+    assert abs(correction_factor(90.0, 180.0, True) - 0.989) < 1e-9
+    assert abs(correction_factor(15.0, 90.0, True) - 1.487) < 1e-9
+    f50 = correction_factor(50.0, 160.0, True)
+    assert 1.05 < f50 < 1.15
+    p0 = Params(fault_length_km=60, fault_width_km=15, dip_deg=50.0, rake_deg=160.0, slip_cv=0.0)
+    p1 = p0.replace(dip_correction=True)
+    fault = planar_fault(p0)
+    idx = np.where(fault.col < 40)[0]
+    s0, _ = build_slip(fault, idx, np.ones(len(idx)), 3e6, np.random.default_rng(0), p0)
+    s1, _ = build_slip(fault, idx, np.ones(len(idx)), 3e6, np.random.default_rng(0), p1)
+    assert abs(s1.mean() / s0.mean() - f50) < 1e-6

@@ -56,6 +56,7 @@ class Params:
     # ------------------------------------------------------------------
     stress_drop_mpa: float = 3.0          # median of lognormal stress drop
     stress_drop_ln_sigma: float = 0.25    # scatter in ln(stress drop); 0 = constant
+    dip_correction: bool = False          # L1: scale crack slip by the half-space / spectral ratio for dip, rake, burial
     deep_slip_km: float = 0.0             # crack solutions extend this far below the locked width where ruptures reach its base
     hurst: float = 0.75                   # von Karman Hurst exponent (Mai & Beroza 2002)
     slip_cv: float = 0.75                 # coefficient of variation of the lognormal slip pattern

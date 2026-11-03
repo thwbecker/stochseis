@@ -22,6 +22,7 @@ years, days (Omori c). Section numbers refer to `docs/design.md`.
 |---|---|---|
 | stress_drop_mpa | 3 | median macroscopic stress drop of the crack solution |
 | stress_drop_ln_sigma | 0.25 | lognormal scatter (0.25 is a factor 1.28 at one sigma; 0.5 gave site-recurrence CVs near 0.8); 0 for constant stress drop |
+| dip_correction | False | L1: scale crack slip by the half-space / spectral ratio for the rupture's dip, rake and burial (stochseis/dipcorr.py) |
 | deep_slip_km | 0 | crack solutions of ruptures reaching the base of the locked width extend this far below it (E18) |
 | hurst | 0.75 | von Karman H (Mai and Beroza, 2002) |
 | slip_cv | 0.75 | coefficient of variation of the lognormal roughness pattern |

@@ -507,6 +507,52 @@ Findings.
   partly represented; the L1 dip correction or the L2 half-space
   operator should be used before quoting geometry effects on slip.
 
+## L1 dip correction and the rerun campaign (round 5)
+
+`dip_correction = true` (new, `stochseis/dipcorr.py`) scales each
+crack solution by the ratio of half-space to spectral-image mean slip for
+the rupture's mean dip, rake and burial, tabulated once from cutde
+solutions for 60 x 20 km ruptures (`examples/checks/l1_table.py`):
+
+| rupture | 15 deg | 30 | 45 | 60 | 75 | 90 |
+|---|---|---|---|---|---|---|
+| strike slip, surface | 1.91 | 1.32 | 1.13 | 1.04 | 1.00 | 0.99 |
+| strike slip, buried (top 3 km) | 1.22 | 1.13 | 1.09 | 1.07 | 1.06 | 1.05 |
+| dip slip, surface | 1.49 | 1.18 | 1.14 | 1.18 | 1.24 | 1.27 |
+| dip slip, buried | 1.18 | 1.16 | 1.16 | 1.17 | 1.18 | 1.18 |
+
+Oblique slip weights the two by cos^2 and sin^2 of the rake. For the
+Alpine Fault (rake 135 to 180, dip 50 to 85 degrees) the factor is 1.0
+to 1.1; for shallow thrusts it is much larger. It corrects the moment
+and mean slip of a rupture, not the shape of its slip distribution near
+the trace, and it adds no cost. The default stays off so that earlier
+single-fault results are unchanged; the Alpine specs switch it on.
+
+Round 5 (`examples/alpine/abc5_{planar,variable_dip}_l1.json`) repeats
+round 4 with the correction and the same design seed, so every design
+pairs with round 4 and across geometries. `examples/alpine/
+run_l1_campaign.sh [ncpu] [outdir] [n_best] [n_seeds] [duration_yr]` runs
+both rounds, scores them with the seismicity constraints, builds and
+runs the posterior ensembles (best 20 vectors x 5 seeds x 20,000 yr, with
+catalogs) and draws the two overview figures with
+`examples/alpine/overview_figures.py`:
+
+* `<outdir>/fig_seismicity.png`: frequency-magnitude distribution, Omori
+  decay after M >= 6 mainshocks, Bath gap distribution, moment release
+  relative to loading; best vector as a line, 5 to 95 percent of all
+  posterior runs as a band, one colour per geometry.
+* `<outdir>/fig_recurrence.png`: RI versus CV at each site for every
+  posterior run with the observations, SED versus RI, the distribution
+  of rupture lengths of M >= 6.5 events, and magnitude versus rupture
+  length.
+
+`docs/alpine_overview_*_example.png` show the figures for a small test
+ensemble (2 vectors x 2 seeds x 3000 yr per geometry) and are not
+results. Already visible in them: through-going ruptures of 500 to
+700 km form a separate population from ruptures shorter than about
+100 km, and system-wide moment release is quasi-periodic with a period
+of about 250 yr.
+
 ## Status (1 November 2026)
 
 * Both geometries load as section grids at 1 km (19,630 and 17,142

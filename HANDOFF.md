@@ -192,6 +192,14 @@ geometry; co-rupture differs by at most 0.07 between geometries (the
 round-4 co-rupture contrast is not reproduced); hypocentres at the base;
 slip-predictable sites; north RI strongly threshold dependent
 (`--site north=1` fits RI and SED but raises the north CV to 0.5).
+Campaign rescored with north at 1 m: 64 to 69 accepted, best vectors
+unchanged, north RI / SED of the best vectors 362 to 436 yr / 3.5 to
+4.2 m; the only remaining systematic misfit is regularity at the central
+and north sites (CV 0.23 and 0.25 observed, about 0.4 in the ensembles).
+Bath gap too large (1.4 ensembles): controlled by b, area threshold and
+branching ratio; round 6 (abc6_bath.json) widens branching (0.2-0.7) and
+b (0.9-1.2); new metric bath_mean_m7; M8 through-going ruptures keep gaps
+near 2 on a single fault (no loaded area left for large aftershocks).
 The paragraph below describes the starting point.
 
 See docs/alpine.md and docs/networks.md. STL geometries load as section

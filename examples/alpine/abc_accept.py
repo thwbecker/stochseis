@@ -1,7 +1,7 @@
 """Accept parameter vectors whose synthetic site records match the data.
 
     python3 examples/alpine/abc_accept.py summary.(json|csv) [threshold_m] [tolerance] [--seismicity]
-        [--site north=1 ...]
+        [--site north=1 ...] [--bath-sigma 0.15] [--bath-m7]
 
 Scores every design vector of a sweep summary (averaged over its seeds)
 against recurrence interval, CV and single-event displacement at the three
@@ -32,10 +32,17 @@ def main():
         k = argv.index("--site")
         site_th.update(parse_site_thresholds([argv[k + 1]]))
         argv = argv[:k] + argv[k + 2:]
+    bath_sigma = 0.15
+    if "--bath-sigma" in argv:
+        k = argv.index("--bath-sigma")
+        bath_sigma = float(argv[k + 1])
+        argv = argv[:k] + argv[k + 2:]
+    bath_key = "bath_mean_m7" if "--bath-m7" in argv else "bath_mean"
+    argv = [a for a in argv if a != "--bath-m7"]
     rows = load_summary(argv[1])
     th = float(argv[2]) if len(argv) > 2 else 2.0
     tol = float(argv[3]) if len(argv) > 3 else 2.0
-    scored = score(rows, th, seis, site_thresholds=site_th)
+    scored = score(rows, th, seis, site_thresholds=site_th, bath_sigma=bath_sigma, bath_key=bath_key)
     extra = "".join(f", {k} at {v:g} m" for k, v in site_th.items())
     print(f"{len(scored)} design vectors, threshold {th} m{extra}{', with seismicity' if seis else ''}; "
           "best ten (mean squared standardized misfit):")

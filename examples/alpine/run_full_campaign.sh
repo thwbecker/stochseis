@@ -16,8 +16,11 @@
 #
 # usage: examples/alpine/run_full_campaign.sh [ncpu] [outdir] [n_samples] [abc_seeds] [abc_duration_yr]
 #                                             [n_best] [post_seeds] [post_duration_yr] ["configurations"]
+#                                             [base_spec] ["scoring options"]
 # defaults:                                   $NR_CPUS alpine_full 100 3 10000 20 5 20000
 #                                             "planar_fine variable_dip_fine segmented_fine planar_coarse variable_dip_coarse"
+#                                             examples/alpine/abc5_planar_l1.json ""
+# scoring options are passed to the acceptance, posterior ranking and summary, e.g. "--site north=1 --bath-m7"
 #
 ncpu=${1-$NR_CPUS}
 outdir=${2-alpine_full}
@@ -28,6 +31,8 @@ n_best=${6-20}
 post_seeds=${7-5}
 post_dur=${8-20000}
 configs=${9-"planar_fine variable_dip_fine segmented_fine planar_coarse variable_dip_coarse"}
+base_spec=${10-examples/alpine/abc5_planar_l1.json}
+score_opts=${11-""}
 
 here=examples/alpine
 if [ -z "$ncpu" ]
@@ -36,22 +41,22 @@ then
     exit 1
 fi
 mkdir -p "$outdir"
-python3 $here/make_campaign_specs.py $here/campaign_configs.json $here/abc5_planar_l1.json "$outdir/specs" \
+python3 $here/make_campaign_specs.py $here/campaign_configs.json "$base_spec" "$outdir/specs" \
     "$n_samples" "$abc_seeds" "$abc_dur" $configs || exit 1
 
 for c in $configs
 do
     echo "=== $c: ABC"
     python3 -m stochseis.cli sweep "$outdir/specs/abc_$c.json" "$outdir/abc_$c" --nproc "$ncpu" --no-catalogs || exit 1
-    python3 $here/abc_accept.py "$outdir/abc_$c/sweep_summary.json" 2 2.0 > "$outdir/abc_${c}_accept_paleo.txt"
-    python3 $here/abc_accept.py "$outdir/abc_$c/sweep_summary.json" 2 2.0 --seismicity > "$outdir/abc_${c}_accept_seismicity.txt"
+    python3 $here/abc_accept.py "$outdir/abc_$c/sweep_summary.json" 2 2.0 $score_opts > "$outdir/abc_${c}_accept_paleo.txt"
+    python3 $here/abc_accept.py "$outdir/abc_$c/sweep_summary.json" 2 2.0 --seismicity $score_opts > "$outdir/abc_${c}_accept_seismicity.txt"
     echo "=== $c: posterior"
     python3 $here/make_posterior_spec.py "$outdir/abc_$c/sweep_summary.json" "$outdir/specs/abc_$c.json" \
-        "$outdir/specs/posterior_$c.json" 2 "$n_best" "$post_seeds" "$post_dur" --seismicity || exit 1
+        "$outdir/specs/posterior_$c.json" 2 "$n_best" "$post_seeds" "$post_dur" --seismicity $score_opts || exit 1
     python3 -m stochseis.cli sweep "$outdir/specs/posterior_$c.json" "$outdir/posterior_$c" --nproc "$ncpu" || exit 1
 done
 
-python3 $here/campaign_summary.py "$outdir" $configs > "$outdir/campaign_summary.md"
+python3 $here/campaign_summary.py "$outdir" $configs $score_opts > "$outdir/campaign_summary.md"
 
 # figure sets: label/directory pairs for the configurations that were run
 pairs_for()

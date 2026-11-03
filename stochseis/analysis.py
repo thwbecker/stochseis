@@ -456,6 +456,11 @@ def summary_metrics(cat: Catalog, mmain=6.0, t_start=None) -> dict:
     out.update({"omori_" + k: v for k, v in fit.items()})
     gaps, none = bath_gaps(cat, mmain=mmain, t_start=t_start)
     out["bath_mean"] = float(gaps.mean()) if len(gaps) else np.nan
+    # Bath gap for large mainshocks only: for M6-7 mainshocks the gap is truncated by the
+    # completeness magnitude (mainshocks without aftershocks above it are excluded)
+    g7, _ = bath_gaps(cat, mmain=7.0, t_start=t_start)
+    out["bath_mean_m7"] = float(g7.mean()) if len(g7) else np.nan
+    out["n_bath_m7"] = int(len(g7))
     out["bath_median"] = float(np.median(gaps)) if len(gaps) else np.nan
     out["bath_n"] = len(gaps)
     out["bath_no_aftershock"] = none

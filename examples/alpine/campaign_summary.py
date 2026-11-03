@@ -1,6 +1,6 @@
 """Summary table of an Alpine campaign over all configurations.
 
-    python3 examples/alpine/campaign_summary.py outdir name1 [name2 ...] [--site north=1 ...] > outdir/campaign_summary.md
+    python3 examples/alpine/campaign_summary.py outdir name1 [name2 ...] [--site north=1 ...] [--bath-sigma 0.15] [--bath-m7] > outdir/campaign_summary.md
 
 Reads <outdir>/abc_<name>/sweep_summary.json for every configuration and
 reports, at a 2 m detection threshold: the number of design vectors
@@ -37,6 +37,13 @@ def main():
         k = argv.index("--site")
         site_th.update(parse_site_thresholds([argv[k + 1]]))
         argv = argv[:k] + argv[k + 2:]
+    bath_sigma = 0.15
+    if "--bath-sigma" in argv:
+        k = argv.index("--bath-sigma")
+        bath_sigma = float(argv[k + 1])
+        argv = argv[:k] + argv[k + 2:]
+    bath_key = "bath_mean_m7" if "--bath-m7" in argv else "bath_mean"
+    argv = [a for a in argv if a != "--bath-m7"]
     outdir = argv[1]
     names = argv[2:]
     if site_th:
@@ -49,7 +56,7 @@ def main():
             continue
         rows = load_summary(path)
         sp = score(rows, 2.0, False, site_thresholds=site_th)
-        ss = score(rows, 2.0, True, site_thresholds=site_th)
+        ss = score(rows, 2.0, True, site_thresholds=site_th, bath_sigma=bath_sigma, bath_key=bath_key)
         res[n] = dict(n=len(sp), n_err=sum(1 for r in rows if r.get("error")), acc_p=accepted(sp), acc_s=accepted(ss),
                       best=ss[0] if ss else None)
     if not res:
@@ -77,7 +84,8 @@ def main():
     for n in res:
         path = os.path.join(outdir, f"posterior_{n}", "sweep_summary.json")
         if os.path.exists(path):
-            post[n] = score(load_summary(path), 2.0, True, site_thresholds=site_th)
+            post[n] = score(load_summary(path), 2.0, True, site_thresholds=site_th, bath_sigma=bath_sigma,
+                            bath_key=bath_key)
     if post:
         print("\n## Posterior vectors rescored with their posterior runs (paleo + seismicity, 2 m)\n")
         print("ABC misfit: from the ABC runs; posterior misfit: from the posterior runs of the same vector.\n")

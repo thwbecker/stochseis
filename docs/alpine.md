@@ -815,8 +815,80 @@ With a 1 m threshold at the north site, the interval and displacement
 fit, but the CV rises from about 0.4 to 0.5: the additional small events
 make the record less regular. The threshold choice therefore moves the
 north misfit from the interval to the regularity rather than removing it.
-To be applied to the campaign summaries with
-`campaign_summary.py alpine_full <configurations> --site north=1`.
+Applied to the full campaign (`runs/alpine_full_campaign/
+campaign_summary_north1m.md`; 2 m at south and central, 1 m at north,
+with seismicity):
+
+| configuration | accepted (2 m / north 1 m) | best rescored misfit | best rescored vector, north RI / CV / SED | median north CV of the posterior vectors |
+|---|---|---|---|---|
+| planar_fine | 53 / 64 | 0.80 / 0.66 | 436 / 0.39 / 4.2 | 0.39 / 0.43 |
+| variable_dip_fine | 59 / 68 | 0.69 / 0.65 | 417 / 0.36 / 3.9 | 0.37 / 0.41 |
+| segmented_fine | 60 / 64 | 0.60 / 0.64 | 380 / 0.32 / 3.7 | 0.40 / 0.45 |
+| planar_coarse | 56 / 64 | 0.85 / 0.69 | 428 / 0.40 / 4.0 | 0.37 / 0.41 |
+| variable_dip_coarse | 65 / 69 | 0.41 / 0.49 | 362 / 0.38 / 3.5 | 0.39 / 0.44 |
+| observed | | | 413 / 0.25 / 4.0 | |
+
+With the north site scored at 1 m, the north interval and displacement
+of the best vectors bracket the observations (362 to 436 yr, 3.5 to
+4.2 m), more vectors are accepted (64 to 69), the overlap between
+configurations rises (56 to 66 shared), and the best vectors are the
+same ones (ABC rank 1 or 2). The accepted parameter distributions are
+unchanged. The north CV of the posterior vectors rises to 0.41 to 0.45.
+
+Summary of the calibration: with site-appropriate detection thresholds
+the calibrated stochastic model matches mean recurrence and single-event
+displacement at all three sites in all five configurations; the one
+remaining systematic difference is regularity at the central and north
+sites (observed CV 0.23 and 0.25 against about 0.4 in the ensembles,
+with individual vectors reaching about 0.3).
+
+### Bath gap
+
+The accepted ensembles have mean Bath gaps of 1.37 to 1.47 (best vectors
+1.2 to 1.6), against the usual 1.2. Diagnosis (best variable-dip vector,
+2 km patches, 10,000 yr, gap by mainshock magnitude):
+
+| mainshock M | branching 0.29 | 0.45 | 0.60 | aftershocks per mainshock |
+|---|---|---|---|---|
+| 6 to 7 | 1.01 | 0.94 | 0.92 | about 1 (50 to 60 percent have none above M5) |
+| 7 to 7.8 | 1.38 | 1.27 | 1.13 | 4 to 8 |
+| 7.8 and above | 2.11 | 1.86 | 1.83 | 33 to 76 |
+
+* The mean over all M >= 6 mainshocks mixes these: for M6 to 7 it is
+  truncated by the completeness magnitude (mainshocks without an
+  aftershock above M5 are excluded), so it is a poor statistic. The
+  summaries now also contain `bath_mean_m7` (mainshocks M >= 7) and
+  `n_bath_m7`.
+* Across the 100 round-4 designs the gap is controlled by the size-hazard
+  b (-0.13 to -0.17 per standard deviation), the area threshold of the
+  hybrid size rule (-0.10 to -0.15) and the branching ratio (-0.12 to
+  -0.13), R^2 0.8. The central-site CV depends mainly on the area
+  threshold (+0.07) and little on b or the branching ratio. Lowering the
+  gap through the area threshold costs regularity; through b and the
+  branching ratio it does not. The round-5 priors capped the branching
+  ratio at 0.3 and b at 1.1.
+* Among the round-4 vectors accepted with the north site at 1 m, those
+  with a gap within 0.15 of 1.2 (32 of 65 planar, 45 of 75 variable dip)
+  have central CVs of 0.43 to 0.49 against 0.35 to 0.37 for the others.
+  In the explored range, a small gap and regular sites are in tension.
+* The through-going ruptures have gaps of about 1.8 to 2.1 even at a
+  branching ratio of 0.6: they release the deficit along the whole fault,
+  so no loaded area remains on which a large aftershock could grow. On an
+  isolated fault this is structural; the global value of about 1.2
+  includes aftershocks on neighbouring faults. Physics-based simulators
+  of the single Alpine Fault face the same geometry, so their gaps for
+  M8 events are a useful comparison.
+
+Next step (round 6, `examples/alpine/abc6_bath.json`): branching ratio
+0.2 to 0.7 and b 0.9 to 1.2, other priors as round 5, scored with the
+north site at 1 m and the gap of M >= 7 mainshocks:
+
+    examples/alpine/run_full_campaign.sh $NR_CPUS alpine_r6 100 3 10000 20 5 20000 \
+        "planar_coarse variable_dip_coarse" examples/alpine/abc6_bath.json "--site north=1 --bath-m7"
+
+(coarse configurations first, about 10 core-hours). The scoring scripts
+accept `--bath-sigma` to weight the gap more strongly than the default
+0.15.
 
 ### Rescoring of the posterior vectors
 

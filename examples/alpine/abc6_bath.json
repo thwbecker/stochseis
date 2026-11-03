@@ -1,0 +1,82 @@
+{
+ "_comment": "ABC round 6: round 5 (hybrid sizes, deficit-capped slip, L1 correction) with wider priors on the branching ratio (0.2 to 0.7) and the size-hazard b (0.9 to 1.2), which lower the Bath gap with little effect on site regularity (docs/alpine.md, 'Bath gap'). Score with --site north=1 --bath-m7.",
+ "design": "random",
+ "design_seed": 6,
+ "n_samples": 100,
+ "base": {
+  "geometry_file": "data/nz_alpine/alpine_planar_1km_26Jan.stl",
+  "segments_file": "data/nz_alpine/segments.csv",
+  "segment_max_dist_km": 40.0,
+  "segment_include": [
+   "Alpine",
+   "Wairau"
+  ],
+  "patch_km": 2.0,
+  "rake_deg": 160.0,
+  "mag_min": 5.0,
+  "duration_yr": 10000,
+  "pilot_events": 300,
+  "store_slip_min_mag": 6.0,
+  "sites_file": "data/nz_alpine/paleo_sites.csv",
+  "site_thresholds_m": [
+   1.0,
+   2.0,
+   4.0
+  ],
+  "slip_mode": "local_cap",
+  "slip_fraction": 1.0,
+  "deep_slip_km": 20.0,
+  "dip_correction": true
+ },
+ "ranges": {
+  "stress_drop_mpa": [
+   5.0,
+   10.0
+  ],
+  "slip_cv": [
+   0.1,
+   0.5
+  ],
+  "stress_drop_ln_sigma": [
+   0.0,
+   0.2
+  ],
+  "branching_ratio": [
+   0.2,
+   0.7
+  ],
+  "arrest_scale": [
+   0.2,
+   1.0
+  ],
+  "admission_exponent": [
+   2.0,
+   8.0
+  ],
+  "b_value": [
+   0.9,
+   1.2
+  ]
+ },
+ "log_ranges": {
+  "hazard_max_area_km2": [
+   300.0,
+   3000.0
+  ],
+  "nucleation_exponent": [
+   2.0,
+   12.0
+  ],
+  "budget_scale": [
+   0.1,
+   1.0
+  ]
+ },
+ "choices": {},
+ "seeds": [
+  1,
+  2,
+  3
+ ],
+ "mmain": 6.0
+}

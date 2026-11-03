@@ -67,3 +67,18 @@ def test_site_specific_threshold():
     m2 = score([r], 2.0, False)[0]["misfit"]
     m1 = score([r], 2.0, False, site_thresholds={"north": 1.0})[0]["misfit"]
     assert m1 < 0.5 < m2
+
+
+def test_bath_options():
+    good_ri = {"south": 268.0, "central": 249.0, "north": 413.0}
+    good_sed = {"south": 7.5, "central": 7.1, "north": 4.0}
+    r = _row(0, 1, good_ri, 0.3, good_sed, bath=1.5)
+    r["bath_mean_m7"] = 1.2
+    loose = score([r], 2.0, True)[0]["misfit"]
+    tight = score([r], 2.0, True, bath_sigma=0.05)[0]["misfit"]
+    m7 = score([r], 2.0, True, bath_sigma=0.05, bath_key="bath_mean_m7")[0]["misfit"]
+    assert m7 < loose < tight
+    from abc_scoring import parse_cli
+    rest, kw, seis = parse_cli(["x", "a.json", "--seismicity", "--site", "north=1", "--bath-sigma", "0.1", "--bath-m7"])
+    assert rest == ["x", "a.json"] and seis and kw["site_thresholds"] == {"north": 1.0}
+    assert kw["bath_sigma"] == 0.1 and kw["bath_key"] == "bath_mean_m7"

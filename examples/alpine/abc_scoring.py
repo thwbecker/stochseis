@@ -11,7 +11,9 @@ standardized residuals:
              SED  with half the observed SED range
   optional (seismicity=True):
              b-value of grown ruptures below width saturation, 1.0 +- 0.1
-             mean Bath gap, 1.2 +- 0.15
+             mean Bath gap, 1.2 +- bath_sigma (default 0.15), using the gap of
+             M >= 7 mainshocks (bath_mean_m7) if bath_key="bath_mean_m7" and the
+             summaries contain it
 
 A missing value (fewer than three recorded events) counts as a residual
 of 5 standard errors.
@@ -79,7 +81,8 @@ def parse_site_thresholds(args):
     return out
 
 
-def score(rows, threshold=2.0, seismicity=False, sites=None, site_thresholds=None):
+def score(rows, threshold=2.0, seismicity=False, sites=None, site_thresholds=None, bath_sigma=0.15,
+          bath_key="bath_mean"):
     """Misfit per design vector, sorted best first.
 
     Returns a list of dicts with keys misfit, key (design index or file), params (the varied and
@@ -113,6 +116,8 @@ def score(rows, threshold=2.0, seismicity=False, sites=None, site_thresholds=Non
         if seismicity:
             vals = []
             for k, obs, sig in SEISMICITY:
+                if k == "bath_mean":
+                    k, sig = bath_key, bath_sigma
                 val = _mean(rs, k)
                 d2 += ((val - obs) / sig) ** 2 if np.isfinite(val) else MISSING
                 nobs += 1
@@ -127,3 +132,26 @@ def score(rows, threshold=2.0, seismicity=False, sites=None, site_thresholds=Non
 def accepted(scored, tolerance=2.0):
     """Design vectors with mean squared standardized misfit below tolerance^2."""
     return [x for x in scored if x["misfit"] < tolerance ** 2]
+
+
+def parse_cli(argv):
+    """Strip scoring options from argv; returns (rest, kwargs for score, seismicity flag).
+
+    Options: --seismicity, --site name=threshold (repeatable), --bath-sigma x, --bath-m7.
+    """
+    argv = list(argv)
+    seis = "--seismicity" in argv
+    argv = [a for a in argv if a != "--seismicity"]
+    kw = dict(site_thresholds={}, bath_sigma=0.15, bath_key="bath_mean")
+    while "--site" in argv:
+        k = argv.index("--site")
+        kw["site_thresholds"].update(parse_site_thresholds([argv[k + 1]]))
+        argv = argv[:k] + argv[k + 2:]
+    if "--bath-sigma" in argv:
+        k = argv.index("--bath-sigma")
+        kw["bath_sigma"] = float(argv[k + 1])
+        argv = argv[:k] + argv[k + 2:]
+    if "--bath-m7" in argv:
+        kw["bath_key"] = "bath_mean_m7"
+        argv = [a for a in argv if a != "--bath-m7"]
+    return argv, kw, seis

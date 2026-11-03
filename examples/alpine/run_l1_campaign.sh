@@ -19,7 +19,7 @@ then
     exit 1
 fi
 mkdir -p "$outdir"
-for g in planar variable_dip
+for g in planar variable_dip segmented
 do
     python3 -m stochseis.cli sweep "examples/alpine/abc5_${g}_l1.json" "$outdir/abc5_$g" --nproc "$ncpu" --no-catalogs
     python3 examples/alpine/abc_accept.py "$outdir/abc5_$g/sweep_summary.json" 2 2.0 --seismicity > "$outdir/abc5_${g}_accept.txt"
@@ -28,5 +28,5 @@ do
     python3 -m stochseis.cli sweep "$outdir/posterior5_$g.json" "$outdir/posterior5_$g" --nproc "$ncpu"
 done
 python3 examples/alpine/overview_figures.py "$outdir/fig" planar "$outdir/posterior5_planar" \
-    variable_dip "$outdir/posterior5_variable_dip"
+    variable_dip "$outdir/posterior5_variable_dip" segmented "$outdir/posterior5_segmented"
 echo "done: acceptance tables in $outdir/abc5_*_accept.txt, figures in $outdir/fig_*.png"

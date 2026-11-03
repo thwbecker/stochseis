@@ -96,3 +96,28 @@ def test_dip_correction():
     s0, _ = build_slip(fault, idx, np.ones(len(idx)), 3e6, np.random.default_rng(0), p0)
     s1, _ = build_slip(fault, idx, np.ones(len(idx)), 3e6, np.random.default_rng(0), p1)
     assert abs(s1.mean() / s0.mean() - f50) < 1e-6
+
+
+def test_unstructured_depth_levels(tmp_path):
+    """Columns with vertices at staggered depths (as in unstructured meshes) keep the right down-dip width."""
+    h = 0.5
+    L, depth, dip = 40.0, 15.0, np.deg2rad(50.0)
+    ns, nz = int(L / h), int(depth / h)
+    pts = np.zeros((ns + 1, nz + 1, 3))
+    for i in range(ns + 1):
+        for j in range(nz + 1):
+            # stagger interior depths by a quarter cell in alternate columns
+            z = j * h + (0.25 * h if (i % 2 and 0 < j < nz) else 0.0)
+            pts[i, j] = (i * h + 1000.0, z / np.tan(dip) + 5000.0, -z)
+    tris = []
+    for i in range(ns):
+        for j in range(nz):
+            a, b, c, d = pts[i, j], pts[i + 1, j], pts[i + 1, j + 1], pts[i, j + 1]
+            tris.append([a, b, c])
+            tris.append([a, c, d])
+    path = tmp_path / "stagger.stl"
+    _write_stl(path, np.array(tris))
+    f = load_mesh_section(path, 1000.0, units="km")
+    W = depth / np.sin(dip)
+    assert abs(f.mesh_info["width_max_m"] / 1e3 - W) < 0.3
+    assert abs(np.median(f.dip) - 50.0) < 1.0

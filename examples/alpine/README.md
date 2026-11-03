@@ -84,8 +84,9 @@ Score any round with the seismicity constraints added (b of grown ruptures
 
     examples/alpine/run_l1_campaign.sh $NR_CPUS alpine_l1
 
-runs everything in sequence (about 8 core-hours for the two ABC rounds
-and 15 to 30 core-hours for the two posterior ensembles of 100 runs of
-20,000 yr each). Shorter posteriors: `run_l1_campaign.sh N outdir 10 3 10000`.
+runs everything in sequence for the three geometries (planar, variable
+dip, segmented transition): about 12 core-hours for the three ABC rounds
+and 25 to 45 core-hours for the three posterior ensembles of 100 runs of
+20,000 yr each. Shorter posteriors: `run_l1_campaign.sh N outdir 10 3 10000`.
 The figure script takes any number of label / directory pairs, so a third
 geometry can be added to the same figures.

@@ -14,8 +14,13 @@ geometry machinery in `docs/networks.md`.
   dipping 50 degrees, 26 km wide to 20 km depth) and variable dip
   (curved trace, 761 km; 80 degrees in the south, 50 degrees in the
   central section, 55 to 65 and then about 80 degrees in the north;
-  20 km depth throughout), each at 1 and 0.5 km resolution. Truncated
-  and Alpine-Hope geometries have not been received.
+  20 km depth throughout), each at 1 and 0.5 km resolution; segmented
+  transition (`Alpine_full_segmented_transition_05km_d20.stl`, 0.5 km
+  only): a single unstructured sheet (Gmsh, 139,706 triangles, 17,247
+  km^2, 759 km trace) with dips of 80 degrees in the south, 50 in the
+  central section, 56 to 65 and then about 85 in the north, changing
+  over a few kilometres at the segment ends (Jacksons, Kaniere, Springs
+  Junction, Tophouse). The Alpine-Hope geometry has not been received.
 * Paleoseismic sites (`data/nz_alpine/paleo_sites.csv`):
 
   | site | along strike (planar / variable dip) | RI [yr] | sigma [yr] | n events | SED [m] (range) |
@@ -552,6 +557,30 @@ results. Already visible in them: through-going ruptures of 500 to
 700 km form a separate population from ruptures shorter than about
 100 km, and system-wide moment release is quasi-periodic with a period
 of about 250 yr.
+
+## Segmented-transition geometry and a parametrisation fix (round 5)
+
+The segmented-transition mesh is unstructured: within one along-strike
+column, vertices sit at many depths, and where the dip changes along
+strike their offsets from the trace scatter. The down-dip coordinate was
+built from a per-vertex profile, which zig-zagged and gave down-dip
+widths of up to 107 km at 2 km resolution. It now uses the median offset
+in depth bins of half a patch. The segmented geometry resamples to 4227
+patches at 2 km (98.5 percent of the mesh area, widths 8 to 26 km); the
+planar grid is unchanged; the variable-dip grid changes from 4294 to 4260
+patches at 2 km (maximum width 26.2 instead of 33.8 km), so a few
+transition columns had about 0.8 percent too much area in the
+variable-dip runs of rounds 1 to 4. Round 5 uses the corrected grids.
+
+A first run on the segmented geometry with the best round-4 vector and
+the L1 correction (single seed, 5000 yr, 2 m threshold): RI / CV / SED
+249 / 0.25 / 6.7 (south), 221 / 0.39 / 6.0 (central), 454 / 0.21 / 4.3
+(north); maximum M 8.30, Bath 1.43, closure 1.01.
+
+The campaign (`run_l1_campaign.sh`) now covers all three geometries
+(`abc5_planar_l1.json`, `abc5_variable_dip_l1.json`,
+`abc5_segmented_l1.json`, same design seed) and draws them in the same
+overview figures.
 
 ## Status (1 November 2026)
 

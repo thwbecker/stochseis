@@ -173,12 +173,19 @@ def parametrise(verts, trace, dx):
         o = m[np.argsort(depth[m])]
         z = depth[o]
         hh = h[o]
-        # group vertices into depth levels (tolerance 5 percent of dx) and use the
-        # median offset per level, which removes the zig-zag of irregular triangulations
-        zq = np.round(z / (0.05 * dx)).astype(int)
-        lev, inv = np.unique(zq, return_inverse=True)
-        zg = np.array([np.mean(z[inv == k]) for k in range(len(lev))])
-        hg = np.array([np.median(hh[inv == k]) for k in range(len(lev))])
+        # robust down-dip profile: median offset from the trace in depth bins of half a
+        # patch (unstructured meshes have vertices at many depths whose offsets scatter
+        # where the dip changes along strike; a per-vertex profile would zig-zag)
+        zbin = max(0.5 * dx, 250.0)
+        kb = np.floor(z / zbin).astype(int)
+        lev = np.unique(kb)
+        zg = np.array([np.median(z[kb == k]) for k in lev])
+        hg = np.array([np.median(hh[kb == k]) for k in lev])
+        # anchor the profile at the top of the surface
+        if zg[0] > 0.0:
+            top = z <= z.min() + 1e-6
+            zg = np.concatenate([[z.min()], zg])
+            hg = np.concatenate([[np.median(hh[top])], hg])
         seg = np.hypot(np.diff(hg), np.diff(zg))
         dg = np.concatenate([[0.0], np.cumsum(seg)])
         d[o] = np.interp(z, zg, dg)

@@ -1,0 +1,82 @@
+{
+ "_comment": "ABC round 5 (segmented transition geometry, 0.5 km mesh resampled to 2 km): round 4 with the L1 dip correction; same design seed, so designs pair with the other geometries.",
+ "design": "random",
+ "design_seed": 4,
+ "n_samples": 100,
+ "base": {
+  "geometry_file": "data/nz_alpine/Alpine_full_segmented_transition_05km_d20.stl",
+  "segments_file": "data/nz_alpine/segments.csv",
+  "segment_max_dist_km": 10.0,
+  "segment_include": [
+   "Alpine",
+   "Wairau"
+  ],
+  "patch_km": 2.0,
+  "rake_deg": 160.0,
+  "mag_min": 5.0,
+  "duration_yr": 10000,
+  "pilot_events": 300,
+  "store_slip_min_mag": 6.0,
+  "sites_file": "data/nz_alpine/paleo_sites.csv",
+  "site_thresholds_m": [
+   1.0,
+   2.0,
+   4.0
+  ],
+  "slip_mode": "local_cap",
+  "slip_fraction": 1.0,
+  "deep_slip_km": 20.0,
+  "dip_correction": true
+ },
+ "ranges": {
+  "stress_drop_mpa": [
+   5.0,
+   10.0
+  ],
+  "slip_cv": [
+   0.1,
+   0.5
+  ],
+  "stress_drop_ln_sigma": [
+   0.0,
+   0.2
+  ],
+  "branching_ratio": [
+   0.05,
+   0.3
+  ],
+  "arrest_scale": [
+   0.2,
+   1.0
+  ],
+  "admission_exponent": [
+   2.0,
+   8.0
+  ],
+  "b_value": [
+   0.8,
+   1.1
+  ]
+ },
+ "log_ranges": {
+  "hazard_max_area_km2": [
+   300.0,
+   3000.0
+  ],
+  "nucleation_exponent": [
+   2.0,
+   12.0
+  ],
+  "budget_scale": [
+   0.1,
+   1.0
+  ]
+ },
+ "choices": {},
+ "seeds": [
+  1,
+  2,
+  3
+ ],
+ "mmain": 6.0
+}

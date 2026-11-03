@@ -19,7 +19,8 @@ Inputs for the New Zealand Alpine Fault simulator intercomparison
 * Fault geometries (STL, coordinates in km NZTM, depth negative) are not
   stored in the repository because of their size (9 to 39 MB). Expected
   file names: `alpine_planar_1km_26Jan.stl`, `alpine_planar05km.stl`,
-  `variable_dip_1km_26Jan.stl`, `variable_dip_05km_improved3.stl`.
+  `variable_dip_1km_26Jan.stl`, `variable_dip_05km_improved3.stl`,
+  `Alpine_full_segmented_transition_05km_d20.stl`.
   Point `geometry_file` at them.
 * Segment slip rates (`alpine_hope_faults_segment_slip_rates`,
   `alpine_segments.pdf`) have not been received yet; runs so far use a

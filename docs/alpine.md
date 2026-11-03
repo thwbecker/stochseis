@@ -647,18 +647,18 @@ Configurations (`examples/alpine/campaign_configs.json`):
 
 | configuration | mesh | patches | grid area / mesh area |
 |---|---|---|---|
-| planar_fine | alpine_planar05km.stl (0.5 km) | 1 km, 19,630 | 0.995 |
-| variable_dip_fine | variable_dip_05km_improved3.stl (0.5 km) | 1 km, 17,125 | 0.991 |
+| planar_fine | alpine_planar_1km_26Jan.stl (1 km) | 1 km, 19,630 | 0.995 |
+| variable_dip_fine | variable_dip_1km_26Jan.stl (1 km) | 1 km, 17,127 | 0.992 |
 | segmented_fine | Alpine_full_segmented_transition_05km_d20.stl (0.5 km) | 1 km, 16,995 | 0.993 |
 | planar_coarse | alpine_planar_1km_26Jan.stl (1 km) | 2 km, 4,901 | 0.994 |
 | variable_dip_coarse | variable_dip_1km_26Jan.stl (1 km) | 2 km, 4,260 | 0.986 |
 
-"Fine" and "coarse" refer to both the mesh and the simulation patch
-size: resampling a 0.5 km mesh onto the 2 km patches used so far would
-give almost the same grid as the 1 km mesh. All earlier rounds correspond
-to the coarse configurations. `alpine_planar.stl` and
-`variable_dip_1km.stl` (in metres) are the same meshes as the 1 km files
-(in km).
+"Fine" and "coarse" refer to the simulation patch size. The 1 km meshes
+resample to the same 1 km grids as the 0.5 km meshes (19,630 and 17,127
+against 19,630 and 17,125 patches), so the original 1 km meshes are used
+at both resolutions. All earlier rounds correspond to the coarse
+configurations. `alpine_planar.stl` and `variable_dip_1km.stl` (in
+metres) are the same meshes as the 1 km files (in km).
 
 `examples/alpine/run_full_campaign.sh [ncpu] [outdir] [n_samples]
 [abc_seeds] [abc_duration] [n_best] [post_seeds] [post_duration]
@@ -677,11 +677,23 @@ configurations, fine first) does, for each configuration:
 
 and then writes `campaign_summary.md` (acceptance counts, best fits,
 accepted parameter ranges and overlap of accepted vectors between
-configurations; `campaign_summary.py`) and the figures and tables of
-`overview_figures.py` and `site_analysis.py` for the fine set
-(`fig_fine_*`, `sites_fine_*`), the coarse set (`*_coarse_*`) and fine
-against coarse for each geometry (`*_resolution_planar_*`,
-`*_resolution_variable_dip_*`). The scoring used by all scripts is in
+configurations; `campaign_summary.py`) and two kinds of figures:
+
+* our overview figures (`overview_figures.py`, `fig_<set>_seismicity.png`
+  and `fig_<set>_recurrence.png`): frequency-magnitude distribution,
+  Omori decay, Bath gaps, moment release relative to loading, moment
+  released per 100-yr window, and whole-fault recurrence of M >= 7.5; then
+  RI versus CV at each site for every run, SED versus RI, mean interval
+  versus CV of system-wide M >= 7.5 and M >= 8 events, magnitude
+  distribution of M >= 6.5 events, rupture-length distribution, magnitude
+  and mean slip versus rupture length. Best vector as line or large
+  symbol, all posterior runs as band or small symbols, one colour per
+  configuration;
+* the RSQSim-style site analysis (`site_analysis.py`, `sites_<set>_*`).
+
+Sets: the fine configurations (`fine`), the coarse ones (`coarse`), all
+five together (`all`, overview figures only), and fine against coarse for
+each geometry (`resolution_planar`, `resolution_variable_dip`). The scoring used by all scripts is in
 `abc_scoring.py`.
 
 Cost on one core (measured): 2.6 min per 10,000 yr at 1 km patches,

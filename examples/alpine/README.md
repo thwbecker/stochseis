@@ -82,8 +82,9 @@ Score any round with the seismicity constraints added (b of grown ruptures
 
 ## Full campaign (current)
 
-Copy the five mesh files listed in `campaign_configs.json` into
-`data/nz_alpine/`, then
+Put the three mesh files listed in `campaign_configs.json`
+(`alpine_planar_1km_26Jan.stl`, `variable_dip_1km_26Jan.stl`,
+`Alpine_full_segmented_transition_05km_d20.stl`) in `data/nz_alpine/`, then
 
     examples/alpine/run_full_campaign.sh $NR_CPUS alpine_full
 

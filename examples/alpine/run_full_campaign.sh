@@ -1,13 +1,14 @@
 #!/bin/bash
 #
 # Full Alpine Fault campaign: for every configuration in
-# examples/alpine/campaign_configs.json (three geometries on 0.5 km meshes
-# with 1 km patches, two on 1 km meshes with 2 km patches), an ABC round
+# examples/alpine/campaign_configs.json (planar, variable dip and segmented
+# transition on 1 km patches; planar and variable dip on 2 km patches), an ABC round
 # (hybrid sizes, deficit-capped slip, L1 dip correction; same parameter
 # vectors in every configuration), acceptance tables, a posterior ensemble
 # of the best vectors with catalogs, and then summary tables and figures
-# for the fine set, the coarse set, and fine against coarse for each
-# geometry available at both resolutions.
+# (our overview figures fig_*, and the RSQSim-style site analysis sites_*)
+# for the fine set, the coarse set, all configurations (overview only), and
+# fine against coarse for each geometry available at both resolutions.
 #
 # Run from the repository root with the mesh files in data/nz_alpine/.
 # Interrupted runs can be restarted with the same command: finished sweep
@@ -89,6 +90,13 @@ do
 done
 figure_set fine $fine
 figure_set coarse $coarse
+# all configurations together (overview figures only; the site analysis is clearer per set)
+pairs=$(pairs_for $configs)
+if [ $(echo $pairs | wc -w) -ge 4 ]
+then
+    echo "=== figures: all"
+    python3 $here/overview_figures.py "$outdir/fig_all" $pairs
+fi
 for c in $coarse
 do
     g=${c%_coarse}

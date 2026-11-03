@@ -165,7 +165,11 @@ Round 3 (slip-predictable) matches the site records but has unphysical
 seismicity (b about 0, Bath 0.7) and is rejected once b and Bath are
 added to the acceptance (`--seismicity`); round 4 keeps 54 of 100.
 Low site CVs come with large Bath gaps (1.5 to 1.9) in this model class.
-Next: variable-dip round 4 and a posterior ensemble with catalogs.
+Variable-dip round 4: same acceptance (61 / 69 of the same 100 vectors);
+geometry shows mainly in co-rupture between sites (much higher on the
+variable-dip geometry), not in the site statistics. Next: posterior
+ensemble with catalogs; L1 dip correction before quoting geometry effects
+on slip.
 The paragraph below describes the starting point.
 
 See docs/alpine.md and docs/networks.md. STL geometries load as section

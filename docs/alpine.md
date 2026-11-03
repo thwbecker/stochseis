@@ -454,6 +454,59 @@ capped slip with hybrid sizes (scale-free below a threshold area,
 characteristic above) satisfies both the paleoseismic records and basic
 seismicity statistics.
 
+## ABC round 4 on the variable-dip geometry (run by T. Becker)
+
+Same 100 parameter vectors (same design seed) x 3 seeds x 10,000 yr on
+the variable-dip geometry (`examples/alpine/abc4_variable_dip_hybrid.json`;
+summary in `runs/alpine_abc4_variable_dip/`), no failed runs. Accepted at
+2 m: 61 vectors on the paleoseismic observables, 69 with the seismicity
+constraints (planar: 55 and 54). Best vector (the same as on the planar
+geometry): RI / CV / SED 259 / 0.31 / 6.9 (south), 258 / 0.32 / 6.9
+(central), 489 / 0.28 / 4.4 (north), b 0.89, Bath 1.33. Accepted ranges
+are essentially those of the planar round.
+
+Because the vectors are identical, the geometries can be compared design
+by design. Paired mean differences, variable dip minus planar, with
+t-statistics over the 100 designs (|t| > 3 marked as systematic):
+
+| statistic | planar median | variable dip median | mean difference | t |
+|---|---|---|---|---|
+| moment rate [N m/yr] | 1.13e19 | 0.99e19 | -13 % | (geometry) |
+| N(M>=6), N(M>=7) per 10,000 yr | 1230, 141 | 1020, 119 | -18 %, -21 % | -9.3, -8.4 |
+| co-rupture central with south | 0.43 | 0.60 | +0.13 | 14.5 |
+| co-rupture central with north | 0.20 | 0.28 | +0.08 | 14.1 |
+| co-rupture south with north | 0.08 | 0.21 | +0.07 | 11.4 |
+| north RI [yr] | 609 | 554 | -53 | -5.9 |
+| south CV / north CV | 0.41 / 0.41 | 0.44 / 0.45 | +0.04 / +0.03 | 6.5 / 3.5 |
+| central CV | 0.41 | 0.40 | +0.005 | 0.7 |
+| central SED [m] | 6.7 | 7.2 | +0.27 | 3.5 |
+| Bath gap | 1.39 | 1.31 | -0.08 | -9.6 |
+| b above saturation | 1.13 | 0.96 | -0.23 | -4.8 |
+| median D/L, L > 3W | 1.8e-5 | 1.1e-5 | -0.9e-5 | -13 |
+| whole-fault M>=7 CV | 0.96 | 0.87 | -0.06 | -6.9 |
+
+Findings.
+
+* The paleoseismic records are matched equally well on both geometries,
+  by the same parameter vectors; per-design site CVs correlate between
+  the geometries (r = 0.82 central, 0.83 south, 0.60 north). The site
+  data therefore do not discriminate between the two geometries in this
+  model.
+* Geometry shows most clearly in how ruptures span the fault: on the
+  variable-dip geometry many more events rupture two or three sites
+  (south-north co-rupture nearly triples), there are fewer but longer
+  large events, and the north site is ruptured more often (shorter RI).
+  Co-rupture fractions are thus the statistic most sensitive to
+  geometry, and a natural one to compare with the physics-based
+  simulators and with paleoseismic correlations between sites (Howarth
+  et al., 2021).
+* Caveat: the elastic operator is level L0 (unrolled grid, free-surface
+  image), which ignores the effect of dip on stiffness beyond the change
+  in down-dip width (`docs/networks.md`, E20). Differences in slip
+  amplitude between the 50 and 80 degree sections are therefore only
+  partly represented; the L1 dip correction or the L2 half-space
+  operator should be used before quoting geometry effects on slip.
+
 ## Status (1 November 2026)
 
 * Both geometries load as section grids at 1 km (19,630 and 17,142

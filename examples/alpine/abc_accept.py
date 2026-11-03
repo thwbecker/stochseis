@@ -1,6 +1,6 @@
 """Accept parameter vectors whose synthetic site records match the data.
 
-    python3 examples/alpine/abc_accept.py abc1_planar/sweep_summary.json [threshold_m] [tolerance]
+    python3 examples/alpine/abc_accept.py abc1_planar/sweep_summary.json [threshold_m] [tolerance] [--seismicity]
 
 For each design vector (averaged over its seeds) and the chosen detection
 threshold (default 2 m), the distance to the data is
@@ -14,6 +14,12 @@ the observed SED range. Vectors with distance below ``tolerance`` per
 observable (default 2, i.e. about two standard errors on average) are
 accepted. The script prints the best vectors and the accepted parameter
 ranges.
+
+With --seismicity two more observables enter the distance: the b-value of
+grown ruptures below width saturation (target 1.0 +- 0.1) and the mean
+Bath gap (target 1.2 +- 0.15). Without them a model can match the site
+records with unphysical seismicity (round 3: b about 0, Bath 0.7).
+The summary may be the JSON written by the sweep tool or its CSV.
 """
 import csv
 import json
@@ -28,9 +34,27 @@ import numpy as np
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 here = os.path.dirname(os.path.abspath(__file__))
-rows = json.load(open(sys.argv[1]))
-th = float(sys.argv[2]) if len(sys.argv) > 2 else 2.0
-tol = float(sys.argv[3]) if len(sys.argv) > 3 else 2.0
+seis = "--seismicity" in sys.argv
+argv = [a for a in sys.argv if a != "--seismicity"]
+if argv[1].endswith(".csv"):
+    rows = []
+    for r in csv.DictReader(open(argv[1])):
+        d = {}
+        for k, v in r.items():
+            if v in ("", None):
+                d[k] = None
+            elif v in ("True", "False"):
+                d[k] = v == "True"
+            else:
+                try:
+                    d[k] = float(v)
+                except ValueError:
+                    d[k] = v
+        rows.append(d)
+else:
+    rows = json.load(open(argv[1]))
+th = float(argv[2]) if len(argv) > 2 else 2.0
+tol = float(argv[3]) if len(argv) > 3 else 2.0
 sites = list(csv.DictReader(open(os.path.join(here, "..", "..", "data", "nz_alpine", "paleo_sites.csv"))))
 
 params = ["stress_drop_mpa", "stress_drop_ln_sigma", "nucleation_exponent", "branching_ratio",
@@ -59,13 +83,21 @@ for key, rs in groups.items():
             d2 += ((val - obs) / sig) ** 2 if np.isfinite(val) else 25.0
             nobs += 1
         detail[n] = (ri, cv, sed)
+    if seis:
+        for key, obs, sig in (("b_fault_below_sat", 1.0, 0.1), ("bath_mean", 1.2, 0.15)):
+            val = np.nanmean([np.nan if r.get(key) is None else r[key] for r in rs])
+            d2 += ((val - obs) / sig) ** 2 if np.isfinite(val) else 25.0
+            nobs += 1
+        detail["seismicity"] = (np.nanmean([r.get("b_fault_below_sat") or np.nan for r in rs]),
+                                np.nanmean([r.get("bath_mean") or np.nan for r in rs]), np.nan)
     scored.append((d2 / nobs, key, {p: rs[0].get("p_" + p) for p in params if "p_" + p in rs[0]}, detail))
 scored.sort(key=lambda x: x[0])
 
-print(f"{len(scored)} design vectors, threshold {th} m; best ten (mean squared standardized misfit):")
+print(f"{len(scored)} design vectors, threshold {th} m{', with seismicity' if seis else ''}; best ten (mean squared standardized misfit):")
 for d, key, pv, det in scored[:10]:
     print(f"  {d:6.2f}  " + " ".join(f"{k}={v:.3g}" if isinstance(v, float) else f"{k}={v}" for k, v in pv.items()))
-    print("          " + "  ".join(f"{n}: RI {v[0]:.0f} CV {v[1]:.2f} SED {v[2]:.1f}" for n, v in det.items()))
+    print("          " + "  ".join(f"{n}: RI {v[0]:.0f} CV {v[1]:.2f} SED {v[2]:.1f}" if n != "seismicity"
+                                    else f"b {v[0]:.2f} Bath {v[1]:.2f}" for n, v in det.items()))
 acc = [x for x in scored if x[0] < tol ** 2]
 print(f"\naccepted (mean squared misfit < {tol ** 2:g}): {len(acc)}")
 if acc:

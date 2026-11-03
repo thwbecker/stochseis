@@ -409,6 +409,51 @@ ensemble with catalogs for the intercomparison statistics
 20,000 yr; regenerate it for other summaries with
 `examples/alpine/make_posterior_spec.py`).
 
+## ABC round 3: slip-predictable mode (run by T. Becker)
+
+100 vectors x 3 seeds x 10,000 yr, planar geometry, `slip_mode =
+"deficit"` (`examples/alpine/abc3_planar_slip_predictable.json`; summary
+in `runs/alpine_abc3_planar/`), no failed runs.
+
+On the paleoseismic observables alone, 29 vectors are accepted at 2 m
+(22 at 1 m, none at 4 m); site CVs are 0.36 to 0.75 (lowest central CV
+0.35), worse than round 4. The seismicity, however, is unphysical: the
+b-value of grown ruptures is about 0.03 (5 to 95 percent: 0 to 0.13),
+the mean Bath gap 0.71, N(M>=7) / N(M>=6) = 0.066, about five times as
+many M>=6 events as in round 4, and a whole-fault M>=7 CV of 1.17. This
+is the flaw anticipated in "What controls site CV": when slip equals the
+local deficit, a small rupture through a loaded patch releases metres of
+slip, so magnitude decouples from rupture size, the frequency-magnitude
+distribution flattens, and aftershocks are often as large as their
+mainshocks. The plain slip-predictable mode is therefore rejected.
+
+## Rescoring with seismicity constraints
+
+`examples/alpine/abc_accept.py ... --seismicity` adds the b-value of
+grown ruptures below width saturation (1.0 +- 0.1) and the mean Bath gap
+(1.2 +- 0.15) to the misfit. Accepted vectors at 2 m (mean squared
+misfit below 4):
+
+| round | slip rule | paleo only | paleo and seismicity |
+|---|---|---|---|
+| 2 | stress drop, scale-free sizes | 4 | 5 (site CVs 0.5 to 0.6) |
+| 3 | slip-predictable | 29 | 0 |
+| 4 | hybrid sizes, deficit-capped slip | 55 | 54 |
+
+Within the round-4 set accepted with seismicity: site CV medians 0.40 to
+0.41 (lowest 0.16 central, 0.20 south, 0.23 north), b 0.80 to 1.08, Bath
+1.15 to 1.75 (median 1.36). The five vectors with all three site CVs at
+or below 0.35 all have Bath gaps of 1.46 to 1.89: in this model class,
+Alpine-like regularity comes with weak triggering of large aftershocks.
+Whether the Alpine Fault's instrumental seismicity supports a large Bath
+gap is a check worth making, and a prediction to compare with the
+physics-based simulators.
+
+Conclusion across rounds 1 to 4: of the slip rules tried, only deficit-
+capped slip with hybrid sizes (scale-free below a threshold area,
+characteristic above) satisfies both the paleoseismic records and basic
+seismicity statistics.
+
 ## Status (1 November 2026)
 
 * Both geometries load as section grids at 1 km (19,630 and 17,142

@@ -74,3 +74,8 @@ The posterior run keeps catalogs (no --no-catalogs): 100 runs of
 [threshold] [n_best] [n_seeds] [duration]` builds the same kind of spec
 from any ABC summary (CSV or JSON). The sweep tool now also accepts
 "design": "list" with explicit parameter vectors.
+
+Score any round with the seismicity constraints added (b of grown ruptures
+1.0 +- 0.1, Bath gap 1.2 +- 0.15):
+
+    python3 examples/alpine/abc_accept.py abc4_planar/sweep_summary.csv 2 2.0 --seismicity

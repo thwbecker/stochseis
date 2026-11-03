@@ -161,6 +161,10 @@ Update after ABC round 4: hybrid sizes (scale-free below a threshold
 area, state-only termination above) with slip capped at the local deficit
 match mean recurrence, CV and single-event displacement at all three
 paleoseismic sites (55 of 100 vectors accepted); details in docs/alpine.md.
+Round 3 (slip-predictable) matches the site records but has unphysical
+seismicity (b about 0, Bath 0.7) and is rejected once b and Bath are
+added to the acceptance (`--seismicity`); round 4 keeps 54 of 100.
+Low site CVs come with large Bath gaps (1.5 to 1.9) in this model class.
 Next: variable-dip round 4 and a posterior ensemble with catalogs.
 The paragraph below describes the starting point.
 

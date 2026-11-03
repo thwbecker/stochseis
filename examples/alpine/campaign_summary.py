@@ -9,6 +9,12 @@ constraints, the best misfit and its site statistics, and median and
 range of the main parameters over the accepted set (with seismicity).
 Because all configurations draw the same vectors, it also reports how
 many vectors are accepted in each pair of configurations (overlap).
+
+If <outdir>/posterior_<name>/sweep_summary.json exists, the posterior
+vectors are rescored with their posterior runs (more seeds, longer
+catalogs). Selecting the best of many noisy ABC estimates favours vectors
+whose short-run statistics were lucky, so the rescored misfits and site
+statistics are the ones to quote.
 """
 import os
 import sys
@@ -59,6 +65,25 @@ def main():
             v = np.array([float(x["params"][k]) for x in r["acc_s"] if x["params"].get(k) is not None])
             cells.append(f"{np.median(v):.3g} [{v.min():.3g}-{v.max():.3g}]" if len(v) else "-")
         print(f"| {k} | " + " | ".join(cells) + " |")
+    post = {}
+    for n in res:
+        path = os.path.join(outdir, f"posterior_{n}", "sweep_summary.json")
+        if os.path.exists(path):
+            post[n] = score(load_summary(path), 2.0, True)
+    if post:
+        print("\n## Posterior vectors rescored with their posterior runs (paleo + seismicity, 2 m)\n")
+        print("ABC misfit: from the ABC runs; posterior misfit: from the posterior runs of the same vector.\n")
+        print("| configuration | vectors | still accepted | best posterior misfit | its ABC rank | "
+              "best: south RI / CV / SED | central | north | b | Bath | median site CV (south, central, north) |")
+        print("|" + "---|" * 11)
+        for n, ps in post.items():
+            b = ps[0]
+            d = b["detail"]
+            med = [np.nanmedian([x["detail"][s][1] for x in ps]) for s in ("south", "central", "north")]
+            print(f"| {n} | {len(ps)} | {len(accepted(ps))} | {b['misfit']:.2f} | {int(b['key']) + 1} | "
+                  + " | ".join(f"{d[s][0]:.0f} / {d[s][1]:.2f} / {d[s][2]:.1f}" for s in ("south", "central", "north"))
+                  + f" | {d['seismicity'][0]:.2f} | {d['seismicity'][1]:.2f} | "
+                  + ", ".join(f"{m:.2f}" for m in med) + " |")
     print("\n## Overlap of accepted vectors (paleo + seismicity): number accepted in both\n")
     print("| | " + " | ".join(res) + " |")
     print("|" + "---|" * (len(res) + 1))

@@ -701,6 +701,100 @@ Cost on one core (measured): 2.6 min per 10,000 yr at 1 km patches,
 and 9 for the posterior; per coarse configuration about 3 and 2; about
 75 core-hours in total.
 
+## Full campaign results (run by T. Becker, 3 November)
+
+Five configurations, 100 vectors x 3 seeds x 10,000 yr each for the ABC
+and the best 20 vectors x 5 seeds x 20,000 yr for the posteriors, no
+failed runs. Tables and acceptance lists in `runs/alpine_full_campaign/`.
+
+### Acceptance
+
+| configuration | accepted (paleo) | accepted (paleo + seismicity) | best misfit (with seismicity) |
+|---|---|---|---|
+| planar_fine | 54 | 53 | 0.85 |
+| variable_dip_fine | 57 | 59 | 0.64 |
+| segmented_fine | 57 | 60 | 0.60 |
+| planar_coarse | 52 | 56 | 0.99 |
+| variable_dip_coarse | 64 | 65 | 0.48 |
+
+The accepted sets overlap strongly: of the 53 to 65 vectors accepted in
+each configuration, 45 to 58 are accepted in any other one. The same few
+vectors rank at the top everywhere (for example stress drop 8.0 MPa,
+nucleation exponent 3.3, branching 0.29, arrest scale 0.27, area
+threshold 990 km^2; and 7.4 MPa, exponent 4.0, branching 0.22, arrest
+0.27, area 370 km^2).
+
+The accepted parameter distributions are almost the prior distributions
+of this round: the medians (stress drop 7.0 to 7.7 MPa, nucleation
+exponent 4.9 to 5.3, branching ratio 0.17 to 0.18, arrest scale 0.67,
+admission exponent 4.4 to 4.6, b 0.94 to 0.96, initiation rate 0.32 to
+0.40 of calibrated, slip CV 0.32 to 0.34, area threshold 1080 to 1140
+km^2) differ from the prior medians (7.5, 4.9, 0.175, 0.6, 5.0, 0.95,
+0.32, 0.30, 950) by little, and the ranges cover the priors. The priors
+of round 5 were themselves narrowed after rounds 1 to 4, so this says
+that within the hybrid, deficit-capped model class the paleoseismic and
+seismicity constraints accept a broad region of parameters, and do not
+pin down any single parameter beyond the earlier rounds. What the data
+select is the model class, not a parameter vector.
+
+### Site statistics of the posterior ensembles (2 m threshold)
+
+Ensemble medians and 5 to 95 percent ranges over all posterior runs:
+
+| configuration | south RI / CV / SED | central RI / CV / SED | north RI / CV / SED |
+|---|---|---|---|
+| planar_fine | 259 [234-292] / 0.38 [0.27-0.52] / 6.6 | 259 [234-301] / 0.38 [0.27-0.52] / 6.6 | 544 [424-659] / 0.36 / 4.8 |
+| variable_dip_fine | 254 [216-288] / 0.40 [0.31-0.53] / 6.5 | 264 [228-312] / 0.39 [0.30-0.52] / 6.7 | 543 [438-683] / 0.38 / 4.9 |
+| segmented_fine | 256 [221-287] / 0.41 [0.31-0.54] / 6.7 | 266 [231-314] / 0.38 [0.29-0.53] / 6.8 | 520 [425-654] / 0.40 / 4.7 |
+| planar_coarse | 252 [218-291] / 0.37 [0.25-0.51] / 6.6 | 257 [226-295] / 0.39 [0.25-0.50] / 6.6 | 545 [422-657] / 0.37 / 4.7 |
+| variable_dip_coarse | 251 [224-276] / 0.41 [0.31-0.53] / 6.6 | 260 [230-309] / 0.40 [0.31-0.52] / 6.8 | 511 [413-642] / 0.39 / 4.7 |
+| observed | 268 / 0.40 / 7.5 | 249 / 0.23 / 7.1 | 413 / 0.25 / 4.0 |
+| RSQSim planar / variable dip | 260 / 0.19 / 7.1; 214 / 0.24 / 5.8 | 271 / 0.13 / 7.3; 272 / 0.15 / 7.4 | 640 / 0.45 / 5.8; 543 / 0.36 / 5.4 |
+
+1. Mean intervals at the south and central sites are matched in every
+   configuration; single-event displacements are 0.4 to 0.9 m below the
+   observed means, with the observations inside or at the upper edge of
+   the 5 to 95 percent ranges.
+2. The south CV (0.40) is matched. The central CV (0.23) lies at or
+   below the 5th percentile of every ensemble (0.25 to 0.31), and the
+   ensemble medians (0.38 to 0.41) are close to the typical CV of the
+   model class found in rounds 4 and 5. For the top-ranked vector the
+   central CV changes from the ABC (three seeds) to its first posterior
+   run as 0.37 to 0.38 (planar fine), 0.41 to 0.44 (variable dip fine),
+   0.27 to 0.37 (segmented), 0.31 to 0.30 (planar coarse) and 0.41 to
+   0.37 (variable dip coarse). Only the segmented case shows a clear
+   increase, and single-run CVs carry about +-0.07, so selection bias
+   (ranking 100 vectors by short-run statistics favours lucky ones) is
+   plausible but not demonstrated by these numbers.
+   `campaign_summary.py` now rescores the posterior vectors with all
+   their posterior runs; those misfits are the ones to quote.
+3. The north site is too slow in every configuration (medians 511 to 545
+   yr against 413, with the observation at the 5th percentile), with a
+   mean SED of 4.7 to 4.9 m against 4.0 m. RSQSim has the same bias, more
+   strongly (543 to 640 yr, 5.4 to 5.8 m).
+4. Resolution: fine and coarse ensembles agree within about 10 yr in RI,
+   0.02 in CV and 0.2 m in SED at every site, so site statistics are
+   converged at 2 km patches.
+5. Geometry: differences between planar, variable-dip and segmented
+   ensembles are of the same size as the resolution differences; the
+   site records do not discriminate between the geometries in this
+   model, as found in round 4. Geometry effects on co-rupture and on
+   the size distribution of system events are in the figures
+   (`fig_*`, `sites_*_extended.png`), which are not summarized here.
+
+### Comparison with RSQSim
+
+At the south and central sites both models reproduce the mean intervals
+and displacements. RSQSim is more periodic (CV 0.13 to 0.24) than the
+stochastic ensembles (0.37 to 0.41): RSQSim matches the central record
+(0.23) better and the south record (0.40) worse. The stochastic model's
+single-event displacements are more variable at a site (SD 1.7 to 2.6 m
+for the best vectors against 1.0 to 1.6 m in RSQSim). At the north site
+both models are too slow with too much slip per event, RSQSim more so.
+A stochastic model calibrated to the paleoseismic records thus spans the
+range between the RSQSim regularity and the more irregular records, and
+the central and north records are the ones that discriminate.
+
 ## Status (1 November 2026)
 
 * Both geometries load as section grids at 1 km (19,630 and 17,142

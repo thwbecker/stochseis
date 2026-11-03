@@ -19,7 +19,7 @@ Outputs
                                dependence of the mean interval on the detection threshold
   <out_prefix>_extended.png    co-rupture of sites, time- and slip-predictability correlations,
                                interval distributions against the paleoseismic normal PDFs
-  <out_prefix>_table.md / .csv per site: best model, ensemble median and 5-95 percent range,
+  <out_prefix>_table.md / .csv per site: best model (pooled over its seeds), ensemble median and 5-95 percent range,
                                observations, RSQSim
 Distributions labelled "ensemble" pool all posterior runs.
 """
@@ -154,8 +154,8 @@ def main():
         if not files:
             sys.exit(f"no catalogs in {d}")
         runs = [run_stats(f, sites, th) for f in files]
-        best = [r for r in runs if re.search(r"cat_v0000_s", r["path"])]
-        G[label] = dict(runs=runs, best=best[0] if best else runs[0])
+        best = [r for r in runs if re.search(r"cat_v0000_s", r["path"])] or runs[:1]
+        G[label] = dict(runs=runs, best=best[0], best_runs=best)
         print(f"{label}: {len(runs)} catalogs, {sum(r['years'] for r in runs):.0f} yr after burn-in")
 
     # ------------------------------------------------------------ space-time
@@ -346,7 +346,14 @@ def main():
     for label, D in G.items():
         for s in sites:
             n = s["name"]
-            b = D["best"]["sites"][(n, th)]
+            # best vector pooled over all its seeds (intervals within each run, SEDs of all runs)
+            br = [r["sites"][(n, th)] for r in D["best_runs"]]
+            iv = np.concatenate([x["intervals"] for x in br])
+            sd = np.concatenate([x["sed"] for x in br])
+            b = dict(ri=iv.mean() if len(iv) > 2 else np.nan, ri_sd=iv.std(ddof=1) if len(iv) > 2 else np.nan,
+                     cv=iv.std(ddof=1) / iv.mean() if len(iv) > 2 else np.nan,
+                     sed_mean=sd.mean() if len(sd) else np.nan, sed_sd=sd.std(ddof=1) if len(sd) > 1 else np.nan,
+                     n=len(sd))
             ens = [r["sites"][(n, th)] for r in D["runs"]]
             q = rsqsim_for(rsq, label, n) or {}
             row = dict(geometry=label, site=n,
@@ -370,8 +377,8 @@ def main():
         for r in rows:
             w.writerow(r)
     with open(out_prefix + "_table.md", "w") as fh:
-        fh.write(f"Detection threshold {th:g} m. Best: best-fitting vector, first seed. Ensemble: median "
-                 "[5-95 %] over all posterior runs.\n\n")
+        fh.write(f"Detection threshold {th:g} m. Best: best-ranked vector, pooled over all its posterior seeds. "
+                 "Ensemble: median [5-95 %] over all posterior runs.\n\n")
         fh.write("| geometry | site | RI best (SD) | RI ensemble | RI obs (SD) | RI RSQSim (SD) | CV best | CV ensemble "
                  "| CV obs | CV RSQSim | slip best (SD) | slip ensemble | slip obs | slip RSQSim (SD) |\n")
         fh.write("|" + "---|" * 14 + "\n")

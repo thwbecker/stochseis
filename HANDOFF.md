@@ -178,6 +178,13 @@ planar and variable dip on 1 km meshes with 2 km patches) driven by
 examples/alpine/run_full_campaign.sh, with RSQSim-style site analysis
 (site_analysis.py), overview figures and a cross-configuration summary
 (campaign_summary.py). See docs/alpine.md, "Full campaign".
+Results (docs/alpine.md, "Full campaign results"): 52 to 65 of 100
+vectors accepted in every configuration with strong overlap; accepted
+parameters close to the round-5 priors; south and central means matched,
+central CV and north RI biased high in all ensembles (RSQSim has the
+north bias too); site statistics converged at 2 km and insensitive to
+geometry. ABC best fits may be optimistic (selection bias, not yet
+demonstrated): quote the posterior rescoring (campaign_summary.py).
 The paragraph below describes the starting point.
 
 See docs/alpine.md and docs/networks.md. STL geometries load as section

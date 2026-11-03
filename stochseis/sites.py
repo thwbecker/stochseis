@@ -59,7 +59,7 @@ def site_records(cat: Catalog, sites, threshold=1.0, t_start=0.0):
     lookup = {}
     for name, (p, _) in patches.items():
         lookup.setdefault(p, []).append(name)
-    rec = {name: ([], []) for name in patches}
+    rec = {name: ([], [], []) for name in patches}
     for k, e in enumerate(cat.slip_event):
         if ev["t"][e] < t_start:
             continue
@@ -74,6 +74,7 @@ def site_records(cat: Catalog, sites, threshold=1.0, t_start=0.0):
                 for name in lookup[idx[j]]:
                     rec[name][0].append(ev["t"][e])
                     rec[name][1].append(val)
+                    rec[name][2].append(e)
     # storage check: the smallest stored magnitude must be below what a threshold slip needs
     m_store = cat.params.store_slip_min_mag
     mu = float(np.mean(f.mu))
@@ -83,10 +84,10 @@ def site_records(cat: Catalog, sites, threshold=1.0, t_start=0.0):
         warnings.warn(f"store_slip_min_mag = {m_store} may miss events with {threshold} m of slip "
                       f"at a site (smallest such events are around M{m_needed + 1.0:.1f})")
     out = {}
-    for name, (times, sed) in rec.items():
+    for name, (times, sed, evi) in rec.items():
         o = np.argsort(times)
         out[name] = dict(times=np.asarray(times)[o], sed=np.asarray(sed)[o],
-                         patch=patches[name][0], dist=patches[name][1])
+                         events=np.asarray(evi, int)[o], patch=patches[name][0], dist=patches[name][1])
     return out
 
 

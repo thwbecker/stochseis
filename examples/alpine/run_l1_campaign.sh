@@ -5,7 +5,7 @@
 # two overview figures. Run from the repository root with the STL files in
 # data/nz_alpine/.
 #
-# usage: examples/alpine/run_l1_campaign.sh [ncpu] [outdir] [n_best] [n_seeds] [duration_yr]
+# usage: examples/alpine/run_l1_campaign.sh [ncpu] [outdir] [n_best] [n_seeds] [duration_yr] ["geometries"]
 #
 ncpu=${1-$NR_CPUS}
 outdir=${2-alpine_l1}
@@ -19,7 +19,9 @@ then
     exit 1
 fi
 mkdir -p "$outdir"
-for g in planar variable_dip segmented
+# geometries: planar and variable dip by default; add segmented as a third argument list if wanted
+geoms=${6-"planar variable_dip"}
+for g in $geoms
 do
     python3 -m stochseis.cli sweep "examples/alpine/abc5_${g}_l1.json" "$outdir/abc5_$g" --nproc "$ncpu" --no-catalogs
     python3 examples/alpine/abc_accept.py "$outdir/abc5_$g/sweep_summary.json" 2 2.0 --seismicity > "$outdir/abc5_${g}_accept.txt"
@@ -27,6 +29,11 @@ do
         "examples/alpine/abc5_${g}_l1.json" "$outdir/posterior5_$g.json" 2 "$n_best" "$n_seeds" "$duration"
     python3 -m stochseis.cli sweep "$outdir/posterior5_$g.json" "$outdir/posterior5_$g" --nproc "$ncpu"
 done
-python3 examples/alpine/overview_figures.py "$outdir/fig" planar "$outdir/posterior5_planar" \
-    variable_dip "$outdir/posterior5_variable_dip" segmented "$outdir/posterior5_segmented"
-echo "done: acceptance tables in $outdir/abc5_*_accept.txt, figures in $outdir/fig_*.png"
+pairs=""
+for g in $geoms
+do
+    pairs="$pairs $g $outdir/posterior5_$g"
+done
+python3 examples/alpine/overview_figures.py "$outdir/fig" $pairs
+python3 examples/alpine/site_analysis.py "$outdir/sites" $pairs --threshold 2
+echo "done: acceptance tables in $outdir/abc5_*_accept.txt, figures in $outdir/fig_*.png and $outdir/sites_*"

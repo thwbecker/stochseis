@@ -582,6 +582,71 @@ The campaign (`run_l1_campaign.sh`) now covers all three geometries
 `abc5_segmented_l1.json`, same design seed) and draws them in the same
 overview figures.
 
+## Site analysis in the style of the RSQSim comparison
+
+`examples/alpine/site_analysis.py out_prefix label dir [label dir ...]
+[--threshold 2]` reproduces the panels of the RSQSim summary for the
+intercomparison (planar and varying-dip geometries, 50,000 yr; RSQSim
+site values in `data/nz_alpine/rsqsim_summary.csv`) for a posterior
+ensemble, and extends them:
+
+* `_spacetime.png`: slip-rate map with the sites and a space-time plot of
+  M >= 7 ruptures (along-strike extent in northing, hypocentre coloured by
+  Mw) for the best run, one row per geometry.
+* `_statistics.png`: the RSQSim panels (slip, magnitude and inter-event
+  time distributions at the sites with the paleoseismic SED ranges and
+  normal interval PDFs; cumulative frequency-magnitude distribution;
+  hypocentre depths; rupture area versus Mw), computed over the whole
+  ensemble with the best run and a 5 to 95 percent band where useful;
+  plus RI versus CV and RI versus SED for every run with the observations
+  and the RSQSim values, and the mean interval as a function of the
+  detection threshold (0.5 to 4 m).
+* `_extended.png`: co-rupture matrices, time- and slip-predictability
+  correlations, and interval distributions against the paleoseismic
+  normal CDFs.
+* `_table.md` / `_table.csv`: per geometry and site, mean and SD of the
+  intervals, CV, mean and SD of SED for the best run, ensemble median and
+  5 to 95 percent range, observations, and RSQSim.
+
+The campaign script now runs it after the posteriors (default geometries
+planar and variable dip; a sixth argument selects others, for example
+"planar variable_dip segmented"). For posteriors already computed:
+
+    python3 examples/alpine/site_analysis.py alpine_l1/sites planar alpine_l1/posterior5_planar \
+        variable_dip alpine_l1/posterior5_variable_dip --threshold 2
+
+Example output for a small test ensemble (round-4 best three vectors with
+the L1 correction, 2 seeds x 8000 yr per geometry) is in
+`docs/alpine_site_analysis_*_example.*`. These are not the campaign
+results, but the comparison with RSQSim already shows where the models
+differ:
+
+| | stochseis (test ensemble, median) | RSQSim | observed |
+|---|---|---|---|
+| central RI / CV / SED, planar | 264 / 0.32 / 7.0 | 271 / 0.13 / 7.3 | 249 / 0.23 / 7.1 |
+| south RI / CV / SED, planar | 258 / 0.33 / 6.9 | 260 / 0.19 / 7.1 | 268 / 0.40 / 7.5 |
+| north RI / CV / SED, planar | 492 / 0.34 / 4.3 | 640 / 0.45 / 5.8 | 413 / 0.25 / 4.0 |
+| central RI / CV / SED, variable dip | 250 / 0.28 / 6.7 | 272 / 0.15 / 7.4 | |
+| south RI / CV / SED, variable dip | 235 / 0.32 / 6.3 | 214 / 0.24 / 5.8 | |
+| north RI / CV / SED, variable dip | 468 / 0.28 / 4.3 | 543 / 0.36 / 5.4 | |
+
+* Both models match the mean interval and displacement at the south and
+  central sites. RSQSim is more periodic than the data (CV 0.13 to 0.24
+  against 0.23 and 0.40); the stochastic ensemble brackets the
+  observations.
+* At the north site both are too slow, RSQSim more so (543 to 640 yr and
+  5.4 to 5.8 m against 413 yr and 4.0 m; stochseis about 470 to 490 yr
+  and 4.3 m).
+* Size distribution: events recorded at the sites are almost all
+  through-going M8.1 to 8.4 ruptures in stochseis, against M7.5 to 8.2 in
+  RSQSim; the space-time plots show the same, a characteristic
+  population of fault-length ruptures in stochseis (the hybrid size rule)
+  and more partial M7.5 to 8 ruptures in RSQSim. Both frequency-magnitude
+  distributions depart from Gutenberg-Richter above about M7.
+* Hypocentres are spread over depth on the planar geometry in stochseis
+  but concentrate at the base of the fault on the variable-dip geometry;
+  RSQSim nucleates mostly between 13 and 20 km on both.
+
 ## Status (1 November 2026)
 
 * Both geometries load as section grids at 1 km (19,630 and 17,142

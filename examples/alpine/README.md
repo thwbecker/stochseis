@@ -90,3 +90,10 @@ and 25 to 45 core-hours for the three posterior ensembles of 100 runs of
 20,000 yr each. Shorter posteriors: `run_l1_campaign.sh N outdir 10 3 10000`.
 The figure script takes any number of label / directory pairs, so a third
 geometry can be added to the same figures.
+
+## RSQSim-style site analysis
+
+    python3 examples/alpine/site_analysis.py out_prefix planar <posterior_dir> variable_dip <posterior_dir> --threshold 2
+
+(also run by the campaign script). See docs/alpine.md for what the
+figures and the table contain.

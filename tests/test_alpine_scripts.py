@@ -106,3 +106,14 @@ def test_realization_specs_and_windows(tmp_path):
     from nz_page import windows
     w = windows(np.array([100.0, 200, 300, 100, 200, 300, 50]), 3)
     assert len(w) == 2 and np.isclose(w[0][0], 200.0) and np.isclose(w[0][1], 0.5)
+
+
+def test_dated_intervals_inflate_cv():
+    from nz_page import dated_intervals
+    rng = np.random.default_rng(3)
+    iv = rng.normal(268.0, 0.2 * 268.0, 200000)
+    out = dated_intervals(iv, 50.0, np.random.default_rng(4))
+    cv = out.std() / out.mean()
+    expected = np.sqrt(0.2 ** 2 + 2 * 50.0 ** 2 / 268.0 ** 2)
+    assert abs(cv - expected) < 0.01
+    assert np.array_equal(dated_intervals(iv[:5], 0.0, rng), iv[:5])

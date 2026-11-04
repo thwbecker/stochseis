@@ -253,14 +253,74 @@ windows with as many intervals as the paleoseismic record at that site
 (12 south, 13 central, 3 north) and give the fraction of windows at least
 as regular as the observed record. The extremes of each family shift the
 mean intervals and are meant to show what the control does, not as
-alternative fits. Results to be added.
+alternative fits.
+
+Results (50 realizations of 20,000 yr per case; `runs/alpine_sets/`).
+Window statistics: median window CV and the fraction of record-length
+windows at least as regular as the observed record (for the south site,
+at least as irregular, i.e. CV >= 0.40):
+
+| set | case | south: CV, P(CV >= 0.40) | central: CV, P(CV <= 0.23) | north: CV, P(CV <= 0.25) | median RI south / central / north [yr] |
+|---|---|---|---|---|---|
+| A_clock | soft clock (exponent 3) | 0.35, 25 % | 0.35, 5 % | 0.27, 46 % | 307 / 307 / 403 |
+| A_clock | medium (6) | 0.26, 7 % | 0.27, 28 % | 0.26, 46 % | 286 / 286 / 397 |
+| A_clock | reference (12.3) | 0.21, 2 % | 0.21, 63 % | 0.28, 41 % | 267 / 266 / 399 |
+| B_size | characteristic (100 km^2) | 0.22, 0 % | 0.22, 59 % | 0.25, 51 % | 221 / 223 / 426 |
+| B_size | reference (488 km^2) | 0.20, 1 % | 0.19, 73 % | 0.29, 37 % | 266 / 269 / 405 |
+| B_size | scale-free (2000 km^2) | 0.45, 66 % | 0.44, 4 % | 0.34, 30 % | 262 / 263 / 466 |
+| C_barriers | reference (ln-sigma 0) | 0.20, 0 % | 0.20, 63 % | 0.27, 45 % | 268 / 267 / 399 |
+| C_barriers | weak (0.5) | 0.24, 3 % | 0.23, 48 % | 0.22, 56 % | 259 / 260 / 342 |
+| C_barriers | strong (1.0) | 0.29, 12 % | 0.28, 31 % | 0.22, 56 % | 249 / 255 / 318 |
+
+Findings.
+
+1. Records of the observed length are more regular than long runs: the
+   reference model's windows have median CVs of 0.19 to 0.21 against 0.26
+   to 0.30 from whole runs (short records rarely sample the long
+   intervals). Judged by windows, the reference calibration is consistent
+   with the central (63 to 73 percent of windows at or below 0.23) and
+   north records (37 to 45 percent at or below 0.25). The three reference
+   copies (independent seeds) agree within a few percent.
+2. The south record is the outlier: in the reference cases at most 2
+   percent of windows are as irregular as observed. Every case irregular
+   enough for the south site (soft clock, scale-free) makes the central
+   record improbable (4 to 5 percent), because the two sites share most
+   ruptures. The contrast between the south and central records is the
+   most diagnostic observation.
+3. Fingerprints of the three controls:
+   * nucleation clock (A): only the timing changes; frequency-magnitude
+     distribution, Omori decay and Bath gap (1.33 to 1.37) are identical;
+     whole-fault M >= 7.5 recurrence CV 0.21 to 0.37, mean intervals 268
+     to 306 yr;
+   * size rule (B): the frequency-magnitude distribution (plateau from
+     M6.5 to near Gutenberg-Richter to M7.5), aftershock productivity,
+     Bath gap (2.16, 1.34, 1.13), rupture patterns (the scale-free case has
+     single-site and no-site M >= 7.5 ruptures) and whole-fault recurrence
+     (CV 0.30, 0.21, 0.76) all change; regularity is greatest at the
+     reference, not at the most characteristic case;
+   * barriers (C, 50 km correlation): moderate increase of site CV (to
+     0.28 to 0.29 at south and central), shorter north intervals (318 to
+     342 yr) and fewer south-central ruptures; they do not decouple the
+     south and central sites (similar CVs at both), contrary to a single
+     earlier test run.
+4. An observation-side explanation of the south record is dating
+   uncertainty: age errors add about 2 sigma^2 / RI^2 to CV^2, so errors of
+   50 yr at the south site would raise a CV of 0.20 to about 0.31.
+   `nz_page.py --age-sigma south=50` applies such errors to the windows of
+   existing catalogs (no new runs). The age uncertainties of the three
+   records are needed to make this quantitative.
+
 
 ## 6. Open points for the comparison with physics-based models
 
 * The observed contrast in regularity between the central (CV 0.23) and
-  south (0.40) sites: in every calibrated ensemble the two sites share
-  most ruptures and have similar CVs. Reproducing the contrast needs
-  partly independent rupture histories at the two sites.
+  south (0.40) sites: in every case and ensemble the two sites share most
+  ruptures and have similar CVs; judged by record-length windows, the
+  reference calibration matches the central and north records but makes
+  the south record improbable (at most 2 percent). Either the south site
+  has partly independent rupture histories (which neither the size rule,
+  the nucleation clock nor 50 km barriers produce), or dating uncertainty
+  inflates the observed south CV.
 * Regular sites require, in this model class, a characteristic size
   distribution and weak triggering (large Bath gaps). A physics-based
   model that matches the regularity with near-Gutenberg-Richter
@@ -308,3 +368,5 @@ merging was available at run time; its merged tables come from
 * `runs/alpine_r6/`: round 6 (Bath gap), coarse.
 * `runs/alpine_r7/`: round 7 (regular sites), coarse, merged tables and
   figures.
+* `runs/alpine_sets/`: realization sets A, B, C (page-2 tables, page-3
+  tables, page-1 and page-2 ensemble figures).

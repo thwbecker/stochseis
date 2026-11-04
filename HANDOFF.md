@@ -168,7 +168,12 @@ Decisions: north site scored at 1 m, site events merged at 30 yr,
 regularity over Bath gap. Three irregularity controls identified
 (nucleation clock, size rule, quenched barriers); realization sets and
 the three figure pages: run_realization_sets.sh. Pending: round 7 on the
-fine configurations, spectrum runs, realization sets, scenario figures.
+fine configurations, spectrum runs, scenario figures.
+Realization sets (runs/alpine_sets): record-length windows make the
+reference calibration consistent with the central and north records;
+the south record (CV 0.40) is improbable in every case that fits the
+central one; barriers do not decouple the sites; dating uncertainty
+(nz_page.py --age-sigma) is the observation-side test.
 
 
 ## 5. Next stages (from the original plan; concrete steps in ROADMAP.md)

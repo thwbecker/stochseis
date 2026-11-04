@@ -130,3 +130,14 @@ def test_parameter_effects_runs(tmp_path):
     header = [c.strip() for c in table.split("\n")[2].split("|")]
     assert float(cells[header.index("log hazard_max_area_km2")]) > 0.9      # CV built to depend on log area only
     assert (tmp_path / "pe_effects.png").exists() and (tmp_path / "pe_dependence.png").exists()
+
+
+def test_record_match_tolerances():
+    from record_match import tolerances
+    from abc_scoring import load_sites as load_site_rows
+
+    obs = {r["name"]: {k: (float(v) if k not in ("name", "sense") else v) for k, v in r.items()} for r in load_site_rows()}
+    tol = tolerances(obs)
+    assert tol["central"]["n"] == 14 and tol["north"]["n"] == 4
+    assert abs(tol["central"]["d_ri"] - 2 * 57 / np.sqrt(13)) < 1e-9
+    assert abs(tol["south"]["d_cv"] - 2 * (108 / 268) / np.sqrt(24)) < 1e-9

@@ -12,6 +12,8 @@
 #                                            rupture patterns, magnitudes, rupture lengths (nz_page.py)
 #   page 3  <set>_<mode>_p3_statistics.png   intercomparison panels (site_analysis.py; also
 #                                            _spacetime.png, _extended.png, _table.md)
+#   page 4  <set>_ensemble_p4.png / .md      how often synthetic records of the observed length match
+#                                            the observed RI and CV, per site and jointly (record_match.py)
 #
 # with mode "single" (first realization of each case) and "ensemble" (all
 # realizations; bands are 5-95 % over realizations). Run from the repository
@@ -56,6 +58,10 @@ do
         python3 $here/overview_figures.py "$outdir/${s}_${mode}_p1" $pairs
         python3 $here/nz_page.py "$outdir/${s}_${mode}_p2" $pairs --site north=1
         python3 $here/site_analysis.py "$outdir/${s}_${mode}_p3" $pairs --threshold 2
+        if [ "$mode" = ensemble ]
+        then
+            python3 $here/record_match.py "$outdir/${s}_${mode}_p4" $pairs --site north=1
+        fi
     done
 done
-echo "done: pages in $outdir/<set>_<single|ensemble>_p{1,2,3}*"
+echo "done: pages in $outdir/<set>_<single|ensemble>_p{1,2,3}* and $outdir/<set>_ensemble_p4*"

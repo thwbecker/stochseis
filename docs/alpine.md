@@ -319,6 +319,45 @@ Findings.
      south and central sites (similar CVs at both), contrary to a single
      earlier test run.
 
+### 6.6 Matching records of the observed length
+
+`record_match.py` samples synthetic paleoseismic records the way the real
+ones were collected: for an end time, the last 13 (south), 14 (central)
+and 4 (north) recorded events, all three sites ending together, every
+100 yr through each catalog. A record matches if its mean interval lies
+within two standard errors of the observed mean (south +-62 yr, central
++-32 yr, north +-119 yr) and its CV within two approximate standard errors
+of the observed CV (+-0.16, +-0.09, +-0.20). First result (4 realizations
+of 20,000 yr per case, about 20 independent record sets per case, so the
+fractions are uncertain by a factor of about 1.5 to 2):
+
+| case | all three sites match RI | all match CV | all match both |
+|---|---|---|---|
+| reference (area threshold 488 km^2, nucleation exponent 12.3) | 57 % | 11 % | 6.1 % |
+| characteristic (100 km^2) | 61 % | 39 % | 16 % |
+| scale-free (2000 km^2) | 42 % | 11 % | 2.1 % |
+| soft clock (nucleation exponent 3) | 18 % | 24 % | 0.7 % |
+
+* Matching the mean intervals is easy wherever the slip budget is
+  calibrated (41 to 61 percent of record sets at all three sites at
+  once; single sites 61 to 100 percent); the soft clock fails on the
+  central RI (its intervals are too long, 20 percent).
+* Matching the CVs at all three sites is hard: regular cases match the
+  central record but rarely the south one (reference: south 17 percent,
+  central 79 percent), irregular cases the reverse (scale-free: south 90,
+  central 16 percent).
+* The characteristic case matches best overall (16 percent of record sets
+  match everything), because its records are regular at the central site
+  but scatter enough at the south site to reach the lower edge of the
+  observed south CV, and its slightly short intervals stay within the
+  tolerances.
+* Best-matching record sets: reference south 265 yr / 0.24, central
+  268 / 0.23, north 428 / 0.26; characteristic 224 / 0.38, 225 / 0.23,
+  387 / 0.37; observed 268 / 0.40, 249 / 0.23, 413 / 0.25.
+
+`run_realization_sets.sh` now also writes this analysis for every set
+(page 4, ensemble only), so the 50-realization sets give stable fractions.
+
 ## 7. Open points for the comparison with physics-based models
 
 * The observed contrast in regularity between the central (CV 0.23) and

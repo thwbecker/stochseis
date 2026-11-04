@@ -32,6 +32,9 @@ Mesh files go in `data/nz_alpine/` (see `data/nz_alpine/README.md`).
 * `spectrum_figures.py`: cases side by side (space-time, site intervals,
   frequency-magnitude, rupture patterns), e.g. for the scenarios
   compatible with the constraints.
+* `record_match.py`: samples synthetic records of the observed length (the
+  last n events before an end time, all sites ending together) and gives
+  how often they match the observed RI and CV, per site and jointly.
 * `control_summary.py`: one figure of what each irregularity control does
   (metrics against the cases of each realization set).
 * `parameter_effects.py`: parameter effects pooled over ABC rounds
@@ -49,6 +52,9 @@ Mesh files go in `data/nz_alpine/` (see `data/nz_alpine/README.md`).
         "planar_coarse variable_dip_coarse" examples/alpine/abc7_regularity.json
     examples/alpine/run_realization_sets.sh $NR_CPUS alpine_sets 50 20000
     python3 examples/alpine/control_summary.py alpine_sets/controls alpine_sets --site north=1
+    python3 examples/alpine/record_match.py alpine_sets/match_B \
+        characteristic alpine_sets/B_size:v0000 reference alpine_sets/B_size:v0001 scale_free alpine_sets/B_size:v0002 \
+        --site north=1
     python3 examples/alpine/parameter_effects.py alpine_effects alpine_full/abc_*/sweep_summary.json \
         alpine_r6/abc_*/sweep_summary.json alpine_r7/abc_*/sweep_summary.json --site north=1
 

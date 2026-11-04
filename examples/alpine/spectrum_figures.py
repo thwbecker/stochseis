@@ -6,9 +6,8 @@
 A case is a sweep output directory with catalogs (cat_vNNNN_sS.npz), one
 design vector of it (dir:v0001) or one realization (dir:v0001_s5). Use it for
 
-* the one-parameter spectrum (examples/alpine/spectrum_area.json: three
-  vectors that differ only in the area threshold of the hybrid size rule),
-  with one case per vector, and
+* the realization sets (run_realization_sets.sh: cases that differ in one
+  irregularity control), with one case per design vector, and
 * the scenarios compatible with the constraints, with one case per
   posterior ensemble (all accepted vectors pooled).
 

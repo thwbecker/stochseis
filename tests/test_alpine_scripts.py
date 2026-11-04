@@ -108,12 +108,25 @@ def test_realization_specs_and_windows(tmp_path):
     assert len(w) == 2 and np.isclose(w[0][0], 200.0) and np.isclose(w[0][1], 0.5)
 
 
-def test_dated_intervals_inflate_cv():
-    from nz_page import dated_intervals
-    rng = np.random.default_rng(3)
-    iv = rng.normal(268.0, 0.2 * 268.0, 200000)
-    out = dated_intervals(iv, 50.0, np.random.default_rng(4))
-    cv = out.std() / out.mean()
-    expected = np.sqrt(0.2 ** 2 + 2 * 50.0 ** 2 / 268.0 ** 2)
-    assert abs(cv - expected) < 0.01
-    assert np.array_equal(dated_intervals(iv[:5], 0.0, rng), iv[:5])
+def test_parameter_effects_runs(tmp_path):
+    rng = np.random.default_rng(0)
+    rows = []
+    for i in range(30):
+        area = float(np.exp(rng.uniform(np.log(100), np.log(3000))))
+        gamma = float(rng.uniform(2, 12))
+        for seed in (1, 2):
+            r = _row(i, seed, {"south": 260.0, "central": 250.0, "north": 420.0}, 0.1 + 0.1 * np.log(area) + 0.01 * rng.normal(),
+                     {"south": 7.0, "central": 7.0, "north": 4.0})
+            r.update(p_hazard_max_area_km2=area, p_nucleation_exponent=gamma, n_m6=100.0, n_m7=12.0, omori_p=1.0,
+                     max_mag=8.2, cv_m7_declustered=0.5, site_corupture_central_south=0.7)
+            rows.append(r)
+    f = tmp_path / "s.json"
+    f.write_text(json.dumps(rows))
+    subprocess.run([sys.executable, os.path.join(ROOT, "examples", "alpine", "parameter_effects.py"), str(tmp_path / "pe"),
+                    str(f)], check=True, capture_output=True)
+    table = (tmp_path / "pe_effects.md").read_text()
+    line = [l for l in table.split("\n") if l.startswith("| central CV")][0]
+    cells = [c.strip() for c in line.split("|")]
+    header = [c.strip() for c in table.split("\n")[2].split("|")]
+    assert float(cells[header.index("log hazard_max_area_km2")]) > 0.9      # CV built to depend on log area only
+    assert (tmp_path / "pe_effects.png").exists() and (tmp_path / "pe_dependence.png").exists()

@@ -1,7 +1,7 @@
 """Page 2 of the Alpine figure set: site recurrence and rupture sizes.
 
     python3 examples/alpine/nz_page.py out_prefix label1 dir1[:filter] [label2 dir2[:filter] ...]
-        [--threshold 2] [--site north=1] [--pattern-mag 7.5] [--age-sigma south=50 ...]
+        [--threshold 2] [--site north=1] [--pattern-mag 7.5]
 
 A case is a directory of catalogs, one design vector of it (dir:v0001) or
 one realization (dir:v0001_s5). One colour per case.
@@ -13,11 +13,6 @@ computed per window. Their distributions show what records of the observed
 length look like, and the fraction of windows at least as regular as the
 observed record measures how unusual the observation is in each case.
 
---age-sigma site=years adds normally distributed errors with that standard
-deviation to the event ages of the synthetic record at that site before the
-windows are formed (an observation model for dating uncertainty; errors
-add about 2 sigma^2 / RI^2 to CV^2). Only the window statistics use it.
-
 Panels: window CV at the three sites (observed CV marked); window RI
 versus window CV at the central site; site SED versus RI (run means)
 with the observations; rate of M >= 7.5 events by the sites they rupture;
@@ -28,7 +23,6 @@ Writes <out_prefix>.png and <out_prefix>.md.
 import os
 import sys
 import warnings
-import zlib
 
 import numpy as np
 
@@ -62,32 +56,8 @@ def windows(intervals, n):
     return out
 
 
-AGE_SIGMA = {}
-
-
-def parse_age_sigma(argv):
-    """Strip --age-sigma site=years options from argv."""
-    argv = list(argv)
-    while "--age-sigma" in argv:
-        k = argv.index("--age-sigma")
-        n, v = argv[k + 1].split("=")
-        AGE_SIGMA[n] = float(v)
-        argv = argv[:k] + argv[k + 2:]
-    return argv
-
-
-def dated_intervals(intervals, sigma, rng):
-    """Intervals after adding age errors (sd sigma) to the event times and re-sorting."""
-    if sigma <= 0 or len(intervals) < 1:
-        return intervals
-    t = np.concatenate([[0.0], np.cumsum(intervals)])
-    t = np.sort(t + rng.normal(0.0, sigma, len(t)))
-    return np.diff(t)
-
-
 def run_stats(path, sites, opt):
     out = pattern_stats(path, sites, opt)
-    rng = np.random.default_rng(zlib.crc32(os.path.basename(path).encode()))
     cat = Catalog.load(path)
     fe = cat.fault_events()
     fe = fe[fe["t"] >= 0.1 * cat.duration]
@@ -99,13 +69,12 @@ def run_stats(path, sites, opt):
     out["windows"] = {}
     for s in sites:
         n = int(s["n_ri"]) - 1
-        iv = dated_intervals(out["sites"][s["name"]]["intervals"], AGE_SIGMA.get(s["name"], 0.0), rng)
-        out["windows"][s["name"]] = windows(iv, n)
+        out["windows"][s["name"]] = windows(out["sites"][s["name"]]["intervals"], n)
     return out
 
 
 def main():
-    out_prefix, pairs, opt = parse(parse_age_sigma(sys.argv))
+    out_prefix, pairs, opt = parse(sys.argv)
     sites = load_sites(os.path.join(DATA, "paleo_sites.csv"))
     obs = {s["name"]: s for s in sites}
     cases = []
@@ -196,8 +165,6 @@ def main():
 
     with open(out_prefix + ".md", "w") as fh:
         th = ", ".join(f"{k} {v:g} m" for k, v in opt["site"].items())
-        ages = ", ".join(f"{k} {v:g} yr" for k, v in AGE_SIGMA.items())
-        fh.write(f"Age errors (sd): {ages}. " if ages else "")
         fh.write(f"Detection threshold {opt['threshold']:g} m{', ' + th if th else ''}. Windows: consecutive records "
                  "with the observed number of intervals. Columns per site: windows, median window RI, median window "
                  "CV [5-95 %], fraction of windows with CV at or below the observed CV.\n\n")

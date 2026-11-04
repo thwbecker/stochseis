@@ -12,8 +12,6 @@ Mesh files go in `data/nz_alpine/` (see `data/nz_alpine/README.md`).
   campaign; the geometry is set per configuration.
 * `abc6_bath.json`: sensitivity case with stronger triggering (Bath gap).
 * `abc7_regularity.json`: calibration toward regular site records.
-* `spectrum_area.json`: one-parameter spectrum (area threshold of the
-  hybrid size rule: 100, 488, 2000 km^2), catalogs kept.
 * `campaign_configs.json`: configurations (geometry, patch size).
 * `realization_sets.json`: three families of cases varying one
   irregularity control each (nucleation clock, size rule, barriers).
@@ -32,8 +30,12 @@ Mesh files go in `data/nz_alpine/` (see `data/nz_alpine/README.md`).
 * `site_analysis.py`: site figures and tables (paleoseismic panels,
   co-rupture, predictability; `--merge`, `--reference`).
 * `spectrum_figures.py`: cases side by side (space-time, site intervals,
-  frequency-magnitude, rupture patterns) for the spectrum and for the
-  scenarios compatible with the constraints.
+  frequency-magnitude, rupture patterns), e.g. for the scenarios
+  compatible with the constraints.
+* `control_summary.py`: one figure of what each irregularity control does
+  (metrics against the cases of each realization set).
+* `parameter_effects.py`: parameter effects pooled over ABC rounds
+  (standardized-effect heatmap, binned dependence, acceptance rates).
 * `run_realization_sets.sh`: runs the realization sets (50 realizations
   per case) and draws the three pages for one realization and for the
   ensemble; `make_realization_specs.py` writes their specs, `nz_page.py`
@@ -45,12 +47,10 @@ Mesh files go in `data/nz_alpine/` (see `data/nz_alpine/README.md`).
 
     examples/alpine/run_full_campaign.sh $NR_CPUS alpine_r7 100 3 10000 20 5 20000 \
         "planar_coarse variable_dip_coarse" examples/alpine/abc7_regularity.json
-    python3 -m stochseis.cli sweep examples/alpine/spectrum_area.json alpine_spectrum --nproc $NR_CPUS
-    python3 examples/alpine/spectrum_figures.py alpine_spectrum/spectrum \
-        characteristic alpine_spectrum:v0000 reference alpine_spectrum:v0001 scale-free alpine_spectrum:v0002 \
-        --site north=1
-
     examples/alpine/run_realization_sets.sh $NR_CPUS alpine_sets 50 20000
+    python3 examples/alpine/control_summary.py alpine_sets/controls alpine_sets --site north=1
+    python3 examples/alpine/parameter_effects.py alpine_effects alpine_full/abc_*/sweep_summary.json \
+        alpine_r6/abc_*/sweep_summary.json alpine_r7/abc_*/sweep_summary.json --site north=1
 
 Quick end-to-end checks (a few minutes on one core each):
 

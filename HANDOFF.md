@@ -172,8 +172,7 @@ fine configurations, spectrum runs, scenario figures.
 Realization sets (runs/alpine_sets): record-length windows make the
 reference calibration consistent with the central and north records;
 the south record (CV 0.40) is improbable in every case that fits the
-central one; barriers do not decouple the sites; dating uncertainty
-(nz_page.py --age-sigma) is the observation-side test.
+central one; barriers do not decouple the sites.
 
 
 ## 5. Next stages (from the original plan; concrete steps in ROADMAP.md)

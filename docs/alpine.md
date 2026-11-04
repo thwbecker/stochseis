@@ -99,9 +99,46 @@ Decision on priorities (T. Becker): regularity at the paleoseismic sites
 matters more than a Bath gap of 1.2; the Bath gap is reported as an
 outcome and not imposed (`--bath-sigma 1`).
 
-## 5. Results
+## 5. What we learned
 
-### 5.1 Reference calibration (round 5, `abc5_planar_l1.json`)
+The parameter effects below come from two kinds of evidence: the
+realization sets, which vary one control at a time around the reference
+calibration (section 6.5; `control_summary.py`), and regressions over the
+design vectors of the ABC rounds (`parameter_effects.py`; standardized
+coefficients, metric standard deviations per parameter standard deviation,
+quoted here from round 4, 200 vectors).
+
+| ingredient | what it controls | evidence |
+|---|---|---|
+| slip rule | whether site regularity and standard seismicity are possible at all: stress-drop slip leaves site CV near 0.4 or above (released slip varies from event to event); slip equal to the deficit decouples magnitude from size (b about 0); deficit-capped slip with the hybrid size rule satisfies both | rounds 1 to 4 |
+| stress drop and initiation rate | mean RI and SED at all sites (slip budget: RI is about SED / slip rate) | coefficients +0.7 (stress drop) and -0.3 (initiation rate) on RI and SED |
+| nucleation exponent (renewal clock) | regularity of sites and of the whole-fault sequence, with the frequency-magnitude distribution, Omori decay and Bath gap unchanged; higher exponents also shorten intervals | set A: whole-fault CV 0.21 to 0.37, central window CV 0.21 to 0.35; coefficient -0.6 on RI |
+| area threshold of the size rule | the size distribution (characteristic to scale-free), aftershock productivity, Bath gap, rupture patterns and whole-fault regularity; site regularity is greatest at intermediate thresholds | set B: Bath 2.16 / 1.34 / 1.13, whole-fault CV 0.30 / 0.21 / 0.76; coefficients +0.65 on site CV, +0.8 on whole-fault CV, -0.6 on the M >= 7 excess |
+| arrest scale and admission sharpness | how far ruptures run into partly loaded fault: co-rupture between sites and north-site regularity | coefficients -0.74 on central-south co-rupture, +0.72 on north CV |
+| branching ratio | Bath gap and Omori p; above about 0.3 also less regular sites and whole-fault sequences | coefficients -0.5 on Bath, +0.5 on Omori p; round 6 |
+| b | b, and the Bath gap | coefficients +0.96 on b, -0.6 on Bath |
+| quenched barriers (strength heterogeneity) | moderately less regular sites, shorter north intervals, fewer full-length ruptures; they do not give neighbouring sites different regularity | set C |
+| slip roughness, stress-drop scatter | little, once slip is capped by the deficit | coefficients below 0.15 |
+| geometry, resolution | little for these observables (with the L0 and L1 elastic operators) | five configurations, paired designs |
+| observation model | detection threshold (north RI 420 to 460 yr at 1 m, 540 at 2 m), merging of close events (CV -0.03 to -0.05), record length (windows of 12 to 13 intervals have CVs about 0.07 lower than long runs) | sections 6.1, 6.5 |
+
+Overall:
+
+* The site records constrain the model class more than its parameters:
+  in each calibration the accepted parameter distributions are close to
+  their priors.
+* Regular site records come with a characteristic size distribution and
+  weak triggering in this model class; standard aftershock statistics
+  (Bath gap 1.2) come with less regular sites.
+* The contrast between a regular central record and a less regular south
+  record is not produced by any control tested: the two sites share most
+  large ruptures in every case.
+* Judged by records of the observed length, the reference calibration is
+  consistent with the central and north records.
+
+## 6. Results in detail
+
+### 6.1 Reference calibration (round 5, `abc5_planar_l1.json`)
 
 Priors: stress drop 5 to 10 MPa, nucleation exponent 2 to 12, branching
 ratio 0.05 to 0.3, area threshold 300 to 3000 km^2, arrest scale 0.2 to 1,
@@ -145,7 +182,7 @@ calibrated rate, slip CV 0.1 to 0.5. All five configurations
   co-rupture differ between geometries and between 1 and 2 km patches by
   no more than their sampling errors.
 
-### 5.2 Regular sites (round 7, `abc7_regularity.json`)
+### 6.2 Regular sites (round 7, `abc7_regularity.json`)
 
 Priors as round 5 but area threshold 50 to 500 km^2, nucleation exponent
 3 to 30, admission exponent 4 to 12; events merged at 30 yr at run time;
@@ -169,7 +206,7 @@ coarse configurations (`runs/alpine_r7/`).
   with south 0.34 to 0.38, south with north 0.02 to 0.04). Records are
   strongly slip-predictable (0.74 to 0.86).
 
-### 5.3 Bath gap (round 6, `abc6_bath.json`)
+### 6.3 Bath gap (round 6, `abc6_bath.json`)
 
 Branching ratio 0.2 to 0.7 and b 0.9 to 1.2 bring the Bath gap to about
 1.0 (M >= 6 mainshocks) and 1.24 to 1.38 (M >= 7, best vectors), but make
@@ -182,38 +219,16 @@ gaps of about 2 at any branching ratio: on an isolated fault no loaded
 area remains for a large aftershock. Regular sites and a Bath gap of 1.2
 are in tension in this model class.
 
-### 5.4 One-parameter spectrum: the area threshold
+### 6.4 Scenarios compatible with the constraints
 
-The area threshold of the hybrid size rule is the strongest single
-control of site regularity. Holding all other parameters at the best
-round-7 variable-dip vector (2 km patches; single 10,000-yr seeds;
-2 m, north 1 m, merged at 30 yr):
-
-| case | area threshold | south RI / CV / SED | central | north | Bath (M >= 6) | events >= M5 |
-|---|---|---|---|---|---|---|
-| characteristic | 100 km^2 | 208 / 0.28 / 5.6 | 219 / 0.24 / 5.9 | 377 / 0.30 / 3.9 | 2.10 | 2,800 |
-| reference | 488 km^2 | 257 / 0.24 / 6.9 | 257 / 0.23 / 6.9 | 417 / 0.35 / 4.2 | 1.46 | 7,800 |
-| scale-free | 2000 km^2 | 310 / 0.40 / 7.3 | 246 / 0.50 / 5.7 | 465 / 0.44 / 4.6 | 1.15 | 26,900 |
-
-Moving the threshold from 100 to 2000 km^2 takes the fault from
-characteristic behaviour (few moderate events, regular sites, large
-Bath gap) to nearly scale-free behaviour (many moderate and partial
-ruptures, irregular sites, standard Bath gap). Only the middle case meets
-all mean constraints with the other parameters fixed.
-`spectrum_area.json` reruns the three cases with 5 seeds x 20,000 yr and
-catalogs, for `spectrum_figures.py`.
-
-### 5.5 Scenarios compatible with the constraints
-
-`spectrum_figures.py` applied to the posterior ensembles (all accepted
-vectors pooled per case) shows the kinds of earthquake sequences that
+Page 2 of the figure set (`nz_page.py`, rupture patterns and sizes) and
+`spectrum_figures.py` applied to posterior ensembles (all accepted
+vectors pooled per case) show the kinds of earthquake sequences that
 satisfy the constraints: space-time windows of large ruptures, site
-interval distributions against the paleoseismic ones, the
-frequency-magnitude distribution, and the rate of M >= 7.5 events by the
-combination of sites they rupture (south only, south and central, all
-three, and so on). Commands in section 7; results to be added.
+intervals, the frequency-magnitude distribution, and the rate of M >= 7.5
+events by the combination of sites they rupture.
 
-### 5.6 Realization sets: three irregularity controls
+### 6.5 Realization sets: three irregularity controls
 
 The area threshold is not the only control of site regularity. Single
 10,000-yr tests around the reference vector (best round-7 variable-dip
@@ -303,24 +318,16 @@ Findings.
      342 yr) and fewer south-central ruptures; they do not decouple the
      south and central sites (similar CVs at both), contrary to a single
      earlier test run.
-4. An observation-side explanation of the south record is dating
-   uncertainty: age errors add about 2 sigma^2 / RI^2 to CV^2, so errors of
-   50 yr at the south site would raise a CV of 0.20 to about 0.31.
-   `nz_page.py --age-sigma south=50` applies such errors to the windows of
-   existing catalogs (no new runs). The age uncertainties of the three
-   records are needed to make this quantitative.
 
-
-## 6. Open points for the comparison with physics-based models
+## 7. Open points for the comparison with physics-based models
 
 * The observed contrast in regularity between the central (CV 0.23) and
   south (0.40) sites: in every case and ensemble the two sites share most
   ruptures and have similar CVs; judged by record-length windows, the
   reference calibration matches the central and north records but makes
-  the south record improbable (at most 2 percent). Either the south site
-  has partly independent rupture histories (which neither the size rule,
-  the nucleation clock nor 50 km barriers produce), or dating uncertainty
-  inflates the observed south CV.
+  the south record improbable (at most 2 percent). Neither the size
+  rule, the nucleation clock nor 50 km barriers give the two sites partly
+  independent rupture histories.
 * Regular sites require, in this model class, a characteristic size
   distribution and weak triggering (large Bath gaps). A physics-based
   model that matches the regularity with near-Gutenberg-Richter
@@ -332,7 +339,7 @@ Findings.
   records; hypocentres near the base of the seismogenic zone; depletion
   of M6.5 to 7 events in the regular-site calibrations.
 
-## 7. Reproducing
+## 8. Reproducing
 
 Mesh files in `data/nz_alpine/` (`alpine_planar_1km_26Jan.stl`,
 `variable_dip_1km_26Jan.stl`, `Alpine_full_segmented_transition_05km_d20.stl`).
@@ -344,13 +351,12 @@ Mesh files in `data/nz_alpine/` (`alpine_planar_1km_26Jan.stl`,
     # regular sites (coarse, about 10 core-hours; add the fine names for all)
     examples/alpine/run_full_campaign.sh $NR_CPUS alpine_r7 100 3 10000 20 5 20000 \
         "planar_coarse variable_dip_coarse" examples/alpine/abc7_regularity.json "--site north=1 --bath-sigma 1"
-    # one-parameter spectrum (15 runs of 20,000 yr)
-    python3 -m stochseis.cli sweep examples/alpine/spectrum_area.json alpine_spectrum --nproc $NR_CPUS
-    python3 examples/alpine/spectrum_figures.py alpine_spectrum/spectrum \
-        characteristic alpine_spectrum:v0000 reference alpine_spectrum:v0001 scale-free alpine_spectrum:v0002 \
-        --site north=1
     # realization sets A, B, C: 450 runs of 20,000 yr at 2 km (about 9 core-hours)
     examples/alpine/run_realization_sets.sh $NR_CPUS alpine_sets 50 20000
+    # what each control does (realization sets) and parameter effects (ABC rounds pooled)
+    python3 examples/alpine/control_summary.py alpine_sets/controls alpine_sets --site north=1
+    python3 examples/alpine/parameter_effects.py alpine_effects alpine_full/abc_*/sweep_summary.json \
+        alpine_r6/abc_*/sweep_summary.json alpine_r7/abc_*/sweep_summary.json --site north=1
     # scenarios compatible with the constraints
     python3 examples/alpine/spectrum_figures.py alpine_scenarios \
         reference alpine_full/posterior_variable_dip_fine regular alpine_r7/posterior_variable_dip_coarse \
@@ -361,7 +367,7 @@ merging was available at run time; its merged tables come from
 `site_analysis.py --merge 30` and its summaries were rescored with
 `--site north=1`.
 
-## 8. Kept run summaries
+## 9. Kept run summaries
 
 * `runs/alpine_full_campaign/`: round 5, five configurations (summaries
   at 2 m and with north at 1 m, site tables, merged tables, figures).

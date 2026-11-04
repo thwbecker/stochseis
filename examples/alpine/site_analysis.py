@@ -10,6 +10,8 @@ cat_vNNNN_sS.npz; vector 0000 is the best-fitting one).
 
 --merge merges recorded site events closer than the given number of years
 (dating resolution of paleoseismic records; works on existing catalogs).
+Without it, the merge interval the catalogs were run with (site_merge_yr)
+is used, so tables agree with the run-time summaries.
 
 --reference adds site statistics of another model (for example a
 physics-based simulator) to the RI-CV and RI-SED panels and to the table.
@@ -60,7 +62,7 @@ GEO_STYLE = ["-", ":", "--", "-."]
 GEO_COLORS = ["C0", "C3", "C2", "C1"]
 MAG = np.arange(5.0, 8.61, 0.05)
 THRESHOLDS = [0.5, 1.0, 2.0, 3.0, 4.0]
-MERGE = 0.0          # merge recorded site events closer than this [yr] (--merge)
+MERGE = None         # merge recorded site events closer than this [yr] (--merge); None: the catalog's site_merge_yr
 
 
 def parse_args(argv):
@@ -101,7 +103,9 @@ def run_stats(path, sites, th):
     # site records at the detection threshold and at the threshold series
     out["sites"] = {}
     for thr in THRESHOLDS + ([th] if th not in THRESHOLDS else []):
-        rec = site_records(cat, sites, threshold=thr, t_start=t0, merge_yr=MERGE)
+        merge = MERGE if MERGE is not None else getattr(cat.params, "site_merge_yr", 0.0)
+        out["merge_yr"] = merge
+        rec = site_records(cat, sites, threshold=thr, t_start=t0, merge_yr=merge)
         for s in sites:
             r = rec[s["name"]]
             t = r["times"]
@@ -400,7 +404,9 @@ def main():
         for r in rows:
             w.writerow(r)
     with open(out_prefix + "_table.md", "w") as fh:
-        fh.write(f"Detection threshold {th:g} m{f', events closer than {MERGE:g} yr merged' if MERGE > 0 else ''}. "
+        merges = sorted({r.get("merge_yr", 0.0) for D in G.values() for r in D["runs"]})
+        mtxt = ", ".join(f"{m:g}" for m in merges)
+        fh.write(f"Detection threshold {th:g} m{f', events closer than {mtxt} yr merged' if any(m > 0 for m in merges) else ''}. "
                  "Best: best-ranked vector, pooled over all its posterior seeds. "
                  "Ensemble: median [5-95 %] over all posterior runs.\n\n")
         rn = ref_name or "reference"

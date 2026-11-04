@@ -246,3 +246,8 @@ Decision: regularity over Bath. Reference baseline = round 5 (north at
 Merging site events closer than 30 yr on the round-5 fine posteriors:
 central and south CVs -0.03 to -0.04 (ensemble medians 0.34 to 0.37),
 north unchanged; reference envelope in docs/alpine.md.
+Round 7 (regularity priors, coarse): best variable-dip vector matches
+central RI/CV/SED (264 yr / 0.23 / 7.0 m) and north RI/SED; south too
+regular (0.24 vs 0.40), north CV 0.32 vs 0.25. Cost: strongly
+characteristic, partly bimodal size distribution, Bath about 1.7 overall.
+site_analysis.py now uses the catalogs' site_merge_yr by default.

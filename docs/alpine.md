@@ -993,23 +993,73 @@ CV of 0.23 now lies just below the 5th percentile of the ensembles
 (0.26), within its own sampling uncertainty of 0.05 to 0.1; the
 remaining difference in regularity is small but systematic.
 
-### Round 7 (planned): can the model reach the observed regularity?
+### Round 7: can the model reach the observed regularity? (run by T. Becker)
 
 `examples/alpine/abc7_regularity.json`: round 5 with the priors extended
 toward more regular behaviour (area threshold of the hybrid size rule 50
 to 500 km^2 instead of 300 to 3000, nucleation exponent 3 to 30,
-admission exponent 4 to 12), branching ratio kept at 0.05 to 0.3, site
-events closer than 30 yr merged at run time. A single-seed test in the
-most regular corner (area threshold 80 km^2, nucleation exponent 15,
-admission exponent 10, branching 0.15, 8 MPa, initiation rate 0.4;
-variable dip, 2 km patches, 10,000 yr) gave central and south CVs of
-0.23 and 0.24, but intervals of 175 to 188 yr with 4.6 to 5.1 m per event
-(to be corrected by stress drop and initiation rate), N(M >= 7) and
-N(M >= 7.5) 3.7 and 10.6 times the Gutenberg-Richter extrapolation from
-M5, and a Bath gap of 2.2. Round 7 therefore maps the trade-off between
-site regularity and a characteristic size distribution; the excess over
-Gutenberg-Richter can be computed from the summaries (n_m6, n_m7,
-b_fault_below_sat).
+admission exponent 4 to 12), branching ratio 0.05 to 0.3, site events
+closer than 30 yr merged at run time. Coarse configurations, 100 vectors
+x 3 seeds x 10,000 yr, posteriors of the best 20 x 5 x 20,000 yr, scored
+with the north site at 1 m and the Bath term switched off
+(`--bath-sigma 1`). Results in `runs/alpine_r7/`.
+
+Acceptance: 58 (planar) and 46 (variable dip) of 100, 43 in common;
+best ABC misfits 0.56 and 0.51; all 20 posterior vectors stay accepted.
+Accepted parameters span the new priors (area threshold 52 to 489 km^2,
+median 180 to 200; nucleation exponent 3.2 to 27, median 8.5); stress
+drops are somewhat higher (median 8.1 to 8.5 MPa) and initiation rates
+lower (0.26 to 0.28 of calibrated) than in round 5.
+
+Best rescored vector (variable dip, ABC rank 1; posterior runs, events
+merged at 30 yr, north at 1 m):
+
+| site | RI [yr] | CV | SED [m] | observed |
+|---|---|---|---|---|
+| south | 262 | 0.24 | 7.0 | 268 / 0.40 / 7.5 |
+| central | 264 | 0.23 | 7.0 | 249 / 0.23 / 7.1 |
+| north | 417 | 0.32 | 4.1 | 413 / 0.25 / 4.0 |
+
+Median site CVs of the posterior vectors (merged): south 0.27 to 0.31,
+central 0.26 to 0.28, north 0.35 to 0.38 (round 5: about 0.37 to 0.41).
+The site table `sites_coarse_table.md` of this run was drawn without
+merging (before `site_analysis.py` used the catalogs' merge interval by
+default) and shows CVs higher by a few hundredths; rerun the site
+analysis to update it.
+
+Findings.
+
+1. The observed regularity is within reach: the central record (CV 0.23)
+   is matched by the best vectors and lies near the middle of the
+   ensemble range (5 to 95 percent of the posterior runs 0.15 to 0.40,
+   unmerged).
+2. The south site is now too regular in many vectors (CV 0.13 to 0.31
+   against 0.40). In the model the south and central sites share most of
+   their ruptures (they co-rupture in most events) and therefore have
+   similar regularity, whereas the data show a regular central record
+   and a less regular south record. Reproducing that contrast needs
+   partly independent rupture histories at the two sites, i.e. a
+   boundary or change in behaviour between them (the variable-dip
+   geometry changes dip between them, but in this model that alone does
+   not decouple the sites).
+3. The north regularity (CV 0.25) is still not reached (best 0.31 to
+   0.33, medians 0.35 to 0.38).
+4. The cost is in the size distribution. The magnitude distribution of
+   M >= 6.5 events becomes bimodal: besides the M8.2 to 8.3 through-going
+   ruptures (best vectors), many accepted runs have a population of
+   segment-scale M7.6 to 8.0 ruptures, and in some runs through-going
+   M >= 8 events recur only every 1,000 to 3,700 yr. Some runs have almost
+   no M6.5 to 7 events (nearly all M >= 6.5 ruptures longer than 100 km).
+   Whole-fault M >= 7.5 events recur every 103 to 105 yr on average (CV
+   0.80 to 0.84; round 5: 171 to 177 yr, CV 0.63 to 0.65). The Bath gap
+   over all runs is 1.68 to 1.73 for M >= 6 mainshocks, with a second mode
+   at 2 to 3 (best vectors 1.26 to 1.42).
+5. Within this model class, regular site records therefore require a
+   strongly characteristic size distribution: small area thresholds for
+   the scale-free size rule, which means that ruptures larger than a few
+   hundred km^2 end by the fault state rather than by chance. Whether the
+   Alpine Fault's moderate-magnitude seismicity is as depleted as these
+   runs predict is an independent test.
 
 ### Rescoring of the posterior vectors
 

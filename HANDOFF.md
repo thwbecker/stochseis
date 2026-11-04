@@ -155,60 +155,19 @@ would be needed to produce stress-dependent b variations.
    exact for antiplane components only. Sub-patch events carry 2 percent
    of the moment.
 
-## 4b. Alpine Fault intercomparison (started 1 November 2026)
+## 4b. Alpine Fault intercomparison
 
-Update after ABC round 4: hybrid sizes (scale-free below a threshold
-area, state-only termination above) with slip capped at the local deficit
-match mean recurrence, CV and single-event displacement at all three
-paleoseismic sites (55 of 100 vectors accepted); details in docs/alpine.md.
-Round 3 (slip-predictable) matches the site records but has unphysical
-seismicity (b about 0, Bath 0.7) and is rejected once b and Bath are
-added to the acceptance (`--seismicity`); round 4 keeps 54 of 100.
-Low site CVs come with large Bath gaps (1.5 to 1.9) in this model class.
-Variable-dip round 4: same acceptance (61 / 69 of the same 100 vectors);
-geometry shows mainly in co-rupture between sites (much higher on the
-variable-dip geometry), not in the site statistics. Next: posterior
-ensemble with catalogs; L1 dip correction before quoting geometry effects
-on slip.
+Consolidated in docs/alpine.md (4 November 2026): model class (hybrid
+sizes, deficit-capped slip, L1 dip correction), calibration by ABC with
+posterior rescoring, reference calibration (round 5, five
+configurations), regular-site calibration (round 7), Bath-gap
+sensitivity (round 6), one-parameter spectrum along the area threshold,
+scenario figures, open points for the physics-based models. Kept run
+summaries: runs/alpine_full_campaign, runs/alpine_r6, runs/alpine_r7.
+Decisions: north site scored at 1 m, site events merged at 30 yr,
+regularity over Bath gap. Pending: round 7 on the fine configurations,
+spectrum runs (spectrum_area.json), scenario figures.
 
-Current step (3 November): L1 dip correction implemented
-(stochseis/dipcorr.py); full campaign over five configurations (planar,
-variable dip, segmented transition on 0.5 km meshes with 1 km patches;
-planar and variable dip on 1 km meshes with 2 km patches) driven by
-examples/alpine/run_full_campaign.sh, with RSQSim-style site analysis
-(site_analysis.py), overview figures and a cross-configuration summary
-(campaign_summary.py). See docs/alpine.md, "Full campaign".
-Results (docs/alpine.md, "Full campaign results"): 52 to 65 of 100
-vectors accepted in every configuration with strong overlap; accepted
-parameters close to the round-5 priors; south and central means matched,
-central CV and north RI biased high in all ensembles (RSQSim has the
-north bias too); site statistics converged at 2 km and insensitive to
-geometry. Posterior rescoring: all 20 posterior vectors stay accepted in
-every configuration and the best was ranked 1 or 2 by the ABC. The
-product for the intercomparison is the calibrated envelope (docs/alpine.md);
-physics models are compared against it, RSQSim being one example
-(site_analysis.py --reference). Figures: event statistics independent of
-geometry; co-rupture differs by at most 0.07 between geometries (the
-round-4 co-rupture contrast is not reproduced); hypocentres at the base;
-slip-predictable sites; north RI strongly threshold dependent
-(`--site north=1` fits RI and SED but raises the north CV to 0.5).
-Campaign rescored with north at 1 m: 64 to 69 accepted, best vectors
-unchanged, north RI / SED of the best vectors 362 to 436 yr / 3.5 to
-4.2 m; the only remaining systematic misfit is regularity at the central
-and north sites (CV 0.23 and 0.25 observed, about 0.4 in the ensembles).
-Bath gap too large (1.4 ensembles): controlled by b, area threshold and
-branching ratio; round 6 (abc6_bath.json) widens branching (0.2-0.7) and
-b (0.9-1.2); new metric bath_mean_m7; M8 through-going ruptures keep gaps
-near 2 on a single fault (no loaded area left for large aftershocks).
-The paragraph below describes the starting point.
-
-See docs/alpine.md and docs/networks.md. STL geometries load as section
-grids (stochseis/mesh.py), paleo-site statistics are computed by
-stochseis/sites.py and included in sweep summaries when sites_file is
-set. First runs with the defaults give single-event displacements of 3 to
-5 m against 7 m observed and recurrence CVs of 0.5 to 0.8 against 0.2 to
-0.4. Missing inputs: segment slip rates, truncated and Alpine-Hope
-geometries.
 
 ## 5. Next stages (from the original plan; concrete steps in ROADMAP.md)
 
@@ -234,20 +193,3 @@ slip rates constrained to a transect loading rate.
   with 10^5 patches are needed.
 * References in docs/design.md were written from memory; verify against
   erdbeben.bib before citing.
-
-Round 6 (3 November, coarse): branching 0.2-0.7 and b 0.9-1.2 bring the
-Bath gap to about 1.0 (M >= 6) and 1.24-1.38 (M >= 7, best vectors) but
-raise site CVs (best central 0.42-0.56) and lower acceptance (41-54):
-regular sites and a Bath gap of 1.2 are in tension in this model class.
-Option site_merge_yr / site_analysis.py --merge merges site events closer
-than the dating resolution (modest effect, CV -0.05 to -0.1).
-Decision: regularity over Bath. Reference baseline = round 5 (north at
-1 m), Bath gap reported as an outcome; round 6 = sensitivity case.
-Merging site events closer than 30 yr on the round-5 fine posteriors:
-central and south CVs -0.03 to -0.04 (ensemble medians 0.34 to 0.37),
-north unchanged; reference envelope in docs/alpine.md.
-Round 7 (regularity priors, coarse): best variable-dip vector matches
-central RI/CV/SED (264 yr / 0.23 / 7.0 m) and north RI/SED; south too
-regular (0.24 vs 0.40), north CV 0.32 vs 0.25. Cost: strongly
-characteristic, partly bimodal size distribution, Bath about 1.7 overall.
-site_analysis.py now uses the catalogs' site_merge_yr by default.

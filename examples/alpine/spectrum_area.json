@@ -1,0 +1,81 @@
+{
+ "_comment": "Spectrum of site regularity along one parameter: the area threshold of the hybrid size rule (ruptures larger than it end only by the fault state). Other parameters fixed at the best round-7 variable-dip vector; variable-dip geometry, 2 km patches. Vector order: v0000 characteristic (100 km^2), v0001 reference (488 km^2), v0002 scale-free (2000 km^2). Run without --no-catalogs; analyse with examples/alpine/spectrum_figures.py.",
+ "design": "list",
+ "base": {
+  "geometry_file": "data/nz_alpine/variable_dip_1km_26Jan.stl",
+  "segments_file": "data/nz_alpine/segments.csv",
+  "segment_max_dist_km": 10.0,
+  "segment_include": [
+   "Alpine",
+   "Wairau"
+  ],
+  "patch_km": 2.0,
+  "rake_deg": 160.0,
+  "mag_min": 5.0,
+  "duration_yr": 20000,
+  "pilot_events": 300,
+  "store_slip_min_mag": 6.0,
+  "sites_file": "data/nz_alpine/paleo_sites.csv",
+  "site_thresholds_m": [
+   1.0,
+   2.0,
+   4.0
+  ],
+  "slip_mode": "local_cap",
+  "slip_fraction": 1.0,
+  "deep_slip_km": 20.0,
+  "dip_correction": true,
+  "site_merge_yr": 30.0
+ },
+ "vectors": [
+  {
+   "stress_drop_mpa": 9.77,
+   "stress_drop_ln_sigma": 0.0229,
+   "nucleation_exponent": 12.3,
+   "branching_ratio": 0.129,
+   "arrest_scale": 0.226,
+   "b_value": 1.07,
+   "budget_scale": 0.463,
+   "slip_cv": 0.454,
+   "admission_exponent": 10.6,
+   "hazard_max_area_km2": 100.0
+  },
+  {
+   "stress_drop_mpa": 9.77,
+   "stress_drop_ln_sigma": 0.0229,
+   "nucleation_exponent": 12.3,
+   "branching_ratio": 0.129,
+   "arrest_scale": 0.226,
+   "b_value": 1.07,
+   "budget_scale": 0.463,
+   "slip_cv": 0.454,
+   "admission_exponent": 10.6,
+   "hazard_max_area_km2": 488.0
+  },
+  {
+   "stress_drop_mpa": 9.77,
+   "stress_drop_ln_sigma": 0.0229,
+   "nucleation_exponent": 12.3,
+   "branching_ratio": 0.129,
+   "arrest_scale": 0.226,
+   "b_value": 1.07,
+   "budget_scale": 0.463,
+   "slip_cv": 0.454,
+   "admission_exponent": 10.6,
+   "hazard_max_area_km2": 2000.0
+  }
+ ],
+ "case_names": [
+  "characteristic",
+  "reference",
+  "scale-free"
+ ],
+ "seeds": [
+  1,
+  2,
+  3,
+  4,
+  5
+ ],
+ "mmain": 6.0
+}

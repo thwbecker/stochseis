@@ -19,8 +19,9 @@
 #                                             [base_spec] ["scoring options"]
 # defaults:                                   $NR_CPUS alpine_full 100 3 10000 20 5 20000
 #                                             "planar_fine variable_dip_fine segmented_fine planar_coarse variable_dip_coarse"
-#                                             examples/alpine/abc5_planar_l1.json ""
-# scoring options are passed to the acceptance, posterior ranking and summary, e.g. "--site north=1 --bath-m7"
+#                                             examples/alpine/abc5_planar_l1.json "--site north=1 --bath-sigma 1"
+# scoring options are passed to the acceptance, posterior ranking and summary (default: north site at 1 m,
+# Bath gap not constrained, as decided in docs/alpine.md)
 #
 ncpu=${1-$NR_CPUS}
 outdir=${2-alpine_full}
@@ -32,7 +33,7 @@ post_seeds=${7-5}
 post_dur=${8-20000}
 configs=${9-"planar_fine variable_dip_fine segmented_fine planar_coarse variable_dip_coarse"}
 base_spec=${10-examples/alpine/abc5_planar_l1.json}
-score_opts=${11-""}
+score_opts=${11-"--site north=1 --bath-sigma 1"}
 
 here=examples/alpine
 if [ -z "$ncpu" ]

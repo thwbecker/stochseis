@@ -101,3 +101,8 @@ Site-specific detection thresholds (rescoring only, no new runs):
     python3 examples/alpine/abc_accept.py alpine_full/abc_planar_fine/sweep_summary.json 2 2.0 --seismicity --site north=1
     python3 examples/alpine/campaign_summary.py alpine_full planar_fine variable_dip_fine segmented_fine \
         planar_coarse variable_dip_coarse --site north=1 > alpine_full/campaign_summary_north1m.md
+
+## Round 7 (regularity)
+
+    examples/alpine/run_full_campaign.sh $NR_CPUS alpine_r7 100 3 10000 20 5 20000 \
+        "planar_coarse variable_dip_coarse" examples/alpine/abc7_regularity.json "--site north=1 --bath-sigma 1"

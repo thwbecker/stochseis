@@ -993,6 +993,24 @@ CV of 0.23 now lies just below the 5th percentile of the ensembles
 (0.26), within its own sampling uncertainty of 0.05 to 0.1; the
 remaining difference in regularity is small but systematic.
 
+### Round 7 (planned): can the model reach the observed regularity?
+
+`examples/alpine/abc7_regularity.json`: round 5 with the priors extended
+toward more regular behaviour (area threshold of the hybrid size rule 50
+to 500 km^2 instead of 300 to 3000, nucleation exponent 3 to 30,
+admission exponent 4 to 12), branching ratio kept at 0.05 to 0.3, site
+events closer than 30 yr merged at run time. A single-seed test in the
+most regular corner (area threshold 80 km^2, nucleation exponent 15,
+admission exponent 10, branching 0.15, 8 MPa, initiation rate 0.4;
+variable dip, 2 km patches, 10,000 yr) gave central and south CVs of
+0.23 and 0.24, but intervals of 175 to 188 yr with 4.6 to 5.1 m per event
+(to be corrected by stress drop and initiation rate), N(M >= 7) and
+N(M >= 7.5) 3.7 and 10.6 times the Gutenberg-Richter extrapolation from
+M5, and a Bath gap of 2.2. Round 7 therefore maps the trade-off between
+site regularity and a characteristic size distribution; the excess over
+Gutenberg-Richter can be computed from the summaries (n_m6, n_m7,
+b_fault_below_sat).
+
 ### Rescoring of the posterior vectors
 
 Each posterior vector was rescored with its own posterior runs (5 seeds

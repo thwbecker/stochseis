@@ -15,6 +15,8 @@ Mesh files go in `data/nz_alpine/` (see `data/nz_alpine/README.md`).
 * `spectrum_area.json`: one-parameter spectrum (area threshold of the
   hybrid size rule: 100, 488, 2000 km^2), catalogs kept.
 * `campaign_configs.json`: configurations (geometry, patch size).
+* `realization_sets.json`: three families of cases varying one
+  irregularity control each (nucleation clock, size rule, barriers).
 
 ## Scripts
 
@@ -32,6 +34,10 @@ Mesh files go in `data/nz_alpine/` (see `data/nz_alpine/README.md`).
 * `spectrum_figures.py`: cases side by side (space-time, site intervals,
   frequency-magnitude, rupture patterns) for the spectrum and for the
   scenarios compatible with the constraints.
+* `run_realization_sets.sh`: runs the realization sets (50 realizations
+  per case) and draws the three pages for one realization and for the
+  ensemble; `make_realization_specs.py` writes their specs, `nz_page.py`
+  draws page 2 (record-length windows, rupture patterns and sizes).
 * `decompose_site_cv.py`: decomposition of site recurrence variability
   for one catalog.
 
@@ -44,6 +50,10 @@ Mesh files go in `data/nz_alpine/` (see `data/nz_alpine/README.md`).
         characteristic alpine_spectrum:v0000 reference alpine_spectrum:v0001 scale-free alpine_spectrum:v0002 \
         --site north=1
 
-A quick end-to-end check (about 10 minutes on one core):
+    examples/alpine/run_realization_sets.sh $NR_CPUS alpine_sets 50 20000
+
+Quick end-to-end checks (a few minutes on one core each):
+
+    examples/alpine/run_realization_sets.sh 1 alpine_sets_smoke 2 3000 A_clock
 
     examples/alpine/run_full_campaign.sh 1 alpine_smoke 2 1 800 1 1 1000

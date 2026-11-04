@@ -55,6 +55,13 @@ MBIG = np.arange(6.5, 8.61, 0.1)
 COLORS = ["C0", "C3", "C2", "C1", "C4"]
 
 
+
+def case_files(spec):
+    """Catalogs of a case: "dir" (all), "dir:v0001" (one vector) or "dir:v0001_s5" (one realization)."""
+    d, _, v = spec.partition(":")
+    pat = f"cat_{v}*.npz" if v else "cat_v*_s*.npz"
+    return sorted(glob.glob(os.path.join(d, pat)))
+
 def run_stats(path, sites):
     cat = Catalog.load(path)
     ev = cat.events
@@ -107,7 +114,7 @@ def main():
     sites = load_sites(os.path.join(os.path.dirname(__file__), "..", "..", "data", "nz_alpine", "paleo_sites.csv"))
     data = {}
     for label, d in pairs:
-        files = sorted(glob.glob(os.path.join(d, "cat_v*_s*.npz")))
+        files = case_files(d)
         if not files:
             sys.exit(f"no catalogs in {d}")
         best = [f for f in files if re.search(r"cat_v0000_", f)]

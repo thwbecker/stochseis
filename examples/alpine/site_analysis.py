@@ -65,6 +65,13 @@ THRESHOLDS = [0.5, 1.0, 2.0, 3.0, 4.0]
 MERGE = None         # merge recorded site events closer than this [yr] (--merge); None: the catalog's site_merge_yr
 
 
+
+def case_files(spec):
+    """Catalogs of a case: "dir" (all), "dir:v0001" (one vector) or "dir:v0001_s5" (one realization)."""
+    d, _, v = spec.partition(":")
+    pat = f"cat_{v}*.npz" if v else "cat_v*_s*.npz"
+    return sorted(glob.glob(os.path.join(d, pat)))
+
 def parse_args(argv):
     th = 2.0
     ref = None
@@ -175,7 +182,7 @@ def main():
     ref_name = ref[1] if ref else ""
     G = {}
     for label, d in pairs:
-        files = sorted(glob.glob(os.path.join(d, "cat_v*_s*.npz")))
+        files = case_files(d)
         if not files:
             sys.exit(f"no catalogs in {d}")
         runs = [run_stats(f, sites, th) for f in files]

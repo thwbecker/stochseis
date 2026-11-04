@@ -165,8 +165,10 @@ sensitivity (round 6), one-parameter spectrum along the area threshold,
 scenario figures, open points for the physics-based models. Kept run
 summaries: runs/alpine_full_campaign, runs/alpine_r6, runs/alpine_r7.
 Decisions: north site scored at 1 m, site events merged at 30 yr,
-regularity over Bath gap. Pending: round 7 on the fine configurations,
-spectrum runs (spectrum_area.json), scenario figures.
+regularity over Bath gap. Three irregularity controls identified
+(nucleation clock, size rule, quenched barriers); realization sets and
+the three figure pages: run_realization_sets.sh. Pending: round 7 on the
+fine configurations, spectrum runs, realization sets, scenario figures.
 
 
 ## 5. Next stages (from the original plan; concrete steps in ROADMAP.md)

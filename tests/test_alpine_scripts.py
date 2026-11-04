@@ -82,3 +82,27 @@ def test_bath_options():
     rest, kw, seis = parse_cli(["x", "a.json", "--seismicity", "--site", "north=1", "--bath-sigma", "0.1", "--bath-m7"])
     assert rest == ["x", "a.json"] and seis and kw["site_thresholds"] == {"north": 1.0}
     assert kw["bath_sigma"] == 0.1 and kw["bath_key"] == "bath_mean_m7"
+
+
+def test_realization_specs_and_windows(tmp_path):
+    cfg = json.load(open(os.path.join(ROOT, "examples", "alpine", "realization_sets.json")))
+    cfg["configuration"]["geometry_file"] = __file__          # any existing file
+    cfg["base_spec"] = os.path.join(ROOT, "examples", "alpine", "abc7_regularity.json")
+    (tmp_path / "sets.json").write_text(json.dumps(cfg))
+    subprocess.run([sys.executable, os.path.join(ROOT, "examples", "alpine", "make_realization_specs.py"),
+                    str(tmp_path / "sets.json"), str(tmp_path / "specs"), "4", "1000"], check=True, capture_output=True)
+    for name, st in cfg["sets"].items():
+        spec = json.loads((tmp_path / "specs" / f"realizations_{name}.json").read_text())
+        assert [v[st["parameter"]] for v in spec["vectors"]] == st["values"]
+        assert spec["seeds"] == list(range(st["seed0"], st["seed0"] + 4))
+        for v in spec["vectors"]:
+            for k, x in cfg["reference"].items():
+                if k != st["parameter"]:
+                    assert v[k] == x
+            for k, x in st["fixed"].items():
+                assert v[k] == x
+        cases = (tmp_path / "specs" / f"realizations_{name}_cases.txt").read_text().split("\n")
+        assert cases[0].split() == [st["labels"][0], "v0000", str(st["seed0"])]
+    from nz_page import windows
+    w = windows(np.array([100.0, 200, 300, 100, 200, 300, 50]), 3)
+    assert len(w) == 2 and np.isclose(w[0][0], 200.0) and np.isclose(w[0][1], 0.5)

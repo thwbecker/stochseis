@@ -1,0 +1,17 @@
+{
+ "_comment": "Families of realizations that vary one irregularity control at a time around the reference vector (best round-7 variable-dip calibration). Set A: nucleation sharpness (renewal clock), size distribution fixed. Set B: area threshold of the hybrid size rule, which also changes the size distribution. Set C: quenched strength heterogeneity (50 km correlation length), barriers that can decouple sites. Each set has its own seed range, so the reference case appears in every set as independent realizations. Used by make_realization_specs.py and run_realization_sets.sh; see docs/alpine.md.",
+ "base_spec": "examples/alpine/abc7_regularity.json",
+ "configuration": {"geometry_file": "data/nz_alpine/variable_dip_1km_26Jan.stl", "patch_km": 2.0, "segment_max_dist_km": 10.0},
+ "reference": {"stress_drop_mpa": 9.77, "stress_drop_ln_sigma": 0.0229, "nucleation_exponent": 12.3, "branching_ratio": 0.129,
+               "arrest_scale": 0.226, "b_value": 1.07, "budget_scale": 0.463, "slip_cv": 0.454, "admission_exponent": 10.6,
+               "hazard_max_area_km2": 488.0},
+ "sets": {
+  "A_clock": {"parameter": "nucleation_exponent", "values": [3.0, 6.0, 12.3],
+              "labels": ["soft_clock", "medium_clock", "reference"], "seed0": 1, "fixed": {}},
+  "B_size": {"parameter": "hazard_max_area_km2", "values": [100.0, 488.0, 2000.0],
+             "labels": ["characteristic", "reference", "scale_free"], "seed0": 101, "fixed": {}},
+  "C_barriers": {"parameter": "strength_ln_sigma", "values": [0.0, 0.5, 1.0],
+                 "labels": ["reference", "weak_barriers", "strong_barriers"], "seed0": 201,
+                 "fixed": {"strength_corr_km": 50.0}}
+ }
+}

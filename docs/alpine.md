@@ -213,6 +213,48 @@ frequency-magnitude distribution, and the rate of M >= 7.5 events by the
 combination of sites they rupture (south only, south and central, all
 three, and so on). Commands in section 7; results to be added.
 
+### 5.6 Realization sets: three irregularity controls
+
+The area threshold is not the only control of site regularity. Single
+10,000-yr tests around the reference vector (best round-7 variable-dip
+calibration; 2 km patches; 1 m threshold, merged at 30 yr):
+
+| change from the reference | central CV | south CV | north CV | Bath | other |
+|---|---|---|---|---|---|
+| none (nucleation exponent 12.3, area threshold 488 km^2) | 0.23 | 0.24 | 0.35 | 1.46 | |
+| nucleation exponent 3 | 0.40 | 0.44 | 0.42 | 1.45 | event count about the same |
+| area threshold 100 km^2 | 0.24 | 0.28 | 0.30 | 2.10 | few moderate events |
+| area threshold 100, strength heterogeneity ln-sigma 1.0, fault-length correlation | 0.28 | 0.30 | 0.32 | 1.84 | M >= 8 events 42 to 13 |
+| area threshold 100, strength heterogeneity ln-sigma 1.0, 50 km correlation | 0.35 | 0.46 | 0.28 | 1.90 | central RI 190, south 272 |
+
+* Nucleation sharpness (a renewal clock) controls regularity about as
+  strongly as the area threshold, without changing the Bath gap or the
+  number of events.
+* The area threshold controls the size distribution (characteristic to
+  scale-free) and with it regularity.
+* Short-wavelength strength heterogeneity (persistent barriers) is the
+  only ingredient found so far that gives neighbouring sites different
+  regularity and intervals, the contrast between the central and south
+  records that no calibrated ensemble reproduced.
+
+`examples/alpine/realization_sets.json` defines three families around the
+reference vector: A_clock (nucleation exponent 3, 6, 12.3), B_size (area
+threshold 100, 488, 2000 km^2) and C_barriers (strength ln-sigma 0, 0.5,
+1.0 at 50 km correlation length). `run_realization_sets.sh` runs each
+case as 50 independent realizations of 20,000 yr (with catalogs) and
+draws three pages for the first realization ("single") and for all
+realizations ("ensemble"): page 1, frequency-magnitude distribution,
+Omori decay, Bath gaps, moment release and whole-fault recurrence
+(`overview_figures.py`); page 2, site recurrence in record-length
+windows, SED versus RI, rupture patterns, magnitudes, rupture lengths
+(`nz_page.py`); page 3, the intercomparison panels (`site_analysis.py`).
+Record-length windows cut each synthetic site record into consecutive
+windows with as many intervals as the paleoseismic record at that site
+(12 south, 13 central, 3 north) and give the fraction of windows at least
+as regular as the observed record. The extremes of each family shift the
+mean intervals and are meant to show what the control does, not as
+alternative fits. Results to be added.
+
 ## 6. Open points for the comparison with physics-based models
 
 * The observed contrast in regularity between the central (CV 0.23) and
@@ -247,6 +289,8 @@ Mesh files in `data/nz_alpine/` (`alpine_planar_1km_26Jan.stl`,
     python3 examples/alpine/spectrum_figures.py alpine_spectrum/spectrum \
         characteristic alpine_spectrum:v0000 reference alpine_spectrum:v0001 scale-free alpine_spectrum:v0002 \
         --site north=1
+    # realization sets A, B, C: 450 runs of 20,000 yr at 2 km (about 9 core-hours)
+    examples/alpine/run_realization_sets.sh $NR_CPUS alpine_sets 50 20000
     # scenarios compatible with the constraints
     python3 examples/alpine/spectrum_figures.py alpine_scenarios \
         reference alpine_full/posterior_variable_dip_fine regular alpine_r7/posterior_variable_dip_coarse \

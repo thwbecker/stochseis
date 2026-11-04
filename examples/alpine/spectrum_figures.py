@@ -3,8 +3,8 @@
     python3 examples/alpine/spectrum_figures.py out_prefix label1 dir1[:vNNNN] [label2 dir2[:vNNNN] ...]
         [--threshold 2] [--site north=1] [--window 3000] [--pattern-mag 7.5]
 
-A case is a sweep output directory with catalogs (cat_vNNNN_sS.npz), or one
-design vector of it (dir:v0001). Use it for
+A case is a sweep output directory with catalogs (cat_vNNNN_sS.npz), one
+design vector of it (dir:v0001) or one realization (dir:v0001_s5). Use it for
 
 * the one-parameter spectrum (examples/alpine/spectrum_area.json: three
   vectors that differ only in the area threshold of the hybrid size rule),
@@ -82,7 +82,7 @@ def parse(argv):
 
 def case_files(spec):
     d, _, v = spec.partition(":")
-    pat = f"cat_{v}_s*.npz" if v else "cat_v*_s*.npz"
+    pat = f"cat_{v}*.npz" if v else "cat_v*_s*.npz"
     return sorted(glob.glob(os.path.join(d, pat)))
 
 

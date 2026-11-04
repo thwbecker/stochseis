@@ -930,6 +930,25 @@ central and south CVs from 0.42 and 0.36 to 0.37 and 0.36 at a branching
 ratio of 0.6, and from 0.53 and 0.49 to 0.43 and 0.45 at 0.29; the north
 site was unchanged. The effect is real but modest.
 
+Applied to the round-6 coarse posteriors (`runs/alpine_r6/merge30/`; 2 m
+threshold at all sites), merging events closer than 30 yr changes the
+ensemble medians as follows (planar / variable dip):
+
+| site | CV without merging | CV merged | RI merged [yr] | SED merged [m] |
+|---|---|---|---|---|
+| central | 0.43 / 0.43 | 0.38 / 0.38 | 270 / 270 | 6.7 / 6.8 |
+| south | 0.42 / 0.41 | 0.37 / 0.38 | 268 / 264 | 6.8 / 6.7 |
+| north | 0.44 / 0.45 | 0.40 / 0.40 | 609 / 563 | 5.1 / 5.0 |
+
+The site CVs drop by 0.04 to 0.05, to about the unmerged round-5 values;
+the best vectors' central CVs drop from 0.48 to 0.52 to 0.41 to 0.44.
+Intervals lengthen by about 10 yr and displacements grow by 0.1 to 0.2 m
+because merged events add their slip. Round 6 also has much lower
+co-rupture between sites than round 5 (central with south 0.47 to 0.53
+against 0.70 to 0.76), consistent with more partial ruptures at higher
+branching ratios. The same merging has yet to be applied to the round-5
+reference posteriors.
+
 ### Rescoring of the posterior vectors
 
 Each posterior vector was rescored with its own posterior runs (5 seeds

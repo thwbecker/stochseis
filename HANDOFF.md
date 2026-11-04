@@ -241,3 +241,8 @@ raise site CVs (best central 0.42-0.56) and lower acceptance (41-54):
 regular sites and a Bath gap of 1.2 are in tension in this model class.
 Option site_merge_yr / site_analysis.py --merge merges site events closer
 than the dating resolution (modest effect, CV -0.05 to -0.1).
+Decision: regularity over Bath. Reference baseline = round 5 (north at
+1 m), Bath gap reported as an outcome; round 6 = sensitivity case.
+Merging site events closer than 30 yr on the round-5 fine posteriors:
+central and south CVs -0.03 to -0.04 (ensemble medians 0.34 to 0.37),
+north unchanged; reference envelope in docs/alpine.md.

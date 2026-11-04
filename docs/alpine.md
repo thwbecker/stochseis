@@ -920,6 +920,17 @@ this model class the paleoseismic regularity and a Bath gap of about 1.2
 are in tension: regular sites need weak triggering, and weak triggering
 gives large Bath gaps.
 
+Decision (T. Becker, 3 November): regularity at the paleoseismic sites
+takes priority over the Bath gap. The reference baseline for the
+intercomparison is therefore the round-5 calibration (branching ratio
+0.05 to 0.3) scored with the north site at 1 m, with the Bath gap
+reported as an outcome of the calibration (about 1.4 for M >= 6
+mainshocks, weak triggering) rather than imposed. Round 6 serves as the
+sensitivity case showing what standard aftershock statistics cost in
+regularity. For scoring without the Bath constraint, use
+`--bath-sigma 1` (which makes the term negligible) together with
+`--seismicity` (which keeps the b-value term).
+
 Part of the irregularity at high branching ratios comes from pairs of
 large events a few years to decades apart, which a paleoseismic record
 would count as one event. `site_merge_yr` (run-time summaries) and
@@ -946,8 +957,41 @@ Intervals lengthen by about 10 yr and displacements grow by 0.1 to 0.2 m
 because merged events add their slip. Round 6 also has much lower
 co-rupture between sites than round 5 (central with south 0.47 to 0.53
 against 0.70 to 0.76), consistent with more partial ruptures at higher
-branching ratios. The same merging has yet to be applied to the round-5
-reference posteriors.
+branching ratios.
+
+Applied to the round-5 reference posteriors (fine configurations,
+`runs/alpine_full_campaign/merge30/`; 2 m at all sites), merging events
+closer than 30 yr changes the ensemble medians of the site CV as follows
+(planar / variable dip / segmented):
+
+| site | CV without merging | CV merged | RI merged [yr] | SED merged [m] |
+|---|---|---|---|---|
+| central | 0.38 / 0.39 / 0.38 | 0.35 / 0.36 / 0.35 | 266 / 269 / 275 | 6.8 / 6.9 / 7.0 |
+| south | 0.38 / 0.40 / 0.41 | 0.34 / 0.37 / 0.37 | 265 / 261 / 258 | 6.8 / 6.7 / 6.8 |
+| north | 0.36 / 0.38 / 0.40 | 0.36 / 0.37 / 0.38 | 546 / 546 / 526 | 4.8 / 4.9 / 4.7 |
+
+At the central and south sites the CVs drop by 0.03 to 0.04, at the north
+site by up to 0.02: at low branching ratios there are fewer close pairs
+of large events to merge than in round 6. The best vectors (pooled over
+their seeds) reach central CVs of 0.33 to 0.38 and, for the segmented
+geometry, north values of 421 yr / 0.30 / 3.9 m at 2 m. Co-rupture and
+event statistics are unchanged.
+
+Reference envelope (round 5, fine configurations, events closer than
+30 yr merged, 2 m at all sites; median of the configuration medians and
+union of the 5 to 95 percent ranges):
+
+| site | RI [yr] | CV | SED [m] | observed |
+|---|---|---|---|---|
+| south | 261 [221-302] | 0.37 [0.25-0.49] | 6.8 [5.9-8.0] | 268 / 0.40 / 7.5 |
+| central | 269 [231-320] | 0.35 [0.26-0.47] | 6.9 [6.0-8.4] | 249 / 0.23 / 7.1 |
+| north | 546 [424-691] | 0.37 [0.26-0.51] | 4.8 [3.9-6.1] | 413 / 0.25 / 4.0 |
+
+(At the north site, a 1 m threshold moves the interval to about 440 to
+490 yr; see "Site-specific detection thresholds".) The observed central
+CV of 0.23 now lies just below the 5th percentile of the ensembles
+(0.26), within its own sampling uncertainty of 0.05 to 0.1; the
+remaining difference in regularity is small but systematic.
 
 ### Rescoring of the posterior vectors
 

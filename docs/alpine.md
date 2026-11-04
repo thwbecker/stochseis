@@ -862,11 +862,10 @@ The accepted ensembles have mean Bath gaps of 1.37 to 1.47 (best vectors
 * Across the 100 round-4 designs the gap is controlled by the size-hazard
   b (-0.13 to -0.17 per standard deviation), the area threshold of the
   hybrid size rule (-0.10 to -0.15) and the branching ratio (-0.12 to
-  -0.13), R^2 0.8. The central-site CV depends mainly on the area
-  threshold (+0.07) and little on b or the branching ratio. Lowering the
-  gap through the area threshold costs regularity; through b and the
-  branching ratio it does not. The round-5 priors capped the branching
-  ratio at 0.3 and b at 1.1.
+  -0.13), R^2 0.8. Within those designs (branching 0.05 to 0.3) the
+  central-site CV depended mainly on the area threshold (+0.07) and
+  little on b or the branching ratio; round 6 shows that this does not
+  extend to higher branching ratios (below).
 * Among the round-4 vectors accepted with the north site at 1 m, those
   with a gap within 0.15 of 1.2 (32 of 65 planar, 45 of 75 variable dip)
   have central CVs of 0.43 to 0.49 against 0.35 to 0.37 for the others.
@@ -889,6 +888,47 @@ north site at 1 m and the gap of M >= 7 mainshocks:
 (coarse configurations first, about 10 core-hours). The scoring scripts
 accept `--bath-sigma` to weight the gap more strongly than the default
 0.15.
+
+### Round 6: wider branching-ratio and b priors (run by T. Becker)
+
+Coarse configurations, 100 vectors x 3 seeds x 10,000 yr, posteriors of
+the best 20 x 5 x 20,000 yr, scored with the north site at 1 m and the
+Bath gap of M >= 7 mainshocks (`runs/alpine_r6/`). Compared with round 5
+scored the same way:
+
+| | round 5 (branching 0.05-0.3, b 0.8-1.1) | round 6 (branching 0.2-0.7, b 0.9-1.2) |
+|---|---|---|
+| accepted, planar / variable dip | 64 / 69 | 41 / 54 |
+| best misfit (ABC) | 0.68 / 0.49 | 1.28 / 1.03 |
+| best rescored misfit, its ABC rank | 0.69 (2) / 0.49 (2) | 1.46 (8) / 1.06 (2) |
+| Bath gap, all M >= 6 mainshocks (ensemble) | about 1.4 | 1.00 to 1.01 |
+| Bath gap, M >= 7 mainshocks (best vectors) | not computed | 1.24 to 1.38 |
+| site CV, ensemble medians (S, C, N; 2 m) | 0.37-0.41 | 0.41-0.45 |
+| best vectors, central CV | 0.32-0.41 | 0.42-0.56 |
+| whole-fault M >= 7.5 intervals | mean 171-177 yr, CV 0.63-0.65 | mean 143-150 yr, CV 0.76-0.78 |
+
+Accepted branching ratios span the new prior (median 0.43); b shifts
+slightly upward (median 1.08). The frequency-magnitude distribution is
+closer to b = 1 with a weaker excess at M7.5 to 8.
+
+The higher branching ratios bring the Bath gap to the usual values but
+make the site records and the whole-fault sequence less regular, with
+more short intervals between large events. This contradicts the
+expectation stated above from the round-4 regression (that the branching
+ratio costs little regularity), which held only within 0.05 to 0.3. In
+this model class the paleoseismic regularity and a Bath gap of about 1.2
+are in tension: regular sites need weak triggering, and weak triggering
+gives large Bath gaps.
+
+Part of the irregularity at high branching ratios comes from pairs of
+large events a few years to decades apart, which a paleoseismic record
+would count as one event. `site_merge_yr` (run-time summaries) and
+`site_analysis.py --merge years` (existing catalogs) merge recorded site
+events closer than a given interval. On a single-seed 10,000-yr test
+(variable dip, 2 km), merging events closer than 30 yr changed the
+central and south CVs from 0.42 and 0.36 to 0.37 and 0.36 at a branching
+ratio of 0.6, and from 0.53 and 0.49 to 0.43 and 0.45 at 0.29; the north
+site was unchanged. The effect is real but modest.
 
 ### Rescoring of the posterior vectors
 

@@ -44,6 +44,7 @@ class Params:
     # paleoseismic sites for summary statistics (CSV, see data/nz_alpine/paleo_sites.csv); empty = none
     sites_file: str = ""
     site_thresholds_m: list = field(default_factory=lambda: [1.0, 2.0, 4.0])
+    site_merge_yr: float = 0.0            # merge recorded site events closer than this (paleoseismic dating resolution)
     # list of [position_km, gap_km]: the fault is cut at position_km along
     # strike and the two segments are separated by a step-over of gap_km
     segment_gaps_km: list = field(default_factory=list)

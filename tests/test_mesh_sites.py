@@ -121,3 +121,16 @@ def test_unstructured_depth_levels(tmp_path):
     W = depth / np.sin(dip)
     assert abs(f.mesh_info["width_max_m"] / 1e3 - W) < 0.3
     assert abs(np.median(f.dip) - 50.0) < 1.0
+
+
+def test_merge_close():
+    from stochseis.sites import merge_close
+
+    t = np.array([0.0, 100.0, 105.0, 300.0, 330.0, 600.0])
+    d = np.ones(6)
+    e = np.arange(6)
+    tt, dd, ee = merge_close(t, d, e, 20.0)
+    assert list(tt) == [0.0, 100.0, 300.0, 330.0, 600.0] and dd[1] == 2.0 and list(ee) == [0, 1, 3, 4, 5]
+    tt, dd, ee = merge_close(t, d, e, 50.0)
+    assert list(tt) == [0.0, 100.0, 300.0, 600.0] and dd[2] == 2.0
+    assert len(merge_close(t, d, e, 0.0)[0]) == 6

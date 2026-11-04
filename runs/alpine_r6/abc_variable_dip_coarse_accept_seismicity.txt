@@ -1,0 +1,35 @@
+100 design vectors, threshold 2.0 m, north at 1 m, with seismicity; best ten (mean squared standardized misfit):
+    1.03  stress_drop_mpa=6.74 stress_drop_ln_sigma=0.17 nucleation_exponent=3.13 branching_ratio=0.652 deep_slip_km=20 arrest_scale=0.647 b_value=0.968 budget_scale=0.536 slip_fraction=1 slip_cv=0.133 admission_exponent=6.58 hazard_max_area_km2=1.71e+03
+          central: RI 275 CV 0.43 SED 7.3  south: RI 278 CV 0.51 SED 7.1  north: RI 442 CV 0.59 SED 4.3  b 0.97 Bath 1.29
+    1.09  stress_drop_mpa=6.63 stress_drop_ln_sigma=0.112 nucleation_exponent=4.54 branching_ratio=0.658 deep_slip_km=20 arrest_scale=0.351 b_value=0.996 budget_scale=0.238 slip_fraction=1 slip_cv=0.176 admission_exponent=2.9 hazard_max_area_km2=2.17e+03
+          central: RI 257 CV 0.54 SED 6.7  south: RI 257 CV 0.54 SED 6.6  north: RI 469 CV 0.48 SED 4.7  b 0.99 Bath 1.24
+    1.21  stress_drop_mpa=6.31 stress_drop_ln_sigma=0.0284 nucleation_exponent=3.43 branching_ratio=0.535 deep_slip_km=20 arrest_scale=0.874 b_value=0.96 budget_scale=0.434 slip_fraction=1 slip_cv=0.198 admission_exponent=2.95 hazard_max_area_km2=749
+          central: RI 265 CV 0.42 SED 6.6  south: RI 259 CV 0.48 SED 6.5  north: RI 395 CV 0.59 SED 3.8  b 0.95 Bath 1.36
+    1.22  stress_drop_mpa=9.48 stress_drop_ln_sigma=0.0123 nucleation_exponent=9.53 branching_ratio=0.463 deep_slip_km=20 arrest_scale=0.95 b_value=1.13 budget_scale=0.149 slip_fraction=1 slip_cv=0.476 admission_exponent=4.59 hazard_max_area_km2=509
+          central: RI 269 CV 0.46 SED 6.6  south: RI 283 CV 0.46 SED 6.9  north: RI 470 CV 0.59 SED 4.3  b 1.11 Bath 1.30
+    1.46  stress_drop_mpa=8.75 stress_drop_ln_sigma=0.0907 nucleation_exponent=11.8 branching_ratio=0.685 deep_slip_km=20 arrest_scale=0.654 b_value=1.07 budget_scale=0.391 slip_fraction=1 slip_cv=0.239 admission_exponent=5.57 hazard_max_area_km2=431
+          central: RI 258 CV 0.38 SED 6.2  south: RI 248 CV 0.38 SED 6.2  north: RI 525 CV 0.45 SED 4.9  b 1.08 Bath 1.38
+    1.47  stress_drop_mpa=9.35 stress_drop_ln_sigma=0.0813 nucleation_exponent=3.72 branching_ratio=0.529 deep_slip_km=20 arrest_scale=0.278 b_value=1.14 budget_scale=0.811 slip_fraction=1 slip_cv=0.106 admission_exponent=4.94 hazard_max_area_km2=1.09e+03
+          central: RI 278 CV 0.51 SED 7.2  south: RI 296 CV 0.53 SED 7.8  north: RI 498 CV 0.50 SED 4.7  b 1.15 Bath 1.29
+    1.59  stress_drop_mpa=7.94 stress_drop_ln_sigma=0.037 nucleation_exponent=5.36 branching_ratio=0.681 deep_slip_km=20 arrest_scale=0.294 b_value=0.952 budget_scale=0.744 slip_fraction=1 slip_cv=0.487 admission_exponent=5.46 hazard_max_area_km2=2.97e+03
+          central: RI 266 CV 0.53 SED 6.9  south: RI 239 CV 0.50 SED 6.2  north: RI 505 CV 0.42 SED 4.9  b 0.93 Bath 1.29
+    1.61  stress_drop_mpa=6.76 stress_drop_ln_sigma=0.0158 nucleation_exponent=3.86 branching_ratio=0.596 deep_slip_km=20 arrest_scale=0.345 b_value=1 budget_scale=0.117 slip_fraction=1 slip_cv=0.375 admission_exponent=2.43 hazard_max_area_km2=488
+          central: RI 289 CV 0.37 SED 7.7  south: RI 296 CV 0.37 SED 8.0  north: RI 396 CV 0.48 SED 3.8  b 1.04 Bath 1.57
+    1.62  stress_drop_mpa=6.84 stress_drop_ln_sigma=0.109 nucleation_exponent=4.77 branching_ratio=0.404 deep_slip_km=20 arrest_scale=0.319 b_value=0.946 budget_scale=0.104 slip_fraction=1 slip_cv=0.231 admission_exponent=6.42 hazard_max_area_km2=1.05e+03
+          central: RI 287 CV 0.37 SED 7.7  south: RI 275 CV 0.41 SED 7.3  north: RI 373 CV 0.39 SED 3.8  b 0.96 Bath 1.66
+    1.65  stress_drop_mpa=9.9 stress_drop_ln_sigma=0.188 nucleation_exponent=3.18 branching_ratio=0.269 deep_slip_km=20 arrest_scale=0.204 b_value=1.17 budget_scale=0.832 slip_fraction=1 slip_cv=0.321 admission_exponent=4.78 hazard_max_area_km2=975
+          central: RI 280 CV 0.57 SED 7.1  south: RI 292 CV 0.40 SED 7.6  north: RI 407 CV 0.33 SED 3.8  b 1.17 Bath 1.54
+
+accepted (mean squared misfit < 4): 54
+  stress_drop_mpa        median    7.75  range    5.08 to    9.93
+  stress_drop_ln_sigma   median   0.103  range 0.00585 to   0.194
+  nucleation_exponent    median    5.42  range    2.11 to    11.8
+  branching_ratio        median   0.434  range   0.208 to   0.691
+  deep_slip_km           median      20  range      20 to      20
+  arrest_scale           median    0.65  range   0.204 to    0.99
+  b_value                median    1.08  range   0.913 to     1.2
+  budget_scale           median   0.349  range   0.103 to   0.984
+  slip_fraction          median       1  range       1 to       1
+  slip_cv                median   0.288  range   0.104 to   0.498
+  admission_exponent     median    5.27  range    2.43 to    7.92
+  hazard_max_area_km2    median     953  range     300 to 2.97e+03

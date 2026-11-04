@@ -234,3 +234,10 @@ slip rates constrained to a transect loading rate.
   with 10^5 patches are needed.
 * References in docs/design.md were written from memory; verify against
   erdbeben.bib before citing.
+
+Round 6 (3 November, coarse): branching 0.2-0.7 and b 0.9-1.2 bring the
+Bath gap to about 1.0 (M >= 6) and 1.24-1.38 (M >= 7, best vectors) but
+raise site CVs (best central 0.42-0.56) and lower acceptance (41-54):
+regular sites and a Bath gap of 1.2 are in tension in this model class.
+Option site_merge_yr / site_analysis.py --merge merges site events closer
+than the dating resolution (modest effect, CV -0.05 to -0.1).

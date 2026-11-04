@@ -48,8 +48,32 @@ def site_patch(fault, x, y, top_rows=1):
     return int(top[k]), float(d[k])
 
 
-def site_records(cat: Catalog, sites, threshold=1.0, t_start=0.0):
-    """Event times and SEDs at each site.  Returns {name: dict(times, sed, patch, dist)}."""
+def merge_close(times, sed, events, min_interval):
+    """Merge events closer than min_interval [yr] into one (summed displacement, first time).
+
+    Paleoseismic records cannot separate events closer than their dating
+    resolution (typically decades); this applies the same limit to
+    synthetic records.
+    """
+    if min_interval <= 0 or len(times) < 2:
+        return times, sed, events
+    tt, dd, ee = [times[0]], [sed[0]], [events[0]]
+    for t, d, e in zip(times[1:], sed[1:], events[1:]):
+        if t - tt[-1] < min_interval:
+            dd[-1] += d
+        else:
+            tt.append(t)
+            dd.append(d)
+            ee.append(e)
+    return np.asarray(tt), np.asarray(dd), np.asarray(ee, int)
+
+
+def site_records(cat: Catalog, sites, threshold=1.0, t_start=0.0, merge_yr=0.0):
+    """Event times and SEDs at each site.  Returns {name: dict(times, sed, events, patch, dist)}.
+
+    Events with slip >= threshold at the site patch are recorded; with merge_yr > 0, recorded events
+    closer than merge_yr are merged (dating resolution of paleoseismic records).
+    """
     f = cat.fault
     ev = cat.events
     patches = {}
@@ -86,8 +110,8 @@ def site_records(cat: Catalog, sites, threshold=1.0, t_start=0.0):
     out = {}
     for name, (times, sed, evi) in rec.items():
         o = np.argsort(times)
-        out[name] = dict(times=np.asarray(times)[o], sed=np.asarray(sed)[o],
-                         events=np.asarray(evi, int)[o], patch=patches[name][0], dist=patches[name][1])
+        t, d, e = merge_close(np.asarray(times)[o], np.asarray(sed)[o], np.asarray(evi, int)[o], merge_yr)
+        out[name] = dict(times=t, sed=d, events=e, patch=patches[name][0], dist=patches[name][1])
     return out
 
 
@@ -101,11 +125,13 @@ def record_stats(times, sed):
                 sed_mean=float(np.mean(sed)), sed_sd=float(np.std(sed)))
 
 
-def compare(cat: Catalog, sites, threshold=1.0, t_start=None):
+def compare(cat: Catalog, sites, threshold=1.0, t_start=None, merge_yr=None):
     """Synthetic versus observed recurrence and SED at each site."""
     if t_start is None:
         t_start = 0.1 * cat.duration
-    rec = site_records(cat, sites, threshold, t_start)
+    if merge_yr is None:
+        merge_yr = getattr(cat.params, "site_merge_yr", 0.0)
+    rec = site_records(cat, sites, threshold, t_start, merge_yr)
     rows = []
     for s in sites:
         r = rec[s["name"]]

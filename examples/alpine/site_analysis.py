@@ -3,10 +3,13 @@ summarize physics-based simulators in the intercomparison, extended with
 ensemble ranges and further diagnostics.
 
     python3 examples/alpine/site_analysis.py out_prefix label1 dir1 [label2 dir2 ...] [--threshold 2]
-        [--reference table.csv name]
+        [--reference table.csv name] [--merge years]
 
 Each dir holds the catalogs of a posterior sweep (design "list", files
 cat_vNNNN_sS.npz; vector 0000 is the best-fitting one).
+
+--merge merges recorded site events closer than the given number of years
+(dating resolution of paleoseismic records; works on existing catalogs).
 
 --reference adds site statistics of another model (for example a
 physics-based simulator) to the RI-CV and RI-SED panels and to the table.
@@ -57,11 +60,17 @@ GEO_STYLE = ["-", ":", "--", "-."]
 GEO_COLORS = ["C0", "C3", "C2", "C1"]
 MAG = np.arange(5.0, 8.61, 0.05)
 THRESHOLDS = [0.5, 1.0, 2.0, 3.0, 4.0]
+MERGE = 0.0          # merge recorded site events closer than this [yr] (--merge)
 
 
 def parse_args(argv):
     th = 2.0
     ref = None
+    global MERGE
+    if "--merge" in argv:
+        k = argv.index("--merge")
+        MERGE = float(argv[k + 1])
+        argv = argv[:k] + argv[k + 2:]
     if "--threshold" in argv:
         k = argv.index("--threshold")
         th = float(argv[k + 1])
@@ -92,7 +101,7 @@ def run_stats(path, sites, th):
     # site records at the detection threshold and at the threshold series
     out["sites"] = {}
     for thr in THRESHOLDS + ([th] if th not in THRESHOLDS else []):
-        rec = site_records(cat, sites, threshold=thr, t_start=t0)
+        rec = site_records(cat, sites, threshold=thr, t_start=t0, merge_yr=MERGE)
         for s in sites:
             r = rec[s["name"]]
             t = r["times"]
@@ -391,7 +400,8 @@ def main():
         for r in rows:
             w.writerow(r)
     with open(out_prefix + "_table.md", "w") as fh:
-        fh.write(f"Detection threshold {th:g} m. Best: best-ranked vector, pooled over all its posterior seeds. "
+        fh.write(f"Detection threshold {th:g} m{f', events closer than {MERGE:g} yr merged' if MERGE > 0 else ''}. "
+                 "Best: best-ranked vector, pooled over all its posterior seeds. "
                  "Ensemble: median [5-95 %] over all posterior runs.\n\n")
         rn = ref_name or "reference"
         cols = ["geometry", "site", "RI best (SD)", "RI ensemble", "RI obs (SD)"] + ([f"RI {rn} (SD)"] if rsq else []) \

@@ -204,3 +204,10 @@ observables, is implemented. The original notes follow.
   checked only through the tests and the diagnostics.
 * The GitHub Actions workflow in `.github/workflows/tests.yml` runs the
   test suite on push.
+
+## Planned: hierarchical patch structure (E23)
+
+A persistent multi-scale patch option is implemented (stochseis/hierarchy.py,
+docs/experiments.md E23); the single-fault experiment (sweep of barrier
+and nucleation exponents, radius range and nesting, with long burn-in)
+is to be run before any use for the Alpine Fault.

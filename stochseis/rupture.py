@@ -66,7 +66,8 @@ def _implied_slip(area, w_eff, dsig, mu):
                (np.pi / 4.0) * dsig / mu * w_eff)
 
 
-def grow_rupture(fault, graph, i0, state_values_fn, dsig, rng, p, w_eff, m0_table=None, strength=None):
+def grow_rupture(fault, graph, i0, state_values_fn, dsig, rng, p, w_eff, m0_table=None, strength=None,
+                 scale_map=None):
     """Grow a rupture from patch ``i0``.
 
     state_values_fn(idx) returns the state measure (stress [Pa] or deficit
@@ -78,6 +79,12 @@ def grow_rupture(fault, graph, i0, state_values_fn, dsig, rng, p, w_eff, m0_tabl
     ``strength`` (optional, per patch, mean one) is a quenched strength
     field: the admission ratio is divided by it, so strong patches need a
     proportionally larger deficit to be admitted.
+    ``scale_map`` (optional, per patch, metres) is the radius of the smallest
+    hierarchical patch containing each patch (stochseis.hierarchy); the
+    admission ratio is further divided by max(1, r / R)^eta, with R the
+    equivalent radius of the rupture including the candidate patch and eta
+    = p.hier_barrier_exponent, so a rupture must grow to about the size of
+    a patch to break into it.
     Returns (patch indices in growth order, distances [m] from the
     nucleation patch, stop code, rho of the last considered patch,
     scale), where scale multiplies the slip to represent the continuous
@@ -135,6 +142,10 @@ def grow_rupture(fault, graph, i0, state_values_fn, dsig, rng, p, w_eff, m0_tabl
                     rho = vals[i] / _implied_slip(a_new, w_eff, dsig, mu)
                 if strength is not None:
                     rho = rho / strength[i]
+                if scale_map is not None:
+                    r_eq = np.sqrt(a_new / np.pi)
+                    if scale_map[i] > r_eq:
+                        rho = rho / (scale_map[i] / r_eq) ** p.hier_barrier_exponent
                 rho_last = rho
                 q = 1.0 - np.exp(-(rho / rho_c) ** p.admission_exponent)
                 if rng.random() >= q:

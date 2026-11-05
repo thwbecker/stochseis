@@ -443,6 +443,64 @@ other E6 values of the branching ratio are nominal in the same way.
 These numbers replace the single-seed values quoted earlier as the
 reference behaviour of the defaults.
 
+## E23 (planned). Persistent hierarchical patch structure (single fault)
+
+Motivation: observations of large earthquakes that begin exactly like
+small repeating events and cascade through intermediate patches into a
+main locked region, with final size set by whether the larger region is
+ready to fail (Yoshida, Ide and Huang, 2026, GRL, 2021 Mw 7.0
+Miyagi-oki), and hierarchical-patch rupture models (Ide and Aochi, 2005;
+Aochi and Ide, 2009). The stochastic model already decides final size
+by arrest, but its scale-free stopping is drawn afresh in every event;
+the new option makes the multi-scale structure persistent.
+
+Option (`stochseis/hierarchy.py`, parameters `hier_*`; off by default):
+circular patches at radii r_max, r_max / ratio, ... down to r_min, each
+level covering a fraction `hier_fill` of the fault, smaller patches
+placed inside a patch of the next larger level with probability
+`hier_nest`; each grid patch gets the radius r of the smallest patch
+containing it (background: ratio x r_max). A rupture of equivalent
+radius R entering a patch of scale r has its admission ratio divided by
+max(1, r / R)^eta (`hier_barrier_exponent`), so it must grow to about
+the size of a patch to break into it; optionally nucleation weights are
+multiplied by (r_min / r)^kappa (`hier_nucleation_exponent`), so ruptures
+start preferentially in the smallest patches. The structure has its own
+random stream (seed + 104729) and can be rebuilt for analysis with
+`hierarchy.build_hierarchy(fault, params)`. Tests: `tests/test_hierarchy.py`.
+
+First runs (defaults otherwise, 200 km fault, 2000 yr, one seed; radii
+1.25 to 40 km, fill 0.3, nest 0.8). Arrest concentration: fraction of the
+ends of M >= 6 ruptures falling in the 10 percent most used 2 km bins
+along strike (a measure of persistent arrest points).
+
+| case | grown events | b | Bath | whole-fault M >= 7 CV | arrest concentration | hypocentres in smallest patches (7 % of area) | moment closure |
+|---|---|---|---|---|---|---|---|
+| defaults | 16,061 | 1.00 | 1.14 | 0.55 | 0.19 | | 0.96 |
+| eta = 1 | 16,336 | 1.03 | 1.21 | 0.68 | 0.19 | 6 % | 0.99 |
+| eta = 2 | 67,666 | 2.38 | 1.35 | 0.88 | 0.34 | 4 % | 0.57 |
+| eta = 1, kappa = 2 | 13,342 | 1.00 | 1.14 | 0.81 | 0.22 | 70 % | 0.95 |
+
+* With eta = 1 the barrier changes little: the default admission scale
+  lets most ruptures through anyway.
+* With eta = 2 rupture arrest becomes persistent (a third of the ends
+  in a tenth of the bins), but ruptures are blocked often enough that the
+  deficit builds up and the deficit feedback raises the event rate four
+  times (b 2.4 below saturation). The system reaches moment balance only
+  after a long spin-up at a higher deficit: released / loaded moment 0.44,
+  0.82, 0.89 and 1.23 in successive 1000-yr windows of a 4000-yr run.
+* kappa = 2 moves nucleation into the smallest patches as intended.
+
+Planned experiment: sweep eta (0.5 to 2), kappa (0 to 3), the radius
+range and nesting on the single fault with at least 3000 yr of burn-in;
+compare frequency-magnitude distribution, Bath gap, site and
+whole-fault regularity, arrest persistence, the fraction of large
+ruptures that begin in the smallest patches, and whether moderate events
+repeatedly stop at the same patch edges before a larger rupture breaks
+through. Points to resolve: whether the rate calibration should account
+for the barriers (to shorten the spin-up), and whether the barrier should
+act through the admission ratio (as now, so it depends on the arrest
+scale) or as a separate passage probability.
+
 ## Remaining single-fault tests
 
 Status 3 November: items 1 to 7 of the original list below have been

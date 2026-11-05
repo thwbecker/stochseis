@@ -208,3 +208,8 @@ slip rates constrained to a transect loading rate.
   with 10^5 patches are needed.
 * References in docs/design.md were written from memory; verify against
   erdbeben.bib before citing.
+
+Hierarchical patch structure (5 November): option hier_* (stochseis/hierarchy.py),
+tests in tests/test_hierarchy.py, first single-fault runs and the planned
+experiment in docs/experiments.md E23. Strong barriers need about 3000 yr
+of spin-up to reach moment balance.

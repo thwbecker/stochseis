@@ -45,6 +45,8 @@ years, days (Omori c). Section numbers refer to `docs/design.md`.
 | segment_boundary_strength, segment_boundary_width_km | 1, 4 | strength factor of patches near segment boundaries, dividing the admission ratio (rupture-passage control) |
 | sites_file, site_thresholds_m | "", [1, 2, 4] | paleoseismic sites and detection thresholds for the summary statistics |
 | strength_ln_sigma, strength_hurst, strength_corr_km | 0, 0.25, -1 | quenched strength heterogeneity dividing the admission ratio (E17); off by default |
+| hier_rmin_km, hier_rmax_km, hier_ratio, hier_fill, hier_nest | 0 (off), 40, 2, 0.3, 0.8 | persistent hierarchical patch structure (stochseis/hierarchy.py, E23): radii, level ratio, area fraction per level, nesting probability |
+| hier_barrier_exponent, hier_nucleation_exponent | 1, 0 | admission ratio divided by max(1, r_patch / R_rupture)^eta; nucleation weight multiplied by (r_min / r_patch)^kappa |
 | state_measure | "deficit" | state used for admission and slip conditioning; "stress" uses the backslip stress (noisy, see design.md) |
 | arrest_scale | 0.25 | rho_c of the admission rule; 0 disables the budget control of ruptures. Ruptures percolate where deficit exceeds about 0.73 rho_c times the implied slip; 0.5 confines the budget release to M < 7 on the test fault |
 | track_stress | True | compute the backslip stress field for heterogeneity diagnostics |

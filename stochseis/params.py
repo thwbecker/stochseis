@@ -77,6 +77,14 @@ class Params:
     strength_ln_sigma: float = 0.0        # quenched strength heterogeneity: ln-std of a lognormal von Karman field (0 = none)
     strength_hurst: float = 0.25          # Hurst exponent of the strength field
     strength_corr_km: float = -1.0        # correlation length of the strength field; negative = fault length
+    # persistent hierarchical patch structure (stochseis/hierarchy.py); hier_rmin_km = 0 switches it off
+    hier_rmin_km: float = 0.0             # smallest patch radius
+    hier_rmax_km: float = 40.0            # largest patch radius
+    hier_ratio: float = 2.0               # radius ratio between successive levels (background: ratio x largest)
+    hier_fill: float = 0.3                # area fraction covered by each level
+    hier_nest: float = 0.8                # probability that a patch lies inside a patch of the next larger level
+    hier_barrier_exponent: float = 1.0    # eta: admission ratio divided by max(1, r_patch / R_rupture)^eta
+    hier_nucleation_exponent: float = 0.0  # kappa: nucleation weight multiplied by (r_min / r_patch)^kappa
     state_measure: str = "deficit"        # "deficit" or "stress" (tau = K deficit) drives arrest and conditioning
     track_stress: bool = True             # compute the backslip stress field for heterogeneity diagnostics
     state_smoothing_km: float = 0.0       # Gaussian smoothing (sd) of the deficit seen by admission and nucleation; mimics elastic coupling

@@ -116,8 +116,9 @@ class Simulation:
 
     # ------------------------------------------------------------------
     def local_weight(self, t, i):
-        """Local nucleation weight (max(deficit, 0) / delta_ref)^gamma of patch i."""
-        return (max(float(self.state.deficit(t, i)), 0.0) / self.delta_ref) ** self.p.nucleation_exponent
+        """Local nucleation weight (max(deficit, 0) / delta_ref)^gamma of patch i (times the hierarchy factor)."""
+        w = (max(float(self.state.deficit(t, i)), 0.0) / self.delta_ref) ** self.p.nucleation_exponent
+        return w * self.nuc_factor[i] if self.nuc_factor is not None else w
 
     def smoothed_deficit(self, t, idx=None):
         """Deficit, optionally smoothed along strike and dip (state_smoothing_km), at patches idx."""
@@ -137,8 +138,9 @@ class Simulation:
         return d if idx is None else d[idx]
 
     def weights(self, t):
-        """(max(deficit, 0) / delta_ref)^gamma on all patches."""
-        return (np.maximum(self.smoothed_deficit(t), 0.0) / self.delta_ref) ** self.p.nucleation_exponent
+        """(max(deficit, 0) / delta_ref)^gamma on all patches (times the hierarchy factor)."""
+        w = (np.maximum(self.smoothed_deficit(t), 0.0) / self.delta_ref) ** self.p.nucleation_exponent
+        return w * self.nuc_factor if self.nuc_factor is not None else w
 
     def _weight_bound(self, t):
         """Thinning bound on the fault-mean weight for background nucleation."""
@@ -215,7 +217,8 @@ class Simulation:
             sfn = lambda ii: np.ones(len(ii))  # noqa: E731
         idx, dist, code, rho, scale = grow_rupture(f, graph, i0, sfn, dsig, self.rng, p, self.w_eff,
                                                    self.m0_table,
-                                                   self.strength if use_state else None)
+                                                   self.strength if use_state else None,
+                                                   self.hier_scale if use_state else None)
         cond = sfn(idx)
         slip, info = build_slip(f, idx, cond, dsig, self.rng, p, diagnostics=diagnostics)
         if use_state and p.slip_mode == "local_cap":
@@ -423,6 +426,16 @@ class Simulation:
             gs = gaussian_field(f.ns, f.nz, f.dx, corr, corr, p.strength_hurst, srng)
             sg = p.strength_ln_sigma
             self.strength = np.exp(sg * gs[f.col, f.row] - 0.5 * sg ** 2)
+        # persistent hierarchical patch structure (fixed for the run)
+        self.hier_scale = None
+        self.nuc_factor = None
+        if p.hier_rmin_km > 0:
+            from .hierarchy import build_hierarchy, nucleation_factor
+
+            self.hier_scale, self.hier_radii, self.hier_levels = build_hierarchy(f, p)
+            if p.hier_nucleation_exponent != 0:
+                self.nuc_factor = nucleation_factor(self.hier_scale, self.hier_radii[-1],
+                                                    p.hier_nucleation_exponent)
         # stronger patches at segment boundaries (rupture-passage control)
         bounds = getattr(f, "segment_bounds_m", None)
         if p.segment_boundary_strength != 1.0 and bounds is not None and len(bounds):
@@ -598,6 +611,8 @@ class Simulation:
                             cand = f.nearest_patch(f.s[srcm] + ds, f.zd[srcm] + dz).reshape(n_keep, N_LOC)
                             wc = np.maximum(self.smoothed_deficit(t, cand.ravel()), 0.0).reshape(n_keep, N_LOC)
                             wc = wc ** p.nucleation_exponent
+                            if self.nuc_factor is not None:
+                                wc = wc * self.nuc_factor[cand]
                             tot = wc.sum(axis=1)
                             relaxed = tot <= 0
                             n_trig += n_keep

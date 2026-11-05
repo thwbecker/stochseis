@@ -1,0 +1,93 @@
+{
+ "_comment": "Single-fault parameter overview: the default 200 km strike-slip fault (Params defaults) and two alternative values of each of three controls, one changed at a time. Families share the default case. Run with run_test.sh (catalogs kept), figures with make_figures.py.",
+ "design": "list",
+ "base": {
+  "duration_yr": 10000,
+  "mag_min": 4.0,
+  "store_slip_min_mag": 6.0
+ },
+ "vectors": [
+  {},
+  {
+   "branching_ratio": 0.2
+  },
+  {
+   "branching_ratio": 0.8
+  },
+  {
+   "nucleation_exponent": 3.0
+  },
+  {
+   "nucleation_exponent": 10.0
+  },
+  {
+   "hazard_max_area_km2": 1000.0
+  },
+  {
+   "hazard_max_area_km2": 200.0
+  }
+ ],
+ "case_names": [
+  "defaults",
+  "branching 0.2",
+  "branching 0.8",
+  "clock 3",
+  "clock 10",
+  "size rule 1000 km2",
+  "size rule 200 km2"
+ ],
+ "families": {
+  "clustering (branching ratio)": {
+   "parameter": "branching_ratio",
+   "cases": [
+    1,
+    0,
+    2
+   ],
+   "values": [
+    "0.2",
+    "0.5",
+    "0.8"
+   ]
+  },
+  "nucleation clock (exponent)": {
+   "parameter": "nucleation_exponent",
+   "cases": [
+    0,
+    3,
+    4
+   ],
+   "values": [
+    "1",
+    "3",
+    "10"
+   ]
+  },
+  "size rule (area threshold)": {
+   "parameter": "hazard_max_area_km2",
+   "cases": [
+    0,
+    5,
+    6
+   ],
+   "values": [
+    "none",
+    "1000 km2",
+    "200 km2"
+   ]
+  }
+ },
+ "seeds": [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10
+ ],
+ "mmain": 6.0
+}

@@ -1,4 +1,4 @@
-# Handoff: stochseis, state as of 31 October 2026
+# Handoff: stochseis, state as of 5 November 2026
 
 Repository: https://github.com/thwbecker/stochseis. All experiments are
 logged in `docs/experiments.md`. Written by Claude
@@ -12,24 +12,27 @@ next. Read `docs/design.md` first for the model itself.
 
 ## 1. What exists
 
-* Package `stochseis` (Python, numpy/scipy/matplotlib only), 18 pytest
-  tests passing, documented in `README.md`, `docs/design.md`,
-  `docs/parameters.md`, `docs/analysis.md`.
-* Stage 0 geometry: planar, optionally segmented faults with step-overs,
-  on the abstract patch-graph interface that later loaders (UCERF3 or
-  NZ CFM sections, stochastic fault networks) must produce.
-* Physics: spectral static stiffness (validated against Eshelby and the
-  antiplane crack to 1 percent), crack solutions for uniform stress drop
-  on arbitrary outlines (preconditioned CG, cached by shape), von Karman
-  lognormal roughness, deficit-conditioned slip, rupture flood growth
-  with percolation-type arrest, scale-free size hazard, ETAS clustering,
-  backslip stress state, rupture kinematics (speed, onset times,
-  duration), budget-calibrated nucleation rate with weak global feedback.
-* Analysis: FMD and b by magnitude regime, source scaling, Omori MLE
-  stacks, Bath (observer and genealogy views), foreshock fraction with
-  chance level, whole-fault and site recurrence CVs, moment closure,
-  stress heterogeneity, arrest statistics; summary and time-series
-  figures; CLI with run / analyze / sweep (multiprocessing).
+* Package `stochseis` (Python, numpy/scipy/matplotlib only), 47 pytest
+  tests, described in `README.md` (what the code does, what was
+  learned, layout) and `docs/` (design, parameters, analysis, the
+  development log `experiments.md`, network design).
+* Geometries: planar and segmented faults, and triangulated surfaces
+  (STL) resampled onto section grids (the Alpine Fault meshes), with
+  segment slip rates and a dip correction of crack amplitudes.
+* Rules: budget-calibrated, deficit-weighted nucleation; ETAS
+  clustering; rupture flood growth with deficit-dependent admission and
+  a scale-free or hybrid size rule; crack slip set by stress drop, with
+  roughness, optionally capped at the local deficit; optional quenched
+  structure (strength field, segment-boundary barriers, hierarchical
+  patches).
+* Analysis: FMD and b by regime, source scaling, Omori stacks, Bath,
+  foreshocks, recurrence at points and on the whole fault, synthetic
+  paleoseismic records, record matching against observations,
+  constraint-weighted predictions; CLI with run / analyze / sweep.
+* Two worked examples, each with a README, results and `run_test.sh`:
+  `examples/single_fault/` (parameter overview and the development
+  experiments E1 to E23) and `examples/nz_alpine/` (Alpine Fault
+  simulator comparison).
 
 ## 2. Decisions and their reasons
 
@@ -103,9 +106,9 @@ chance level of 0.15 (10 days, 10 km), closure 1.002 +- 0.008, realised
 branching ratio 0.41 for a nominal 0.5. Runtime about 12 min per
 10,000 yr on one core.
 
-Results quoted before 1 November 2026, the figures in `runs/sweep1`,
-`runs/sweep2` and the top level of `runs/`, and the reasoning that led to
-the earlier defaults were produced with the miscalibrated rate.
+Results quoted before 1 November 2026 and the reasoning that led to the
+earlier defaults were produced with the miscalibrated rate (the figures
+from that period were removed from the repository on 5 November 2026).
 
 Note on b-values: before 31 October the estimator applied the Utsu
 half-bin correction to continuous synthetic magnitudes (b biased about
@@ -118,82 +121,39 @@ would be needed to produce stress-dependent b variations.
 
 ## 4. Open issues, in order of importance
 
-1. **Finish the regime study** (ROADMAP step 1, remaining items): more
-   seeds and longer runs for the chosen defaults, arrest_scale 2, and the
-   dependence of site CV and Bath on fault length; the trade-off between
-   Bath and site CV through the branching ratio is the main result so far
-   and should be checked for robustness.
-2. **Single-fault tests are essentially complete** (docs/experiments.md
-   E1 to E21): resolution independence, stationarity, segmented and
-   dipping faults, emergence of GR from state (negative: GR must be
-   imposed), deep slip and moment scaling, foreshocks, half-space check
-   (exact for vertical faults, up to 35 percent too little slip for
-   shallow thrusts), lower stress drop. Remaining runs that need more
-   cores are specified in docs/experiments.md. Stage 1 (fault networks)
-   is next.
-3. **Stress as state.** Patch-scale stress roughness (std about 18 MPa)
-   is probably too large; it scales with slip_cv and the deficit
-   conditioning. Options: filter the roughness at the patch scale,
-   lower slip_cv, or use a low-pass stress for arrest. Needed before the
-   maturity/damage variable (recorded, unused) can be given a role.
-4. **M0 versus L above saturation** goes as L^1.2 to 1.8 against the
-   observed L^2 (W-model limitation). One extra parameter (effective
-   depth extent of slip below the locked zone) would test the fix.
-5. **Omori p** (largely resolved): in a 1500-yr run the direct offspring
-   of M >= 6 mainshocks recover the input p = 1.10; secondary
-   triggering flattens the all-generation stack to 0.96 (the known ETAS
-   effect, Helmstetter and Sornette, 2002), and the background inside the
-   observer window lowers it further to 0.93 to 0.98. Comparisons with
-   data should use the observer view and fit p jointly with a background
-   term.
-6. **Foreshock statistic**: defined as an event of M >= M_main - 2
-   within 30 days and max(10 km, L); chance level is computed, but the
-   definition should be settled with the user.
-7. Minor: single-core sandbox prevented completing the six-run sweep in
-   one go; the sweep command itself works. Capped events can fall below
-   mag_min (analysis filters on mag_min). The free-surface image is
-   exact for antiplane components only. Sub-patch events carry 2 percent
-   of the moment.
+1. **South-central contrast on the Alpine Fault.** No control tested
+   (nucleation clock, size rule, strength heterogeneity, first test of
+   segment-boundary barriers) gives a regular central and a less
+   regular south record together; set D (`examples/nz_alpine/run_test.sh`)
+   is the next test.
+2. **Regularity versus aftershock statistics.** Regular recurrence comes
+   with characteristic sizes and weak triggering (Bath gaps of 1.3 and
+   more); this is a property of the model class to be stated in the
+   comparison, not a bug.
+3. **Hierarchical patches (E23).** Implemented, first runs only; strong
+   barriers need about 3000 yr of spin-up. Decision (5 November): keep
+   the barrier inside the admission ratio (no extra parameter) and handle
+   spin-up by run length and the analysis burn-in rather than a
+   recalibration.
+4. **Stress as state.** Patch-scale stress roughness is probably too
+   large (scales with slip_cv); needed before a damage or maturity
+   variable can be given a role.
+5. **M0 versus L above saturation** goes as about L^1.5 unless slip
+   extends below the seismogenic depth (`deep_slip_km`, E18).
+6. **Kinematics.** Events have onset times but only final slip, so no
+   moment-rate functions; a slip-time function with a local rise time
+   would give them (relevant for cascade-type observations).
+7. Minor: capped events can fall below mag_min (analysis filters on
+   mag_min); the free-surface image is exact for antiplane components
+   only; sub-patch events carry about 2 percent of the moment.
 
-## 4a. Synthesis
+## 5. Next stages (concrete steps in ROADMAP.md)
 
-docs/synthesis.md (5 November): model class, controls of complexity
-(slip rule, nucleation clock, size rule, clustering, admission, barriers),
-which Alpine cases match the records (record_match.py), and
-constraint-weighted predictions (predictions.py, last step of
-run_realization_sets.sh). Pending: record matching for sets B and C with
-50 realizations, then the full prediction table.
-
-## 4b. Alpine Fault intercomparison
-
-Consolidated in docs/alpine.md (4 November 2026): model class (hybrid
-sizes, deficit-capped slip, L1 dip correction), calibration by ABC with
-posterior rescoring, reference calibration (round 5, five
-configurations), regular-site calibration (round 7), Bath-gap
-sensitivity (round 6), one-parameter spectrum along the area threshold,
-scenario figures, open points for the physics-based models. Kept run
-summaries: runs/alpine_full_campaign, runs/alpine_r6, runs/alpine_r7.
-Decisions: north site scored at 1 m, site events merged at 30 yr,
-regularity over Bath gap. Three irregularity controls identified
-(nucleation clock, size rule, quenched barriers); realization sets and
-the three figure pages: run_realization_sets.sh. Pending: round 7 on the
-fine configurations, spectrum runs, scenario figures.
-Realization sets (runs/alpine_sets): record-length windows make the
-reference calibration consistent with the central and north records;
-the south record (CV 0.40) is improbable in every case that fits the
-central one; barriers do not decouple the sites.
-
-
-## 5. Next stages (from the original plan; concrete steps in ROADMAP.md)
-
-Stage 1: UCERF3 or NZ CFM subsection loader producing the patch graph
-(sections, connections with jump distances, slip rates, coupling); the
-backslip stress state then needs the general-geometry path (per-section
-grids or Okada via interact). Stage 2: megathrust meshes (triangles,
-dipping, 100 km widths). Stage 3: recurrence-rate calibration mode
-(adjust per-section nucleation weights to paleoseismic recurrence).
-Later: stochastic fault-network generator on the same interface, with
-slip rates constrained to a transect loading rate.
+Run the two `run_test.sh` scripts; the E23 hierarchy sweep on the single
+fault; then Stage 1: a UCERF3 example (fault sections with connections
+and jump distances, `docs/networks.md` stage N2 for multi-section
+faults); later a fault system represented only probabilistically
+(stochastic fault-network generator on the same patch-graph interface).
 
 ## 6. Practical notes
 
@@ -208,8 +168,3 @@ slip rates constrained to a transect loading rate.
   with 10^5 patches are needed.
 * References in docs/design.md were written from memory; verify against
   erdbeben.bib before citing.
-
-Hierarchical patch structure (5 November): option hier_* (stochseis/hierarchy.py),
-tests in tests/test_hierarchy.py, first single-fault runs and the planned
-experiment in docs/experiments.md E23. Strong barriers need about 3000 yr
-of spin-up to reach moment balance.

@@ -4,12 +4,12 @@ This log records the tests run on a single planar strike-slip fault
 (200 x 15 km, surface breaking, 20 mm/yr, 1 km patches, unless stated),
 what each was meant to establish, the settings, the results and the
 conclusion. Spec files that reproduce the multi-seed experiments with the
-current code are in `examples/experiments/`;
-`examples/run_stochseis_tests.sh [ncpu] [outdir] [all]` runs the test
+current code are in `examples/single_fault/experiments/`;
+`examples/single_fault/experiments/run_stochseis_tests.sh [ncpu] [outdir] [all]` runs the test
 suite, the half-space check and the sweeps with python3,
-`examples/experiments/run_all.sh [nproc] [outdir]` runs all sweeps, and
-`examples/aggregate_sweep.py` averages over seeds. Summaries of the runs
-quoted below are in `runs/regime_2026-11-01/` and `runs/tests_2026-11-02/`.
+`examples/single_fault/experiments/run_all.sh [nproc] [outdir]` runs all sweeps, and
+`examples/single_fault/experiments/aggregate_sweep.py` averages over seeds. Summaries of the runs
+quoted below are in `examples/single_fault/experiments/results/regime_2026-11-01/` and `examples/single_fault/experiments/results/tests_2026-11-02/`.
 
 Two warnings apply to the whole log.
 
@@ -363,8 +363,8 @@ megathrust applications need half-space kernels (ROADMAP step 6).
 ## E21. Stress drop and deep slip (3 November; sweep run by T. Becker, 1 November local time)
 
 200 km fault, defaults otherwise, three seeds of 3000 yr per cell (27
-runs, `examples/experiments/e21_stressdrop_deepslip.json`; summaries in
-`runs/e21_e22_2026-11-01/`). Means over seeds; seed-to-seed standard
+runs, `examples/single_fault/experiments/e21_stressdrop_deepslip.json`; summaries in
+`examples/single_fault/experiments/results/e21_e22_2026-11-01/`). Means over seeds; seed-to-seed standard
 deviations are about 0.02 to 0.05 for magnitudes and Bath, 0.03 to 0.1
 for CVs, and up to 0.3 for the M0-L slope above saturation.
 
@@ -406,8 +406,8 @@ slip: D/L 1.9e-5 and 0.54e-5, max M 7.21) is consistent with the table.
 ## E22. Error bars for the defaults (sweep run by T. Becker)
 
 Defaults, 200 km fault, 20 seeds of 10,000 yr (about 1.1 million events
-each; `examples/experiments/e22_defaults_error_bars.json`; summaries in
-`runs/e21_e22_2026-11-01/`). Mean and standard deviation over seeds:
+each; `examples/single_fault/experiments/e22_defaults_error_bars.json`; summaries in
+`examples/single_fault/experiments/results/e21_e22_2026-11-01/`). Mean and standard deviation over seeds:
 
 | statistic | mean | sd |
 |---|---|---|
@@ -496,10 +496,11 @@ compare frequency-magnitude distribution, Bath gap, site and
 whole-fault regularity, arrest persistence, the fraction of large
 ruptures that begin in the smallest patches, and whether moderate events
 repeatedly stop at the same patch edges before a larger rupture breaks
-through. Points to resolve: whether the rate calibration should account
-for the barriers (to shorten the spin-up), and whether the barrier should
-act through the admission ratio (as now, so it depends on the arrest
-scale) or as a separate passage probability.
+through. Decisions (5 November, fewest parameters and fastest at equal
+accuracy): the barrier stays inside the admission ratio (no additional
+parameter; its effect therefore scales with the arrest scale), and the
+spin-up is handled by run length and the analysis burn-in (first 10
+percent of each run), not by recalibrating the rate.
 
 ## Remaining single-fault tests
 
@@ -510,7 +511,7 @@ epicentre-based foreshock definition is now the one in
 faults:
 
 1. Optionally reproduce E5 to E10 with the current code
-   (`examples/run_stochseis_tests.sh N outdir all`, about 6 core-hours).
+   (`examples/single_fault/experiments/run_stochseis_tests.sh N outdir all`, about 6 core-hours).
 2. D/L restricted to the magnitude range of the compilations (needs
    catalogs, i.e. a sweep without --no-catalogs).
 3. Calibrate K0 on the realised rather than the unrestricted magnitude

@@ -37,8 +37,8 @@ years, days (Omori c). Section numbers refer to `docs/design.md`.
 | b_value | 1.0 | size hazard per unit ln area, equal to the GR b below width saturation |
 | stop_measure | "moment" | "moment" keeps b continuous through width saturation, "area" raises it by a factor 1.5 |
 | size_hazard | True | False: no scale-free size hazard, ruptures stop only when no neighbour is admitted (state-only termination; gives characteristic size distributions, see ROADMAP) |
-| segments_file, segment_include, segment_max_dist_km, segment_taper_km | "", [], 10, 10 | segment table with end points, rake and slip rate; projected onto mesh traces (docs/alpine.md) |
-| slip_mode, slip_fraction | "stress_drop", 1 | "deficit": each patch releases slip_fraction of its positive deficit; "local_cap": stress-drop crack slip capped patch by patch at slip_fraction of the deficit (docs/alpine.md) |
+| segments_file, segment_include, segment_max_dist_km, segment_taper_km | "", [], 10, 10 | segment table with end points, rake and slip rate; projected onto mesh traces (examples/nz_alpine/README.md) |
+| slip_mode, slip_fraction | "stress_drop", 1 | "deficit": each patch releases slip_fraction of its positive deficit; "local_cap": stress-drop crack slip capped patch by patch at slip_fraction of the deficit (examples/nz_alpine/README.md) |
 | hazard_max_area_km2 | -1 | hybrid sizes: scale-free size hazard only below this area, state-only termination above |
 | admission_exponent | 2 | m in the admission probability 1 - exp(-(rho/rho_c)^m) |
 | state_smoothing_km | 0 | Gaussian smoothing of the deficit seen by admission and nucleation |

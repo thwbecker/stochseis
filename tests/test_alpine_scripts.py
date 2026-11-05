@@ -7,7 +7,7 @@ import sys
 import numpy as np
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.insert(0, os.path.join(ROOT, "examples", "alpine"))
+sys.path.insert(0, os.path.join(ROOT, "examples", "nz_alpine"))
 
 from abc_scoring import accepted, score  # noqa: E402
 
@@ -41,8 +41,8 @@ def test_campaign_specs(tmp_path):
                        {"name": "a_coarse", "geometry": "a", "resolution": "coarse", "geometry_file": __file__,
                         "patch_km": 2.0, "segment_max_dist_km": 40.0}]}
     (tmp_path / "cfg.json").write_text(json.dumps(cfg))
-    base = os.path.join(ROOT, "examples", "alpine", "abc5_planar_l1.json")
-    subprocess.run([sys.executable, os.path.join(ROOT, "examples", "alpine", "make_campaign_specs.py"),
+    base = os.path.join(ROOT, "examples", "nz_alpine", "abc5_planar_l1.json")
+    subprocess.run([sys.executable, os.path.join(ROOT, "examples", "nz_alpine", "make_campaign_specs.py"),
                     str(tmp_path / "cfg.json"), base, str(tmp_path / "specs"), "7", "2", "500"], check=True,
                    capture_output=True)
     a = json.loads((tmp_path / "specs" / "abc_a_fine.json").read_text())
@@ -85,11 +85,11 @@ def test_bath_options():
 
 
 def test_realization_specs_and_windows(tmp_path):
-    cfg = json.load(open(os.path.join(ROOT, "examples", "alpine", "realization_sets.json")))
+    cfg = json.load(open(os.path.join(ROOT, "examples", "nz_alpine", "realization_sets.json")))
     cfg["configuration"]["geometry_file"] = __file__          # any existing file
-    cfg["base_spec"] = os.path.join(ROOT, "examples", "alpine", "abc7_regularity.json")
+    cfg["base_spec"] = os.path.join(ROOT, "examples", "nz_alpine", "abc7_regularity.json")
     (tmp_path / "sets.json").write_text(json.dumps(cfg))
-    subprocess.run([sys.executable, os.path.join(ROOT, "examples", "alpine", "make_realization_specs.py"),
+    subprocess.run([sys.executable, os.path.join(ROOT, "examples", "nz_alpine", "make_realization_specs.py"),
                     str(tmp_path / "sets.json"), str(tmp_path / "specs"), "4", "1000"], check=True, capture_output=True)
     for name, st in cfg["sets"].items():
         spec = json.loads((tmp_path / "specs" / f"realizations_{name}.json").read_text())
@@ -122,7 +122,7 @@ def test_parameter_effects_runs(tmp_path):
             rows.append(r)
     f = tmp_path / "s.json"
     f.write_text(json.dumps(rows))
-    subprocess.run([sys.executable, os.path.join(ROOT, "examples", "alpine", "parameter_effects.py"), str(tmp_path / "pe"),
+    subprocess.run([sys.executable, os.path.join(ROOT, "examples", "nz_alpine", "parameter_effects.py"), str(tmp_path / "pe"),
                     str(f)], check=True, capture_output=True)
     table = (tmp_path / "pe_effects.md").read_text()
     line = [l for l in table.split("\n") if l.startswith("| central CV")][0]

@@ -1,89 +1,134 @@
 # stochseis
 
-A stochastic seismicity generator on fault patch graphs, intended as a
-baseline that physics-based earthquake cycle models should be measured
-against. Large ruptures carry stress-drop-normalised, rough slip; small
-events and clustering follow an ETAS process; a slip budget couples
-everything to the long-term loading.
+A stochastic earthquake-sequence generator for faults and fault systems,
+intended as a baseline against which physics-based earthquake cycle
+simulators can be measured. It produces long synthetic catalogs with
+slip distributions from a few rules and a slip budget, without friction,
+stress transfer or dynamics. When such a model, tuned to the same
+constraints, reproduces an observation, that observation does not by
+itself require the physics of a simulator; where it fails, the
+simulator has something to show.
 
 ## Authorship
 
 The code, tests and documentation in this repository were written by
 Claude (Anthropic's AI model, Claude Opus 5.5) in a chat session with
 Thorsten Becker (UT Austin), who specified the scientific goals, made the
-modelling decisions and reviewed the results. The design discussion that
-led to the current rules, including approaches that were tried and
-rejected, is summarised in `HANDOFF.md`. The code has been tested as
-described below but has not yet been reviewed line by line by a human;
+modelling decisions and reviewed the results. The code has been tested
+as described below but has not been reviewed line by line by a human;
 please treat results accordingly. References in `docs/design.md` were
 written from memory and have not all been checked against the
 literature.
 
-## Status
+## What the code does
 
-This is a first iteration (Stage 0: single planar or segmented faults).
-It runs and its tests pass, but the statistics it produces have only
-begun to be explored and several modelling choices are provisional. On a
-single 200 x 15 km strike-slip fault with default parameters the
-frequency-magnitude distribution follows Gutenberg-Richter from M3 to M6
-up to the fault-size limit near M7.5 (b = 1 by construction below width
-saturation), Bath's gap (about 1.25) and Omori decay emerge, site
-recurrence coefficients of variation are about 0.6 for slip of 1 m or
-more, and the slip budget closes. These values come from a reduced
-parameter study on one fault geometry (ROADMAP step 1). A calibration
-error that affected all results before 1 November 2026 has been fixed
-(`docs/design.md` section 2.5). Figures in `runs/` come from intermediate
-versions of the code and single seeds and should not be compared across
-versions.
+A fault (planar, segmented, or a triangulated surface such as the
+Alpine Fault meshes) is divided into patches of 1 to 2 km. On it:
 
-## Documentation
+* **Loading and state.** Every patch accumulates slip deficit at its
+  long-term slip rate; earthquakes release it. The deficit is the state
+  of the fault, and the budget closes: over long runs released moment
+  equals loaded moment.
+* **Nucleation.** Background earthquakes start at a rate set by the
+  budget, preferentially where the deficit is high; the exponent of that
+  dependence (`nucleation_exponent`) acts as a renewal clock, from
+  Poisson-like to strongly time-predictable.
+* **Clustering.** Each event triggers aftershocks (ETAS, Omori decay,
+  productivity scaling with magnitude, `branching_ratio`).
+* **Rupture growth and arrest.** A rupture grows outward from its
+  hypocentre over neighbouring patches. At each step it may stop: by a
+  scale-free size hazard (Gutenberg-Richter, `b_value`), and wherever the
+  fault is not ready, i.e. where the deficit is small compared with the
+  slip the growing rupture would need (`arrest_scale`). With the hybrid
+  size rule (`hazard_max_area_km2`), ruptures larger than a threshold
+  area stop only where the fault is not ready. Optional quenched
+  structure: a strength field, barriers at segment boundaries, and a
+  persistent hierarchy of nested patches.
+* **Slip.** Each rupture receives a crack-shaped slip distribution set by
+  its stress drop, with self-affine roughness, optionally capped patch by
+  patch at the local deficit (`slip_mode = "local_cap"`); a dip
+  correction accounts for dipping faults.
+* **Outputs.** Catalogs with event times, magnitudes, geometry and slip
+  distributions, and analysis tools for frequency-magnitude statistics,
+  aftershock statistics (Omori, Bath), recurrence at points and on the
+  whole fault, synthetic paleoseismic records, and comparisons with
+  observations.
 
-* `docs/design.md`: core assumptions first, then the rules, parameter
-  provenance, known limitations and references.
-* `docs/parameters.md`: every parameter with its default and role.
-* `docs/analysis.md`: the statistics and figures.
-* `docs/synthesis.md`: what the stochastic model class produces, which
-  parameters control complexity, which Alpine cases fit the constraints,
-  and how predictions for the model comparison are made.
-* `docs/networks.md`: design for 3-D geometries, fault networks, UCERF3
-  and probabilistic networks; `docs/alpine.md`: the New Zealand Alpine
-  Fault intercomparison (inputs, status, plan).
-* `docs/experiments.md`: log of the single-fault experiments, with
-  settings, results, conclusions and the specs in `examples/experiments/`
-  that reproduce them.
-* `HANDOFF.md`: decisions and their reasons, rejected alternatives,
-  current behaviour, open issues in order of importance.
-* `ROADMAP.md`: concrete next steps.
+`docs/design.md` gives the rules and their justification in detail.
 
-## Requirements
+## What we have learned
 
-Python 3.10 or later, numpy (1.22 or later), scipy (1.10 or later; 1.12
-or later recommended), matplotlib; pytest for the tests; optionally cutde
-for the half-space check in `examples/checks/`. Installing with
+Results from the single-fault experiments (`examples/single_fault/`) and
+the Alpine Fault application (`examples/nz_alpine/`):
 
-    python3 -m pip install --user -e ".[test]"
+* **Two main axes of complexity.** Timing regularity is controlled by
+  the nucleation clock, which leaves the size distribution and the
+  aftershock statistics unchanged. The shape of the size distribution
+  (characteristic to scale-free) is controlled by the size rule, which
+  also changes aftershock productivity, the Bath gap, rupture patterns
+  and, through them, regularity. Clustering (the branching ratio) is a
+  third control that couples aftershock statistics to regularity: strong
+  triggering gives standard Bath gaps but irregular recurrence.
+* **Prerequisites.** Whether regular recurrence at a point is possible at
+  all depends on how slip is assigned: when slip is set by stress drop
+  alone, the slip released at a point varies from event to event and
+  point recurrence stays irregular (CV of 0.4 and more); capping slip at
+  the accumulated deficit allows regular recurrence with normal
+  seismicity statistics. Gutenberg-Richter does not emerge from the
+  fault state alone and has to be imposed.
+* **Final size is decided by arrest.** Nothing at nucleation determines
+  how large a rupture becomes; it grows until it reaches fault that is
+  not ready to fail. This matches observations of large earthquakes that
+  begin like small ones.
+* **Mean recurrence intervals are easy, regularity is hard.** With the
+  slip budget calibrated, mean recurrence intervals and displacements at
+  paleoseismic sites follow from slip rate and stress drop; the
+  coefficient of variation of the intervals is the discriminating
+  observation, and it must be judged on synthetic records of the
+  observed length (a dozen events), which are more regular than long
+  runs.
+* **Alpine Fault.** Models with regular, partly characteristic rupture,
+  weak triggering and deficit-capped slip match the three paleoseismic
+  records about one time in six; irregular models (soft clock,
+  scale-free sizes) about one time in a hundred. In every model the
+  south and central sites share most large ruptures, so the observed
+  contrast between a regular central and a less regular south record is
+  not reproduced. The constraint-weighted ensemble gives predictions
+  with ranges for the model comparison.
 
-from the repository root pulls in suitable versions; `".[test,halfspace]"`
-adds cutde.
-No compiled code. A 1500-year catalog on a 200 x 15 km fault at 1 km
-patch size (about 160,000 events above M3) takes under a minute on one
-core.
+## Examples
 
-## Installation and quick start
+* `examples/single_fault/`: a single planar strike-slip fault; how a few
+  parameters change Gutenberg-Richter statistics, Omori decay, Bath's
+  law and recurrence, with spreads from several realizations and example
+  slip distributions; the development experiments E1 to E23.
+* `examples/nz_alpine/`: the Alpine Fault, New Zealand (three mesh
+  geometries, segment slip rates, three paleoseismic sites); how the
+  parameters, including barriers at segment boundaries, change the
+  behaviour of a long fault, and the model tuned to the paleoseismic
+  constraints of the simulator comparison, with predictions.
+* Planned: UCERF3 fault sections (a network of connected faults), and
+  later a fault system represented only probabilistically
+  (`docs/networks.md`).
 
-```bash
-pip install -e .            # or set PYTHONPATH to the repository root
-python -m pytest tests      # 26 tests, about 60 s
+Each example folder has a `README.md` with the results and figures and a
+`run_test.sh` that reproduces them.
 
-# one run with defaults, 1500 years, seed 3
-python -m stochseis.cli run - cat.npz --set duration_yr=1500 seed=3 --summary cat.json
+## Requirements and installation
 
-# metrics and figures
-python -m stochseis.cli analyze cat.npz --plots plots/
+Python 3.10 or later, numpy (1.22 or later), scipy (1.10 or later),
+matplotlib; pytest for the tests; optionally cutde for the half-space
+checks in `examples/checks/`. No compiled code.
 
-# parameter sweep on four processes
-python -m stochseis.cli sweep examples/sweep_arrest_stressdrop.json sweep_out --nproc 4
-```
+    python3 -m pip install --user -e ".[test]"     # or set PYTHONPATH to the repository root
+    python3 -m pytest tests                          # 47 tests, about a minute
+
+    # one run with defaults, 1500 years, seed 3, and its figures
+    python3 -m stochseis.cli run - cat.npz --set duration_yr=1500 seed=3 --summary cat.json
+    python3 -m stochseis.cli analyze cat.npz --plots plots/
+
+    # a sweep (parameters and seeds from a JSON spec) on four processes
+    python3 -m stochseis.cli sweep examples/single_fault/specs/parameter_overview.json sweep_out --nproc 4
 
 From Python:
 
@@ -94,44 +139,58 @@ from stochseis import analysis, plots
 cat = run(Params(duration_yr=1000, seed=1))
 m = analysis.summary_metrics(cat)        # dict of scalar diagnostics
 plots.summary_figure(cat, "summary.png")
-plots.time_series_figure(cat, "time_series.png")
 cat.save("cat.npz")
 ```
+
+A 1500-year catalog on a 200 x 15 km fault at 1 km patches (about
+160,000 events above M3) takes under a minute on one core. Sweeps run
+their members as independent processes; they can be interrupted and
+restarted.
 
 ## Layout
 
 ```
-stochseis/
-  params.py      all parameters, JSON I/O
-  geometry.py    patch-graph fault interface, planar builder, fault factory
-  mesh.py        triangulated surfaces (STL) to section grids
-  sites.py       synthetic paleoseismic records and comparison with data
-  stiffness.py   spectral static stiffness, crack solver, analytic checks
-  randomfield.py von Karman fields
-  slip.py        slip distribution for a rupture outline
-  rupture.py     growth, admission and arrest
-  state.py       deficit, backslip stress, maturity
-  etas.py        Omori times, spatial kernel, productivity
-  simulator.py   event-driven simulation and budget calibration
-  catalog.py     catalog container and file format
-  analysis.py    statistics
-  plots.py       figures
-  cli.py         run / analyze / sweep
-tests/           pytest suite (analytic crack checks, spectra, growth
-                 statistics, ETAS pieces, end-to-end run)
-docs/            design.md, parameters.md, analysis.md
-examples/        quickstart, sweep specifications, sweep plotting
-runs/            figures from development runs (see Status)
+stochseis/          the package
+  params.py         all parameters, JSON I/O
+  geometry.py       fault patch graph, planar and segmented builders, segment slip rates
+  mesh.py           triangulated surfaces (STL) to patch grids
+  stiffness.py      spectral static stiffness, crack solutions
+  dipcorr.py        dip and rake correction of crack amplitudes
+  randomfield.py    von Karman random fields
+  hierarchy.py      persistent hierarchical patch structure
+  slip.py           slip distribution of a rupture
+  rupture.py        growth, admission and arrest
+  state.py          slip deficit and stress
+  etas.py           aftershock times, locations, productivity
+  simulator.py      event-driven simulation and budget calibration
+  catalog.py        catalog container and file format
+  sites.py          synthetic paleoseismic records
+  analysis.py       statistics
+  plots.py          figures
+  cli.py            run / analyze / sweep
+tests/              pytest suite
+docs/               design, parameters, analysis, development log, network design
+examples/
+  quickstart.py
+  checks/           half-space comparison and dip-correction table
+  single_fault/     README, run_test.sh, overview spec and figures, experiments E1-E23
+  nz_alpine/        README, run_test.sh, scripts, specs, results
+data/nz_alpine/     Alpine Fault inputs (sites, segments; meshes not included)
 ```
 
-## Parallelism
+## Documentation
 
-Single runs are serial. Sweeps over parameters and seeds run as
-independent processes through `multiprocessing.Pool`. The numerical hot
-spots are the shortest-path computation and the flood loop per grown
-rupture and the FFTs of the stiffness operator; a compiled version of
-the flood loop would be the first step if fault networks with many more
-patches make it necessary.
+* `docs/design.md`: core assumptions, the rules, parameter provenance,
+  known limitations and references.
+* `docs/parameters.md`: every parameter with its default and role.
+* `docs/analysis.md`: the statistics and figures.
+* `docs/experiments.md`: the development log of the single-fault
+  experiments (E1 to E23), with settings, results and the specs that
+  reproduce them.
+* `docs/networks.md`: design for 3-D geometries, fault networks, UCERF3
+  and probabilistic networks.
+* `HANDOFF.md`: decisions and their reasons, rejected alternatives, open
+  issues; `ROADMAP.md`: next steps.
 
 ## Output
 

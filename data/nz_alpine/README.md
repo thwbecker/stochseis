@@ -24,11 +24,11 @@ Inputs for the New Zealand Alpine Fault simulator intercomparison
   Point `geometry_file` at them.
 * Segment slip rates (`alpine_hope_faults_segment_slip_rates`,
   `alpine_segments.pdf`) have not been received yet; runs so far use a
-  placeholder (see docs/alpine.md).
+  placeholder (see examples/nz_alpine/README.md).
 
 * `rsqsim_summary.csv`: site statistics of the RSQSim simulations of the
   same exercise (planar and varying-dip geometries, 50,000 yr), transcribed
   from the slides "RSqsim_results.pdf" provided by the organisers (sites 1
   to 3 = south, central, north). An example of a reference table for
-  `examples/alpine/site_analysis.py --reference`; other models' results
+  `examples/nz_alpine/site_analysis.py --reference`; other models' results
   can be added in the same format.

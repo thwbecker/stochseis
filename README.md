@@ -42,6 +42,9 @@ versions.
   provenance, known limitations and references.
 * `docs/parameters.md`: every parameter with its default and role.
 * `docs/analysis.md`: the statistics and figures.
+* `docs/synthesis.md`: what the stochastic model class produces, which
+  parameters control complexity, which Alpine cases fit the constraints,
+  and how predictions for the model comparison are made.
 * `docs/networks.md`: design for 3-D geometries, fault networks, UCERF3
   and probabilistic networks; `docs/alpine.md`: the New Zealand Alpine
   Fault intercomparison (inputs, status, plan).

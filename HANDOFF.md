@@ -155,6 +155,15 @@ would be needed to produce stress-dependent b variations.
    exact for antiplane components only. Sub-patch events carry 2 percent
    of the moment.
 
+## 4a. Synthesis
+
+docs/synthesis.md (5 November): model class, controls of complexity
+(slip rule, nucleation clock, size rule, clustering, admission, barriers),
+which Alpine cases match the records (record_match.py), and
+constraint-weighted predictions (predictions.py, last step of
+run_realization_sets.sh). Pending: record matching for sets B and C with
+50 realizations, then the full prediction table.
+
 ## 4b. Alpine Fault intercomparison
 
 Consolidated in docs/alpine.md (4 November 2026): model class (hybrid

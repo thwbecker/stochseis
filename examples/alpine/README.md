@@ -35,6 +35,10 @@ Mesh files go in `data/nz_alpine/` (see `data/nz_alpine/README.md`).
 * `record_match.py`: samples synthetic records of the observed length (the
   last n events before an end time, all sites ending together) and gives
   how often they match the observed RI and CV, per site and jointly.
+* `predictions.py`: constraint-weighted predictions: pools cases and
+  weights each realization by the fraction of its records that match the
+  observations at all sites; weighted medians and 5-95 % ranges of the
+  metrics to compare with physics-based simulators.
 * `control_summary.py`: one figure of what each irregularity control does
   (metrics against the cases of each realization set).
 * `parameter_effects.py`: parameter effects pooled over ABC rounds

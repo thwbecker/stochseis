@@ -1,5 +1,8 @@
 # Alpine Fault intercomparison: stochastic baseline
 
+(For the big picture across the single-fault experiments and this
+application, and for the route to predictions, see `docs/synthesis.md`.)
+
 Status: 4 November 2026. This document summarizes the calibration of
 stochseis to the Alpine Fault paleoseismic constraints for the New
 Zealand simulator intercomparison. The chronological development record

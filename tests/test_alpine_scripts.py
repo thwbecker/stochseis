@@ -155,3 +155,12 @@ def test_case_files_exact_realization(tmp_path):
         assert [os.path.basename(f) for f in mod.case_files(f"{tmp_path}:v0000_s1")] == ["cat_v0000_s1.npz"]
         assert len(mod.case_files(f"{tmp_path}:v0000")) == 4
         assert len(mod.case_files(str(tmp_path))) == 5
+
+
+def test_weighted_quantile():
+    from predictions import wquantile
+    x = np.arange(10.0)
+    assert abs(wquantile(x, np.ones(10), 0.5) - 4.5) < 0.6
+    w = np.zeros(10)
+    w[7] = 1.0
+    assert wquantile(x, w, 0.05) == 7.0 and wquantile(x, w, 0.95) == 7.0

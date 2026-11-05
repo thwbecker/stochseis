@@ -14,6 +14,8 @@
 #                                            _spacetime.png, _extended.png, _table.md)
 #   page 4  <set>_ensemble_p4.png / .md      how often synthetic records of the observed length match
 #                                            the observed RI and CV, per site and jointly (record_match.py)
+#   predictions.png / .md                    all cases pooled, realizations weighted by how often their
+#                                            records match the observations (predictions.py)
 #
 # with mode "single" (first realization of each case) and "ensemble" (all
 # realizations; bands are 5-95 % over realizations). Run from the repository
@@ -64,4 +66,15 @@ do
         fi
     done
 done
-echo "done: pages in $outdir/<set>_<single|ensemble>_p{1,2,3}* and $outdir/<set>_ensemble_p4*"
+# constraint-weighted predictions over all cases of all sets
+pairs=""
+for s in $sets
+do
+    while read label vec seed0
+    do
+        pairs="$pairs ${s}_${label} $outdir/$s:$vec"
+    done < "$outdir/specs/realizations_${s}_cases.txt"
+done
+echo "=== predictions over all cases"
+python3 $here/predictions.py "$outdir/predictions" $pairs --site north=1
+echo "done: pages in $outdir/<set>_<single|ensemble>_p{1,2,3}*, $outdir/<set>_ensemble_p4*, $outdir/predictions.*"

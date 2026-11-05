@@ -358,6 +358,24 @@ fractions are uncertain by a factor of about 1.5 to 2):
 `run_realization_sets.sh` now also writes this analysis for every set
 (page 4, ensemble only), so the 50-realization sets give stable fractions.
 
+Set A with 50 realizations of 20,000 yr per case (about 7,000 record sets,
+about 280 independent ones; `runs/alpine_sets/A_clock_ensemble_p4.md`):
+
+| case | all sites RI | all sites CV | all sites both | CV match south / central / north |
+|---|---|---|---|---|
+| reference (nucleation exponent 12.3) | 67 % | 23 % | 16.0 % | 36 / 75 / 88 % |
+| medium clock (6) | 34 % | 37 % | 8.6 % | 64 / 71 / 88 % |
+| soft clock (3) | 17 % | 23 % | 1.5 % | 91 / 33 / 84 % |
+
+With more realizations the reference case matches all three records at
+once in 16 percent of record sets (the 4-realization estimate was 6
+percent), as often as the characteristic case did in the small test; its
+best record set (south 238 yr / 0.35, central 254 / 0.24, north 443 /
+0.26) is close to the observations in every number. The softer clocks
+match the south CV more often but lose the central RI and CV. Sets B and
+C at 50 realizations will settle the comparison with the characteristic
+case.
+
 ## 7. Open points for the comparison with physics-based models
 
 * The observed contrast in regularity between the central (CV 0.23) and

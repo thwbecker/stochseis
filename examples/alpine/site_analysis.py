@@ -69,7 +69,9 @@ MERGE = None         # merge recorded site events closer than this [yr] (--merge
 def case_files(spec):
     """Catalogs of a case: "dir" (all), "dir:v0001" (one vector) or "dir:v0001_s5" (one realization)."""
     d, _, v = spec.partition(":")
-    pat = f"cat_{v}*.npz" if v else "cat_v*_s*.npz"
+    if "_s" in v:                                   # one realization: exact match (s1 must not match s10)
+        return sorted(glob.glob(os.path.join(d, f"cat_{v}.npz")))
+    pat = f"cat_{v}_s*.npz" if v else "cat_v*_s*.npz"
     return sorted(glob.glob(os.path.join(d, pat)))
 
 def parse_args(argv):

@@ -141,3 +141,17 @@ def test_record_match_tolerances():
     assert tol["central"]["n"] == 14 and tol["north"]["n"] == 4
     assert abs(tol["central"]["d_ri"] - 2 * 57 / np.sqrt(13)) < 1e-9
     assert abs(tol["south"]["d_cv"] - 2 * (108 / 268) / np.sqrt(24)) < 1e-9
+
+
+def test_case_files_exact_realization(tmp_path):
+    for s in (1, 2, 10, 11):
+        (tmp_path / f"cat_v0000_s{s}.npz").write_bytes(b"")
+    (tmp_path / "cat_v0001_s1.npz").write_bytes(b"")
+    import overview_figures
+    import record_match
+    import site_analysis
+    import spectrum_figures
+    for mod in (overview_figures, site_analysis, spectrum_figures, record_match):
+        assert [os.path.basename(f) for f in mod.case_files(f"{tmp_path}:v0000_s1")] == ["cat_v0000_s1.npz"]
+        assert len(mod.case_files(f"{tmp_path}:v0000")) == 4
+        assert len(mod.case_files(str(tmp_path))) == 5

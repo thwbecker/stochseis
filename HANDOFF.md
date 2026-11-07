@@ -122,10 +122,13 @@ would be needed to produce stress-dependent b variations.
 ## 4. Open issues, in order of importance
 
 1. **South-central contrast on the Alpine Fault.** No control tested
-   (nucleation clock, size rule, strength heterogeneity, first test of
-   segment-boundary barriers) gives a regular central and a less
-   regular south record together; set D (`examples/nz_alpine/run_test.sh`)
-   is the next test.
+   (nucleation clock, size rule, strength heterogeneity, segment-boundary
+   barriers, set D) gives a regular central and a less regular south
+   record together: boundary barriers decouple the sites but make both
+   irregular. Remaining candidates would make one segment intrinsically
+   different (different stress drop, clock or loading south of the
+   Jacksons boundary), which is a site-specific tuning rather than a
+   general control.
 2. **Regularity versus aftershock statistics.** Regular recurrence comes
    with characteristic sizes and weak triggering (Bath gaps of 1.3 and
    more); this is a property of the model class to be stated in the

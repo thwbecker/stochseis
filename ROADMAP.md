@@ -6,16 +6,14 @@ Alpine calibration rounds) are complete and documented in
 `docs/experiments.md` and `examples/nz_alpine/README.md`; their history is
 in git.
 
-## Now
+## Done (5 November 2026)
 
-1. `examples/single_fault/run_test.sh`: the single-fault parameter
-   overview (branching ratio, nucleation clock, size rule; 10
-   realizations of 10,000 yr per case), figures for
-   `examples/single_fault/README.md`.
-2. `examples/nz_alpine/run_test.sh`: realization set D (segment-boundary
-   barriers), the control summary of sets A to D, the pooled
-   constraint-weighted predictions, and parameter effects over the ABC
-   rounds; then update `examples/nz_alpine/README.md` sections 3 and 4.3.
+1. Single-fault parameter overview (`examples/single_fault/run_test.sh`;
+   branching ratio, nucleation clock, size rule; 10 realizations of
+   10,000 yr per case).
+2. Alpine realization sets A to D, control summary, pooled
+   constraint-weighted predictions, parameter effects over the ABC rounds
+   (`examples/nz_alpine/run_test.sh`).
 
 ## Next
 

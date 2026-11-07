@@ -88,17 +88,49 @@ regular (record-length CVs up to 0.28 to 0.29) and shorten north
 intervals (318 to 342 yr), with fewer full-length ruptures; they do not
 give the south and central sites different regularity.*
 
-Set D (segment-boundary barriers, the analogue of a jump or passage
-probability on this single-strand fault) is run by `run_test.sh`. A
-single 10,000-yr test with strength factor 10 decoupled the south and
-central sites (14 to 15 percent of the events at one also rupture the
-other, against more than 90 percent in the reference) but made both less
-regular, the central site more so (CV 0.40, south 0.30): it reverses the
-observed contrast rather than reproducing it.
+![Segment-boundary barriers: site recurrence and rupture sizes](results/sets/figures/D_boundaries_ensemble_p2.png)
 
-`results/sets/controls.png` (written by `run_test.sh`) summarizes all
-sets in one figure: each statistic against the cases of each set, median
-and 5 to 95 percent over realizations.
+*Set D. Barriers at the segment boundaries (the analogue of a jump or
+passage probability on this single-strand fault; the Jacksons boundary
+lies between the south and central sites) decouple the sites: the
+fraction of central-site M >= 7.5 events that also rupture the south
+site falls from 1.00 to 0.73 (factor 3) and 0.21 (factor 10), and
+full-length ruptures disappear. But both sites become less regular
+together (record-length CVs: south 0.26 and 0.36, central 0.29 and 0.34),
+the north site becomes very irregular (0.50 to 0.53) with long intervals
+(about 490 to 570 yr), and whole-fault recurrence becomes irregular (CV
+0.50 and 0.78). Decoupling removes the regularizing effect of long
+ruptures everywhere at once, so it does not produce a regular central
+next to a less regular south record.*
+
+![What each control does, sets A to D](results/sets/figures/controls.png)
+
+*All four sets in one figure: each statistic against the cases of each
+set, median and 5 to 95 percent over realizations (dashed: observed).
+Record-length window CVs at the three sites, central RI and SED, b, the
+excess of M >= 7.5 events, Bath gap, whole-fault M >= 7.5 CV, the
+fraction of M >= 7.5 events spanning all three sites, and the fraction
+of central-site M >= 7.5 events also rupturing the south site.*
+
+The same picture emerges from the 900 parameter vectors of the
+calibration rounds 5 to 7 (`parameter_effects.py`; standardized
+regression coefficients, metric standard deviations per parameter
+standard deviation; `results/sets/parameter_effects.md`):
+
+* site CV is raised mostly by the area threshold of the size rule (+0.60
+  to +0.63 at the south and central sites) and the arrest scale (+0.25 to
+  +0.52);
+* mean intervals and displacements are set by stress drop (+0.57 to
+  +0.70), the nucleation clock (-0.34 to -0.63) and the initiation rate
+  (-0.24 to -0.33);
+* co-rupture of the south and central sites is controlled by the arrest
+  scale (-0.82);
+* the Bath gap falls with the branching ratio (-0.41), b (-0.35) and the
+  area threshold (-0.52); the excess of large events falls with the area
+  threshold (-0.69);
+* slip roughness and stress-drop scatter have no effect above 0.1.
+
+![Parameter effects pooled over the calibration rounds](results/sets/figures/parameter_effects.png)
 
 Other findings on this fault, from the calibration rounds:
 
@@ -166,11 +198,11 @@ sites at once (RI within two standard errors of the observed mean, CV
 within two approximate standard errors). Mean match fraction per case
 (50 realizations each):
 
-| case | match | case | match | case | match |
-|---|---|---|---|---|---|
-| A soft clock | 1.5 % | B characteristic | 13 % | C reference | 16 % |
-| A medium clock | 8.5 % | B reference | 15 % | C weak barriers | 17 % |
-| A reference | 16 % | B scale-free | 1.1 % | C strong barriers | 13 % |
+| case | match | case | match | case | match | case | match |
+|---|---|---|---|---|---|---|---|
+| A soft clock | 1.5 % | B characteristic | 13 % | C reference | 16 % | D reference | 15 % |
+| A medium clock | 8.5 % | B reference | 15 % | C weak barriers | 17 % | D boundaries x3 | 1.5 % |
+| A reference | 16 % | B scale-free | 1.1 % | C strong barriers | 13 % | D boundaries x10 | 3.5 % |
 
 ![Record matching, set A](results/sets/figures/A_clock_ensemble_p4.png)
 
@@ -183,7 +215,9 @@ fraction of record sets that match (bottom).*
 * Regular models match the central record but rarely the irregular south
   record; irregular models do the reverse. In every case the south and
   central sites share more than 90 percent of their large ruptures, so
-  the observed contrast between them is rare in all of them.
+  the observed contrast between them is rare in all of them. Barriers
+  at the segment boundaries separate the two sites but make both
+  irregular, and the north record then fails (set D).
 * The best-matching record sets of the reference case are close to the
   observations in every number (south 238 yr / 0.35, central 254 / 0.24,
   north 443 / 0.26; observed 268 / 0.40, 249 / 0.23, 413 / 0.25).
@@ -194,24 +228,29 @@ fraction of record sets that match (bottom).*
 fraction of its records that match the constraints, so model classes
 contribute in proportion to how well they fit; the weighted ranges are
 the behaviour to be expected from purely stochastic models consistent
-with the paleoseismic records (sets A to C; 450 realizations, effective
-sample size 214; `results/sets/predictions.md`):
+with the paleoseismic records (sets A to D, 12 cases, 600 realizations,
+effective sample size 261; `results/sets/predictions.md`). The reference,
+characteristic and strength-barrier cases carry 10 to 14 percent of the
+weight each, the medium clock 7 percent, and the soft clock, scale-free
+sizes and segment-boundary barriers 1 to 3 percent.
 
 | quantity | constraint-weighted median [5-95 %] | all realizations |
 |---|---|---|
-| RI south / central / north [yr] | 261 / 262 / 407 | 266 / 267 / 411 |
-| CV south | 0.24 [0.19-0.34] | 0.24 [0.19-0.45] |
-| CV central | 0.23 [0.18-0.32] | 0.24 [0.18-0.44] |
-| CV north | 0.31 [0.24-0.38] | 0.32 [0.24-0.43] |
-| SED central [m] | 6.98 [5.92-7.55] | 7.03 [5.91-8.17] |
-| whole-fault M >= 7.5 mean interval [yr] | 261 [172-287] | 263 [162-309] |
-| whole-fault M >= 7.5 CV | 0.25 [0.18-0.54] | 0.28 [0.18-0.76] |
-| maximum magnitude | 8.33 [8.28-8.46] | 8.34 [8.29-8.45] |
-| b below saturation | 1.10 [1.07-1.20] | 1.09 [1.05-1.20] |
-| M >= 7.5 excess over b = 1 | 1.77 [1.41-8.87] | 1.72 [0.67-8.89] |
-| Bath gap (M >= 6) | 1.34 [1.27-2.16] | 1.34 [1.13-2.16] |
-| fraction of M >= 7.5 rupturing all three sites | 0.62 [0.21-0.76] | 0.63 [0.18-0.79] |
-| M >= 7.5 at the central site also at the south site | 1.00 [0.81-1.00] | 1.00 [0.65-1.00] |
+| RI south [yr] | 261 [219-283] | 264 [220-305] |
+| RI central [yr] | 263 [223-282] | 263 [223-303] |
+| RI north [yr] | 408 [310-486] | 420 [310-596] |
+| CV south | 0.24 [0.19-0.35] | 0.25 [0.18-0.44] |
+| CV central | 0.23 [0.18-0.32] | 0.26 [0.18-0.43] |
+| CV north | 0.31 [0.25-0.44] | 0.33 [0.25-0.62] |
+| SED central [m] | 6.98 [5.93-7.48] | 6.95 [5.94-8.06] |
+| whole-fault M >= 7.5 mean interval [yr] | 262 [164-283] | 260 [107-305] |
+| whole-fault M >= 7.5 CV | 0.24 [0.18-0.58] | 0.29 [0.18-0.79] |
+| maximum magnitude | 8.33 [8.27-8.45] | 8.33 [8.20-8.45] |
+| b below saturation | 1.10 [1.07-1.20] | 1.09 [1.05-1.19] |
+| M >= 7.5 excess over b = 1 | 1.76 [1.41-8.53] | 1.70 [0.70-8.41] |
+| Bath gap (M >= 6) | 1.33 [1.25-2.15] | 1.32 [1.14-2.14] |
+| fraction of M >= 7.5 rupturing all three sites | 0.62 [0.08-0.75] | 0.61 [0.00-0.79] |
+| M >= 7.5 at the central site also at the south site | 1.00 [0.72-1.00] | 0.99 [0.21-1.00] |
 
 ![Constraint-weighted predictions](results/sets/figures/predictions.png)
 
@@ -223,8 +262,7 @@ whole-fault irregularity. The constrained stochastic baseline predicts
 regular large ruptures (whole-fault M >= 7.5 CV about 0.25), maximum
 magnitudes of about 8.3, a moderate excess of large events over
 Gutenberg-Richter, Bath gaps of 1.3 and more, and large ruptures that
-mostly span the south and central sites together. Set D will be added to
-the pooled ensemble by `run_test.sh`.
+mostly span the south and central sites together.
 
 ## 5. Open points for the comparison with physics-based simulators
 
@@ -233,7 +271,7 @@ paleoseismic records together with:
 
 * the contrast between a regular central and a less regular south record
   (not produced by any control tested here: clock, size rule, strength
-  heterogeneity, and in a first test segment-boundary barriers);
+  heterogeneity, segment-boundary barriers);
 * regular sites with near-Gutenberg-Richter statistics and standard
   aftershock sequences (here, regular sites come with characteristic
   sizes and weak triggering);
@@ -248,8 +286,8 @@ ranges in section 4.3.
 
 From the repository root, with the meshes in `data/nz_alpine/`:
 
-    # the runs still needed (set D, control summary, pooled predictions, parameter effects)
-    examples/nz_alpine/run_test.sh $NR_CPUS alpine_sets 50 20000
+    # set D, the control summary, pooled predictions and parameter effects (results/sets)
+    examples/nz_alpine/run_test.sh $NR_CPUS alpine_sets 50 20000 alpine_full alpine_r6 alpine_r7
 
     # the realization sets A to D from scratch (about 12 core-hours) and their figure pages
     examples/nz_alpine/run_realization_sets.sh $NR_CPUS alpine_sets 50 20000

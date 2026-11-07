@@ -90,11 +90,13 @@ the Alpine Fault application (`examples/nz_alpine/`):
 * **Alpine Fault.** Models with regular, partly characteristic rupture,
   weak triggering and deficit-capped slip match the three paleoseismic
   records about one time in six; irregular models (soft clock,
-  scale-free sizes) about one time in a hundred. In every model the
-  south and central sites share most large ruptures, so the observed
-  contrast between a regular central and a less regular south record is
-  not reproduced. The constraint-weighted ensemble gives predictions
-  with ranges for the model comparison.
+  scale-free sizes) about one time in a hundred. In most models the
+  south and central sites share nearly all large ruptures; barriers at
+  the segment boundaries separate them but make both irregular, so the
+  observed contrast between a regular central and a less regular south
+  record is not reproduced by any control tested. The
+  constraint-weighted ensemble gives predictions with ranges for the
+  model comparison.
 
 ## Examples
 

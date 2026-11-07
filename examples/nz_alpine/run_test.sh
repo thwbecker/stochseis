@@ -56,11 +56,15 @@ done
 if [ -n "$(echo $summaries)" ]
 then
     python3 $here/parameter_effects.py "$sets_dir/effects" $summaries --site north=1
-    cp "$sets_dir/effects_effects.png" "$sets_dir/effects_dependence.png" "$sets_dir/effects_effects.md" "$res/sets/"
+    mkdir -p "$res/sets/figures"
+    cp "$sets_dir/effects_effects.png" "$res/sets/figures/parameter_effects.png"
+    cp "$sets_dir/effects_dependence.png" "$res/sets/figures/parameter_dependence.png"
+    cp "$sets_dir/effects_effects.md" "$res/sets/parameter_effects.md"
 fi
 
 mkdir -p "$res/sets/figures"
-cp "$sets_dir/controls.png" "$sets_dir/controls.md" "$sets_dir/predictions.png" "$sets_dir/predictions.md" "$res/sets/"
+cp "$sets_dir/controls.md" "$sets_dir/predictions.md" "$res/sets/"
+cp "$sets_dir/controls.png" "$sets_dir/predictions.png" "$res/sets/figures/"
 for s in A_clock B_size C_barriers D_boundaries
 do
     cp "$sets_dir/${s}_ensemble_p2.md" "$sets_dir/${s}_ensemble_p4.md" "$sets_dir/${s}_ensemble_p3_table.md" "$res/sets/" 2>/dev/null

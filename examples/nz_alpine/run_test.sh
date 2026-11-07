@@ -10,7 +10,9 @@
 #   3. constraint-weighted predictions over all cases of sets A to D
 #      (predictions.py; reads each catalog several times, about an hour);
 #   4. if the ABC campaign directories exist, the parameter effects pooled
-#      over rounds 5 to 7 (parameter_effects.py).
+#      over rounds 5 to 7 (parameter_effects.py);
+#   5. the site and seismicity panels of contrasting cases (site_analysis.py),
+#      in the layout used for the physics-based models of the intercomparison.
 #
 # Results are copied to examples/nz_alpine/results/ (tables and the figures
 # used in the README). Sets A to C are expected in sets_dir already (run
@@ -71,4 +73,11 @@ do
     cp "$sets_dir/${s}_ensemble_p1_seismicity.png" "$sets_dir/${s}_ensemble_p2.png" "$sets_dir/${s}_ensemble_p4.png" \
         "$res/sets/figures/" 2>/dev/null
 done
-echo "done: results copied to $res/sets/"
+# typical sequences of contrasting cases, in the panel layout of the intercomparison
+mkdir -p "$res/cases"
+python3 $here/site_analysis.py "$res/cases/cases_size" reference "$sets_dir/B_size:v0001" \
+    characteristic "$sets_dir/B_size:v0000" scale_free "$sets_dir/B_size:v0002" --threshold 2
+python3 $here/site_analysis.py "$res/cases/cases_timing" reference "$sets_dir/A_clock:v0002" \
+    soft_clock "$sets_dir/A_clock:v0000" boundaries_10 "$sets_dir/D_boundaries:v0002" --threshold 2
+rm -f "$res"/cases/*_extended.png "$res"/cases/*_table.csv
+echo "done: results copied to $res/sets/ and $res/cases/"

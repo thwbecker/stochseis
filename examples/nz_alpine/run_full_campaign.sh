@@ -6,7 +6,7 @@
 # (hybrid sizes, deficit-capped slip, L1 dip correction; same parameter
 # vectors in every configuration), acceptance tables, a posterior ensemble
 # of the best vectors with catalogs, and then summary tables and figures
-# (our overview figures fig_*, and the RSQSim-style site analysis sites_*)
+# (our overview figures fig_*, and the site analysis sites_* with the panels used in the intercomparison)
 # for the fine set, the coarse set, all configurations (overview only), and
 # fine against coarse for each geometry available at both resolutions.
 #

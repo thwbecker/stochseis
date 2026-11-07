@@ -18,7 +18,8 @@ physics-based simulator) to the RI-CV and RI-SED panels and to the table.
 The CSV has columns geometry, site, ri_mean_yr, ri_sd_yr, slip_mean_m,
 slip_sd_m; a configuration label that is or starts with the geometry name
 (planar_fine for planar) is matched to it. Example:
-data/nz_alpine/rsqsim_summary.csv (RSQSim, planar and variable dip).
+data/nz_alpine/physics_model_summary.csv (a physics-based model of the
+intercomparison, planar and variable-dip geometries).
 
 Outputs
   <out_prefix>_spacetime.png   map of slip rate with the sites and a space-time plot of M >= 7
@@ -155,15 +156,15 @@ def run_stats(path, sites, th):
     return out
 
 
-def rsqsim_for(rsq, label, site):
+def refmodel_for(refm, label, site):
     """Reference-model values for a label such as planar, planar_fine or variable_dip_coarse."""
-    for (geom, st), v in rsq.items():
+    for (geom, st), v in refm.items():
         if st == site and (label == geom or label.startswith(geom + "_")):
             return v
     return None
 
 
-def load_rsqsim(path):
+def load_refmodel(path):
     out = {}
     if path and os.path.exists(path):
         for r in csv.DictReader(open(path)):
@@ -180,7 +181,7 @@ def main():
     out_prefix, pairs, th, ref = parse_args(sys.argv)
     sites = load_sites(os.path.join(DATA, "paleo_sites.csv"))
     names = [s["name"] for s in sites]
-    rsq = load_rsqsim(ref[0]) if ref else {}
+    refm = load_refmodel(ref[0]) if ref else {}
     ref_name = ref[1] if ref else ""
     G = {}
     for label, d in pairs:
@@ -188,7 +189,10 @@ def main():
         if not files:
             sys.exit(f"no catalogs in {d}")
         runs = [run_stats(f, sites, th) for f in files]
-        best = [r for r in runs if re.search(r"cat_v0000_s", r["path"])] or runs[:1]
+        if ":" in d:            # a selected case or realization: its first realization stands for it
+            best = runs[:1]
+        else:                   # a posterior directory: v0000 is the best-ranked vector
+            best = [r for r in runs if re.search(r"cat_v0000_s", r["path"])] or runs[:1]
         G[label] = dict(runs=runs, best=best[0], best_runs=best)
         print(f"{label}: {len(runs)} catalogs, {sum(r['years'] for r in runs):.0f} yr after burn-in")
 
@@ -259,7 +263,7 @@ def main():
             mk = "o" if gi == 0 else ("s" if gi == 1 else "^")
             axs[2, 0].plot(ri, cv, mk, color=c, ms=4, alpha=0.5, mfc="none" if gi else c)
             axs[2, 1].plot(ri, se, mk, color=c, ms=4, alpha=0.5, mfc="none" if gi else c)
-            q = rsqsim_for(rsq, label, n)
+            q = refmodel_for(refm, label, n)
             if q:
                 axs[2, 0].plot(q["ri_mean_yr"], q["ri_sd_yr"] / q["ri_mean_yr"], "X", color=c, mec="k", ms=11)
                 axs[2, 1].plot(q["ri_mean_yr"], q["slip_mean_m"], "X", color=c, mec="k", ms=11)
@@ -307,7 +311,7 @@ def main():
                    label=f"{lab}: one run each") for i, lab in enumerate(G)]
     obs_h = [Line2D([], [], marker="s", color="k", ls="", label="observed"),
              Line2D([], [], marker="X", color="k", ls="", ms=9, label=f"{ref_name} (same geometry)")]
-    if not rsq:
+    if not refm:
         obs_h = obs_h[:1]
     axs[2, 0].legend(handles=site_h + mk_h + obs_h, fontsize=7)
     axs[2, 0].set(xlabel="mean recurrence interval [yr]", ylabel="CV of intervals", title=f"RI versus CV ({th:g} m threshold)")
@@ -391,7 +395,7 @@ def main():
                      sed_mean=sd.mean() if len(sd) else np.nan, sed_sd=sd.std(ddof=1) if len(sd) > 1 else np.nan,
                      n=len(sd))
             ens = [r["sites"][(n, th)] for r in D["runs"]]
-            q = rsqsim_for(rsq, label, n) or {}
+            q = refmodel_for(refm, label, n) or {}
             row = dict(geometry=label, site=n,
                        ri_best=b["ri"], ri_sd_best=b["ri_sd"], cv_best=b["cv"], slip_best=b["sed_mean"],
                        slip_sd_best=b["sed_sd"], n_best=b["n"],
@@ -403,9 +407,9 @@ def main():
                        slip_ens_lo=pct([e["sed_mean"] for e in ens], 5), slip_ens_hi=pct([e["sed_mean"] for e in ens], 95),
                        ri_obs=s["ri_yr"], ri_sd_obs=s["ri_sigma_yr"], cv_obs=s["ri_sigma_yr"] / s["ri_yr"],
                        slip_obs=s["sed_mean_m"],
-                       ri_rsqsim=q.get("ri_mean_yr", np.nan), ri_sd_rsqsim=q.get("ri_sd_yr", np.nan),
-                       cv_rsqsim=q.get("ri_sd_yr", np.nan) / q.get("ri_mean_yr", np.nan) if q else np.nan,
-                       slip_rsqsim=q.get("slip_mean_m", np.nan), slip_sd_rsqsim=q.get("slip_sd_m", np.nan))
+                       ri_reference=q.get("ri_mean_yr", np.nan), ri_sd_reference=q.get("ri_sd_yr", np.nan),
+                       cv_reference=q.get("ri_sd_yr", np.nan) / q.get("ri_mean_yr", np.nan) if q else np.nan,
+                       slip_reference=q.get("slip_mean_m", np.nan), slip_sd_reference=q.get("slip_sd_m", np.nan))
             rows.append(row)
     with open(out_prefix + "_table.csv", "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0]))
@@ -416,28 +420,29 @@ def main():
         merges = sorted({r.get("merge_yr", 0.0) for D in G.values() for r in D["runs"]})
         mtxt = ", ".join(f"{m:g}" for m in merges)
         fh.write(f"Detection threshold {th:g} m{f', events closer than {mtxt} yr merged' if any(m > 0 for m in merges) else ''}. "
-                 "Best: best-ranked vector, pooled over all its posterior seeds. "
-                 "Ensemble: median [5-95 %] over all posterior runs.\n\n")
+                 "Best: for a posterior directory, the best-ranked vector pooled over its seeds; for a "
+                 "selected case (dir:vNNNN), its first realization. "
+                 "Ensemble: median [5-95 %] over all runs of the case.\n\n")
         rn = ref_name or "reference"
-        cols = ["geometry", "site", "RI best (SD)", "RI ensemble", "RI obs (SD)"] + ([f"RI {rn} (SD)"] if rsq else []) \
-            + ["CV best", "CV ensemble", "CV obs"] + ([f"CV {rn}"] if rsq else []) \
-            + ["slip best (SD)", "slip ensemble", "slip obs"] + ([f"slip {rn} (SD)"] if rsq else [])
+        cols = ["geometry", "site", "RI best (SD)", "RI ensemble", "RI obs (SD)"] + ([f"RI {rn} (SD)"] if refm else []) \
+            + ["CV best", "CV ensemble", "CV obs"] + ([f"CV {rn}"] if refm else []) \
+            + ["slip best (SD)", "slip ensemble", "slip obs"] + ([f"slip {rn} (SD)"] if refm else [])
         fh.write("| " + " | ".join(cols) + " |\n")
         fh.write("|" + "---|" * len(cols) + "\n")
         for r in rows:
             c = [r["geometry"], r["site"], f"{r['ri_best']:.0f} ({r['ri_sd_best']:.0f})",
                  f"{r['ri_ens_med']:.0f} [{r['ri_ens_lo']:.0f}-{r['ri_ens_hi']:.0f}]",
                  f"{r['ri_obs']:.0f} ({r['ri_sd_obs']:.0f})"]
-            if rsq:
-                c.append(f"{r['ri_rsqsim']:.0f} ({r['ri_sd_rsqsim']:.0f})")
+            if refm:
+                c.append(f"{r['ri_reference']:.0f} ({r['ri_sd_reference']:.0f})")
             c += [f"{r['cv_best']:.2f}", f"{r['cv_ens_med']:.2f} [{r['cv_ens_lo']:.2f}-{r['cv_ens_hi']:.2f}]",
                   f"{r['cv_obs']:.2f}"]
-            if rsq:
-                c.append(f"{r['cv_rsqsim']:.2f}")
+            if refm:
+                c.append(f"{r['cv_reference']:.2f}")
             c += [f"{r['slip_best']:.1f} ({r['slip_sd_best']:.1f})",
                   f"{r['slip_ens_med']:.1f} [{r['slip_ens_lo']:.1f}-{r['slip_ens_hi']:.1f}]", f"{r['slip_obs']:.1f}"]
-            if rsq:
-                c.append(f"{r['slip_rsqsim']:.1f} ({r['slip_sd_rsqsim']:.1f})")
+            if refm:
+                c.append(f"{r['slip_reference']:.1f} ({r['slip_sd_reference']:.1f})")
             fh.write("| " + " | ".join(c) + " |\n")
     print("wrote", ", ".join(out_prefix + x for x in ("_spacetime.png", "_statistics.png", "_extended.png",
                                                        "_table.md", "_table.csv")))

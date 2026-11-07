@@ -151,6 +151,51 @@ Other findings on this fault, from the calibration rounds:
   threshold (depending on the calibration, 400 to 460 yr at 0.5 to 1 m,
   460 to 550 yr at 2 m, 750 to 850 yr at 4 m).
 
+### 3.1 Typical sequences of contrasting cases
+
+The panels below follow the layout used to compare the physics-based
+models of the intercomparison: displacement, magnitude and interval
+distributions at the three sites, the frequency-magnitude distribution,
+hypocentre depths, rupture area against magnitude, and the site
+statistics against the observations. Each page compares three cases
+(variable-dip geometry, 2 km patches, 4 realizations of 20,000 yr per
+case; `run_test.sh` redraws them from the 50-realization sets).
+"Ensemble" curves and bands are over all realizations of a case; "best"
+markers and curves show one realization of each case.
+
+![Size rule: reference, characteristic, scale-free](results/cases/cases_size_statistics.png)
+
+*Size rule. Characteristic sizes (area threshold 100 km^2): few moderate
+events (a plateau from about M6.5), shorter intervals at the south and
+central sites (about 220 yr) with smaller displacements (about 6 m), and
+the strongest concentration of hypocentres at the base of the fault.
+Scale-free sizes (2000 km^2): near Gutenberg-Richter statistics to M7.5,
+broad interval distributions (CV about 0.40 at all sites), and longer,
+more threshold-dependent north intervals (about 510 yr at 2 m). The
+reference lies between them, with the most regular records (CV 0.18 to
+0.19 at the south and central sites).*
+
+![Space-time history of large ruptures, size rule](results/cases/cases_size_spacetime.png)
+
+*M >= 7 ruptures over 10,000 yr of one realization per case (bars:
+along-strike extent; dots: hypocentres, coloured by magnitude).*
+
+![Clock and boundaries: reference, soft clock, strong segment-boundary barriers](results/cases/cases_timing_statistics.png)
+
+*Nucleation clock and segment-boundary barriers. The soft clock
+(exponent 3) keeps the size distribution of the reference but makes
+intervals longer and more variable (about 300 yr, CV about 0.35) and
+displacements larger (about 8 m). Strong barriers (factor 10) give
+segment-bounded ruptures: the south and central sites record mostly
+different events, both with CV about 0.34, and the north site has long,
+irregular intervals (about 690 yr, CV 0.52).*
+
+![Space-time history of large ruptures, clock and boundaries](results/cases/cases_timing_spacetime.png)
+
+*Through-going ruptures in the reference and soft-clock cases; shorter,
+more frequent, segment-bounded large ruptures with barriers at the
+segment boundaries.*
+
 ## 4. The model tuned to the paleoseismic constraints
 
 ### 4.1 Calibration
@@ -325,4 +370,5 @@ design vector of it (`dir:v0001`) or one realization (`dir:v0001_s5`).
 
 Results kept in `results/`: `full_campaign/` (round 5, five
 configurations, with `merge30/` tables), `r6/`, `r7/`, `sets/` (realization
-sets: page-2, page-3 and page-4 tables, predictions, figures).
+sets: page-2, page-3 and page-4 tables, predictions, figures), `cases/`
+(site and seismicity panels of contrasting cases).

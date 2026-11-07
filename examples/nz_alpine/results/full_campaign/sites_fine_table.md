@@ -1,6 +1,6 @@
 Detection threshold 2 m. Best: best-fitting vector, first seed. Ensemble: median [5-95 %] over all posterior runs.
 
-| geometry | site | RI best (SD) | RI ensemble | RI obs (SD) | RI RSQSim (SD) | CV best | CV ensemble | CV obs | CV RSQSim | slip best (SD) | slip ensemble | slip obs | slip RSQSim (SD) |
+| geometry | site | RI best (SD) | RI ensemble | RI obs (SD) | RI reference model (SD) | CV best | CV ensemble | CV obs | CV reference model | slip best (SD) | slip ensemble | slip obs | slip reference model (SD) |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | planar_fine | central | 285 (108) | 259 [234-301] | 249 (57) | 271 (34) | 0.38 | 0.38 [0.27-0.52] | 0.23 | 0.13 | 7.5 (2.6) | 6.6 [5.8-8.0] | 7.1 | 7.3 (1.0) |
 | planar_fine | south | 279 (103) | 259 [234-292] | 268 (108) | 260 (48) | 0.37 | 0.38 [0.27-0.52] | 0.40 | 0.19 | 7.2 (2.5) | 6.6 [5.8-7.6] | 7.5 | 7.1 (1.5) |

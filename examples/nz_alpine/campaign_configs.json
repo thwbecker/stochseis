@@ -1,5 +1,5 @@
 {
- "_comment": "Alpine Fault campaign configurations. fine: 1 km simulation patches; coarse: 2 km patches. Meshes: the 1 km planar and variable-dip meshes (26 Jan) and the 0.5 km segmented-transition mesh, resampled to the patch size. 'geometry' is the label used for the RSQSim comparison. Mesh files go in data/nz_alpine/.",
+ "_comment": "Alpine Fault campaign configurations. fine: 1 km simulation patches; coarse: 2 km patches. Meshes: the 1 km planar and variable-dip meshes (26 Jan) and the 0.5 km segmented-transition mesh, resampled to the patch size. 'geometry' is the label used to match tables of other models (site_analysis.py --reference). Mesh files go in data/nz_alpine/.",
  "configs": [
   {
    "name": "planar_fine",

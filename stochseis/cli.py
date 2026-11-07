@@ -75,6 +75,8 @@ def cmd_analyze(args):
         json.dump(_json_safe(m), f, indent=2)
     plots.summary_figure(cat, os.path.join(args.plots, stem + "_summary.png"), mmain=args.mmain)
     plots.deficit_figure(cat, os.path.join(args.plots, stem + "_deficit.png"))
+    plots.time_series_figure(cat, os.path.join(args.plots, stem + "_time_series.png"))
+    plots.fmd_regimes_figure(cat, os.path.join(args.plots, stem + "_fmd_regimes.png"))
     keys = ["n_events", "n_fault_events", "max_mag", "b_sub", "b_fault_below_sat",
             "b_fault_above_sat", "slope_m0_L_small", "slope_m0_L_large", "omori_p", "omori_c",
             "bath_mean", "bath_n", "foreshock_fraction", "foreshock_chance",

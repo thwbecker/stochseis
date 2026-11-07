@@ -20,6 +20,31 @@ please treat results accordingly. References in `docs/design.md` were
 written from memory and have not all been checked against the
 literature.
 
+## Philosophy
+
+* **A null hypothesis for simulators.** Physics-based earthquake cycle
+  simulators produce long catalogs from friction, stress transfer and
+  dynamics. stochseis asks how much of what they produce follows from
+  simpler ingredients: a slip budget, a rule for where ruptures start, a
+  rule for where they stop, and clustering. Features that the stochastic
+  model reproduces once it is tuned to the same constraints do not by
+  themselves demonstrate the physics; features it cannot reproduce are
+  where simulators show something.
+* **Few rules, few parameters.** Each rule is kept only if it is needed
+  to match an observation, and it is described by as few parameters as
+  possible. Where two formulations give the same result, the one with
+  fewer parameters and the faster run is kept.
+* **Same constraints, same observation model.** Models are compared with
+  data the way the data were collected: synthetic paleoseismic records
+  use a detection threshold, merge events too close to separate, and
+  have the length of the real records.
+* **Ensembles, not single runs.** Every statement is checked over many
+  realizations; single catalogs are used only as illustrations.
+* **A range, not a best fit.** The constraints select a class of models
+  rather than one parameter vector; predictions are therefore given as
+  the range of behaviour of all models consistent with the constraints,
+  weighted by how well they match.
+
 ## What the code does
 
 A fault (planar, segmented, or a triangulated surface such as the
@@ -58,45 +83,55 @@ Alpine Fault meshes) is divided into patches of 1 to 2 km. On it:
 
 ## What we have learned
 
-Results from the single-fault experiments (`examples/single_fault/`) and
-the Alpine Fault application (`examples/nz_alpine/`):
+Single fault (`examples/single_fault/`, 10 realizations of 10,000 yr per
+case) and Alpine Fault (`examples/nz_alpine/`, 50 realizations of
+20,000 yr per case and 900 calibration runs):
 
-* **Two main axes of complexity.** Timing regularity is controlled by
-  the nucleation clock, which leaves the size distribution and the
-  aftershock statistics unchanged. The shape of the size distribution
-  (characteristic to scale-free) is controlled by the size rule, which
-  also changes aftershock productivity, the Bath gap, rupture patterns
-  and, through them, regularity. Clustering (the branching ratio) is a
-  third control that couples aftershock statistics to regularity: strong
-  triggering gives standard Bath gaps but irregular recurrence.
-* **Prerequisites.** Whether regular recurrence at a point is possible at
-  all depends on how slip is assigned: when slip is set by stress drop
-  alone, the slip released at a point varies from event to event and
-  point recurrence stays irregular (CV of 0.4 and more); capping slip at
-  the accumulated deficit allows regular recurrence with normal
-  seismicity statistics. Gutenberg-Richter does not emerge from the
-  fault state alone and has to be imposed.
-* **Final size is decided by arrest.** Nothing at nucleation determines
-  how large a rupture becomes; it grows until it reaches fault that is
-  not ready to fail. This matches observations of large earthquakes that
-  begin like small ones.
-* **Mean recurrence intervals are easy, regularity is hard.** With the
-  slip budget calibrated, mean recurrence intervals and displacements at
-  paleoseismic sites follow from slip rate and stress drop; the
-  coefficient of variation of the intervals is the discriminating
-  observation, and it must be judged on synthetic records of the
-  observed length (a dozen events), which are more regular than long
-  runs.
-* **Alpine Fault.** Models with regular, partly characteristic rupture,
-  weak triggering and deficit-capped slip match the three paleoseismic
-  records about one time in six; irregular models (soft clock,
-  scale-free sizes) about one time in a hundred. In most models the
-  south and central sites share nearly all large ruptures; barriers at
-  the segment boundaries separate them but make both irregular, so the
-  observed contrast between a regular central and a less regular south
-  record is not reproduced by any control tested. The
-  constraint-weighted ensemble gives predictions with ranges for the
-  model comparison.
+1. **Three controls with separate signatures.**
+   * The *nucleation clock* (how strongly nucleation favours accumulated
+     slip deficit) sets timing regularity and nothing else: on the single
+     fault, CV of recurrence at points from 0.63 to 0.51 with b, Bath gap
+     and the size distribution unchanged.
+   * The *size rule* (whether large ruptures stop at random or only where
+     the fault is not ready) sets the shape of the size distribution,
+     from Gutenberg-Richter to a characteristic population of large events
+     (3.5 times the Gutenberg-Richter rate at M >= 7), and with it the
+     Bath gap and the regularity of large events.
+   * *Clustering* (the ETAS branching ratio) sets aftershock and foreshock
+     statistics (Bath gap 1.43 to 1.01, foreshock fraction 0.08 to 0.24)
+     and, when strong, makes recurrence irregular.
+2. **Regular recurrence needs slip limited by the deficit.** With slip set
+   by stress drop alone, slip at a point varies from event to event and
+   recurrence there stays irregular (CV of 0.4 and more); capping slip at
+   the accumulated deficit allows regular recurrence with normal
+   seismicity statistics.
+3. **Gutenberg-Richter has to be imposed**; ruptures stopped only by the
+   fault state give characteristic size distributions, with or without
+   quenched heterogeneity.
+4. **Final size is decided by arrest.** Nothing at nucleation determines
+   how large a rupture becomes, consistent with large earthquakes that
+   begin like small ones.
+5. **Mean intervals are easy, regularity is hard.** Once the slip budget
+   is calibrated, mean recurrence intervals and displacements follow from
+   slip rate and stress drop; the coefficient of variation is the
+   discriminating observation, and it has to be judged on records of the
+   observed length (a dozen events), which are more regular than long
+   runs.
+6. **Regularity and standard aftershock statistics are in tension.**
+   Regular records come with characteristic sizes and weak triggering
+   (Bath gaps of 1.3 and more); strong triggering gives standard Bath gaps
+   but irregular records.
+7. **Alpine Fault.** Models with regular, partly characteristic rupture,
+   weak triggering and deficit-capped slip match all three paleoseismic
+   records together about one time in six; irregular models about one
+   time in a hundred. Geometry (planar, variable dip, segmented) and
+   resolution (1 or 2 km) matter little. No control tested (clock, size
+   rule, strength heterogeneity, segment-boundary barriers) reproduces
+   the contrast between the regular central and the less regular south
+   record: the sites either share nearly all large ruptures, or, when
+   barriers separate them, both become irregular. The constraint-weighted
+   ensemble gives predictions with ranges for the comparison with the
+   physics-based simulators of the intercomparison.
 
 ## Examples
 

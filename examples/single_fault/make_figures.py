@@ -12,6 +12,10 @@ spec.json is the overview spec (specs/parameter_overview.json: design
                           M >= 6 mainshocks, Bath gaps, intervals between M >= 7 events
                           (lines: median over realizations; bands: 5-95 %)
   example_ruptures_<case>.png  slip of the six largest events of the first realization
+  diagnostics_summary.png, diagnostics_time_series.png, diagnostics_fmd_regimes.png
+                          standard diagnostics of the first realization of the first case
+                          (stochseis.plots: summary page, sequence through time, frequency-magnitude
+                          distribution by rupture regime)
   table.md                the statistics per case, median [5-95 %]
 
 Statistics: b of grown ruptures below width saturation; excess of M >= 7
@@ -38,7 +42,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 from stochseis import Catalog  # noqa: E402
 from stochseis import analysis as an  # noqa: E402
-from stochseis.plots import largest_events_figure  # noqa: E402
+from stochseis.plots import fmd_regimes_figure, largest_events_figure, summary_figure, time_series_figure  # noqa: E402
 
 STATS = [("b_fault_below_sat", "b below saturation"), ("excess_m7", "M>=7 excess over b"),
          ("max_mag", "maximum magnitude"), ("omori_p", "Omori p"), ("bath_mean", "Bath gap"),
@@ -161,6 +165,13 @@ def main():
         if files:
             tag = names[i].replace(" ", "_")
             largest_events_figure(Catalog.load(files[0]), n=6, path=os.path.join(out_dir, f"example_ruptures_{tag}.png"))
+
+    first = sorted(glob.glob(os.path.join(sweep_dir, "cat_v0000_s*.npz")))
+    if first:
+        cat = Catalog.load(first[0])
+        summary_figure(cat, os.path.join(out_dir, "diagnostics_summary.png"))
+        time_series_figure(cat, os.path.join(out_dir, "diagnostics_time_series.png"))
+        fmd_regimes_figure(cat, os.path.join(out_dir, "diagnostics_fmd_regimes.png"))
 
     with open(os.path.join(out_dir, "table.md"), "w") as fh:
         fh.write("Median [5-95 %] over realizations.\n\n| case | runs | " + " | ".join(l for _, l in STATS) + " |\n")

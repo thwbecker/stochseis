@@ -11,7 +11,9 @@ several realizations. The model itself is described in the top-level
 
 The figures in `figures/` and the numbers below come from 10
 realizations of 10,000 yr per case (`run_test.sh`; table in
-`figures/table.md`).
+`figures/table.md`); the single-realization diagnostics in section 3 are
+from one 3000-yr realization and are rewritten by `run_test.sh` from the
+first 10,000-yr one.
 
 ## 1. The overview
 
@@ -106,7 +108,28 @@ The same figure for the extreme case of each control:
 [clock 10](figures/example_ruptures_clock_10.png),
 [size rule 200 km^2](figures/example_ruptures_size_rule_200_km2.png).
 
-## 3. What the development experiments established
+## 3. Diagnostics of one realization
+
+![Summary diagnostics of one realization with the defaults](figures/diagnostics_summary.png)
+
+*The standard diagnostic page (`stochseis.plots.summary_figure`; one
+realization with the defaults): frequency-magnitude distribution with the
+patch magnitude and width saturation marked; moment and slip against
+rupture length; rupture aspect ratio; stacked Omori decay after M >= 6
+mainshocks; Bath gaps; whole-fault recurrence of M >= 6, 6.5 and 7
+events against a Poisson process, with the CV at points; released against
+loaded moment (budget closure); slip of the largest event.*
+
+Two further diagnostics are written for the same realization:
+[the sequence through time](figures/diagnostics_time_series.png)
+(magnitudes, rates and moment release; `time_series_figure`) and
+[the frequency-magnitude distribution by rupture regime](figures/diagnostics_fmd_regimes.png)
+(sub-patch events, ruptures narrower than the fault width, saturated
+ruptures; `fmd_regimes_figure`). For any catalog,
+`python3 -m stochseis.cli analyze cat.npz --plots dir/` writes these three
+figures, a map of the slip deficit, and the scalar diagnostics as JSON.
+
+## 4. What the development experiments established
 
 The single-fault experiments E1 to E23 (`docs/experiments.md`, specs in
 `experiments/`, summaries in `experiments/results/`) tested the building
@@ -136,7 +159,7 @@ blocks and the behaviour of the defaults:
   persistent; first runs and the planned sweep are in
   `docs/experiments.md`.
 
-## 4. Running
+## 5. Running
 
 From the repository root:
 

@@ -17,22 +17,25 @@ in git.
 
 ## Next
 
-3. E23 (`docs/experiments.md`): sweep of the hierarchical patch option on
+3. UCERF3 (`examples/ucerf3/`): multi-section fault container with
+   connections (`docs/networks.md` stage N2), UCERF3 subsection loader and
+   connection rules (N3), calibration against UCERF3 regional and
+   section participation rates; see HANDOFF section 6.1.
+4. Fault systems represented only probabilistically (N5): a network
+   generator for sections and connections constrained by a regional
+   loading rate, networks sampled along with parameters; see HANDOFF
+   section 6.2.
+
+## Also pending
+
+5. E23 (`docs/experiments.md`): sweep of the hierarchical patch option on
    the single fault (barrier and nucleation exponents, radius range,
    nesting; at least 3000 yr burn-in).
-4. Intercomparison submission: catalog export from the constrained
-   ensemble once the organisers specify a format.
-5. Alpine-Hope geometry (needs the Hope mesh and multi-section faults,
-   `docs/networks.md` stage N2); the L2 half-space operator (cutde) for
-   accurate dip effects and inter-section stress transfer.
-
-## Later
-
-6. `examples/ucerf3/`: UCERF3 fault sections as a network of connected
-   faults (jump distances, connection probabilities, section slip rates).
-7. A fault system represented only probabilistically: a stochastic
-   fault-network generator on the same patch-graph interface, with slip
-   rates constrained by a regional loading rate.
+6. Intercomparison submission: catalog export from the constrained
+   Alpine ensemble once the organisers specify a format.
+7. Alpine-Hope geometry (needs the Hope mesh; follows from N2); the L2
+   half-space operator (cutde, N4) for accurate dip effects and stress
+   transfer between sections.
 
 ## Housekeeping
 

@@ -202,8 +202,7 @@ resemble a UCERF3 region, compared with the UCERF3 example.
 * Intercomparison catalog export from the constrained Alpine ensemble.
 * L2 half-space operator (cutde, N4): accurate dip effects and, if
   wanted, stress transfer between sections.
-* Housekeeping: choose a license; a line-by-line human review of the
-  code; check the references in `docs/design.md` against the literature.
+* Housekeeping: a line-by-line human review of the code; check the references in `docs/design.md` against the literature.
 
 ## 7. Practical notes
 

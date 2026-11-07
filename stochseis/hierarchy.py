@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Persistent hierarchical (multi-scale) patch structure of a fault.
 
 A quenched structure in the spirit of hierarchical-patch models of

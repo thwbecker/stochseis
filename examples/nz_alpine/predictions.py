@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Predictions for the model comparison: what stochastic models that fit the constraints produce.
 
     python3 examples/nz_alpine/predictions.py out_prefix label1 dir1[:filter] [label2 dir2[:filter] ...]

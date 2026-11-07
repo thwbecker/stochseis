@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Summary table of an Alpine campaign over all configurations.
 
     python3 examples/nz_alpine/campaign_summary.py outdir name1 [name2 ...] [--site north=1 ...] [--bath-sigma 0.15] [--bath-m7] > outdir/campaign_summary.md

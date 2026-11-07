@@ -1,4 +1,6 @@
 #!/bin/bash
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 # Run the stochseis test suite and the experiment sweeps that need more
 # than one core. Run from the root of the stochseis repository.

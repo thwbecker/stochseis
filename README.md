@@ -18,7 +18,7 @@ modelling decisions and reviewed the results. The code has been tested
 as described below but has not been reviewed line by line by a human;
 please treat results accordingly. References in `docs/design.md` were
 written from memory and have not all been checked against the
-literature.
+literature. Copyright and license: see the end of this file.
 
 ## Philosophy
 
@@ -238,6 +238,30 @@ the slip distributions of events above `store_slip_min_mag`, the fault
 geometry, the released slip per patch, the parameters and run metadata.
 `Catalog.load` restores it.
 
-## License
+## Copyright and license
 
-No license has been chosen yet.
+Copyright (C) 2026 Thorsten Becker.
+
+The code, tests and documentation were written by Claude, an AI model
+developed by Anthropic (Claude Opus 5.5), working with Thorsten Becker
+(Jackson School of Geosciences, The University of Texas at Austin), who
+directed the work. As an AI model cannot hold copyright, the copyright is
+held by Thorsten Becker; Claude's authorship is acknowledged here and in
+the header of each source file.
+
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation, either version 3 of the License, or (at your
+option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program (`LICENSE`). If not, see <https://www.gnu.org/licenses/>.
+
+The Alpine Fault inputs in `data/nz_alpine/` were provided by the
+organisers of the simulator intercomparison and are subject to their
+terms; they are not covered by this license.

@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Minimal end-to-end example: run, analyse, plot."""
 import os
 import sys

@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Von Karman random fields by spectral synthesis.
 
 Power spectral density (Mai & Beroza, 2002, eq. 1), with angular

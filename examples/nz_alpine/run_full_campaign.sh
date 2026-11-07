@@ -1,4 +1,6 @@
 #!/bin/bash
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 # Full Alpine Fault campaign: for every configuration in
 # examples/nz_alpine/campaign_configs.json (planar, variable dip and segmented

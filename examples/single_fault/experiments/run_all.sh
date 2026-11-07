@@ -1,4 +1,6 @@
 #!/bin/bash
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 # Reproduce the single-fault experiments of docs/experiments.md.
 # usage: run_all.sh [nproc] [outdir]
 nproc=${1-4}

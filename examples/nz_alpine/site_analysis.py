@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Site and system statistics for posterior ensembles: the panels used to
 summarize physics-based simulators in the intercomparison, extended with
 ensemble ranges and further diagnostics.

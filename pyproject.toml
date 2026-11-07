@@ -7,6 +7,10 @@ name = "stochseis"
 version = "0.1.0"
 description = "Stochastic seismicity generator on fault patch graphs (baseline for earthquake cycle models)"
 requires-python = ">=3.10"
+license = {text = "GPL-3.0-or-later"}
+authors = [{name = "Thorsten Becker"}, {name = "Claude (Anthropic)"}]
+classifiers = ["License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+               "Programming Language :: Python :: 3", "Topic :: Scientific/Engineering :: Physics"]
 dependencies = ["numpy>=1.22", "scipy>=1.10", "matplotlib>=3.5"]
 
 [project.optional-dependencies]

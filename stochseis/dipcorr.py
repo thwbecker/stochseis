@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """L1 correction of crack-solution amplitudes for dip, rake and burial.
 
 The spectral operator (unrolled grid, free surface by an image) is exact

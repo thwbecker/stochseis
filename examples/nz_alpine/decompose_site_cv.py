@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Decompose site recurrence variability for a saved catalog (see examples/nz_alpine/README.md, "What controls site CV").
 
     python3 examples/nz_alpine/decompose_site_cv.py catalog.npz [threshold_m]

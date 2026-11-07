@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Overview figures for posterior ensembles on one or more geometries.
 
     python3 examples/nz_alpine/overview_figures.py out_prefix label1 dir1 [label2 dir2 ...]

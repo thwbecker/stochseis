@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Write one ABC spec per campaign configuration.
 
     python3 examples/nz_alpine/make_campaign_specs.py configs.json base_spec.json outdir \\

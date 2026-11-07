@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Plot summary metrics of a sweep against arrest_scale, grouped by stress drop.
 
     python examples/single_fault/experiments/plot_sweep.py sweep_out/sweep_summary.json sweep.png

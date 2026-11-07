@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Accept parameter vectors whose synthetic site records match the data.
 
     python3 examples/nz_alpine/abc_accept.py summary.(json|csv) [threshold_m] [tolerance] [--seismicity]

@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Scoring of ABC sweep summaries against the Alpine Fault paleoseismic data.
 
 Shared by abc_accept.py, make_posterior_spec.py and campaign_summary.py.

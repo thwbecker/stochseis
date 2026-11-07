@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """How each model parameter affects performance, pooled over ABC sweeps.
 
     python3 examples/nz_alpine/parameter_effects.py out_prefix summary1 [summary2 ...] [--site north=1]

@@ -1,4 +1,6 @@
 #!/bin/bash
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 # Realization sets for the Alpine Fault: families of cases that vary one
 # irregularity control at a time (examples/nz_alpine/realization_sets.json),

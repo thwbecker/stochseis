@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Fault geometry as a patch graph.
 
 The simulator only talks to the :class:`Fault` interface: per-patch arrays

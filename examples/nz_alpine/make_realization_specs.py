@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Write one sweep spec per realization set.
 
     python3 examples/nz_alpine/make_realization_specs.py sets.json outdir [n_seeds=50] [duration_yr=20000] [set names...]

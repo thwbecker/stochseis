@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Page 2 of the Alpine figure set: site recurrence and rupture sizes.
 
     python3 examples/nz_alpine/nz_page.py out_prefix label1 dir1[:filter] [label2 dir2[:filter] ...]

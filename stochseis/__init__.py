@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """stochseis: a stochastic seismicity generator on fault patch graphs.
 
 See README.md and docs/ for the model description.  Typical use::

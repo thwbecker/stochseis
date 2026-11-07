@@ -1,4 +1,6 @@
 #!/bin/bash
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 # Single-fault parameter overview (examples/single_fault/README.md): the
 # default 200 km strike-slip fault and two alternative values each of the

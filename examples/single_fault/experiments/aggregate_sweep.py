@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Aggregate a sweep summary over seeds: mean and standard deviation per
 parameter combination for a set of metrics.
 

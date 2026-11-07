@@ -39,6 +39,5 @@ in git.
 
 ## Housekeeping
 
-* Choose a license.
 * Line-by-line review of the code by a human; check the references in
   `docs/design.md` against the literature.

@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """What each irregularity control does: one figure for all realization sets.
 
     python3 examples/nz_alpine/control_summary.py out_prefix sets_dir [set names ...] [--site north=1]

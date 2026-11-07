@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Cases side by side: what kinds of earthquake sequences each case produces.
 
     python3 examples/nz_alpine/spectrum_figures.py out_prefix label1 dir1[:vNNNN] [label2 dir2[:vNNNN] ...]

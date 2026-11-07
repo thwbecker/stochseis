@@ -1,4 +1,6 @@
 #!/bin/bash
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 #
 # Runs still needed for the Alpine Fault example (examples/nz_alpine/README.md),
 # from the repository root, with the meshes in data/nz_alpine/:

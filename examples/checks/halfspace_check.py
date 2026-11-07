@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Compare the FFT/image crack solutions with full elastic half-space kernels.
 
 For a rectangular rupture with uniform stress drop, solve K D = dsig with

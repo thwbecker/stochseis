@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Static stress change from slip on a planar fault, in the wavenumber domain.
 
 For slip D(x, z) on an infinite plane in a homogeneous full space the

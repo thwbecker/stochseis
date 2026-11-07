@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Figures for the single-fault parameter overview.
 
     python3 examples/single_fault/make_figures.py spec.json sweep_dir out_dir

@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """How often do synthetic records of the observed length match the observations?
 
     python3 examples/nz_alpine/record_match.py out_prefix label1 dir1[:filter] [label2 dir2[:filter] ...]

@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Write a sweep spec that reruns the best ABC vectors with catalogs kept.
 
     python3 examples/nz_alpine/make_posterior_spec.py summary.(json|csv) base_spec.json out_spec.json \\

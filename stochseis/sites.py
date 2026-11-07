@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Thorsten Becker. Written by Claude (Anthropic) with Thorsten Becker.
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Synthetic paleoseismic records at sites and comparison with data.
 
 A site is a map position (x, y) close to the fault trace.  It is assigned
